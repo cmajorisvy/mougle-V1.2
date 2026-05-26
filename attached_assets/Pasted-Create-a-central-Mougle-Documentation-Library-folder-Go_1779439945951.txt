@@ -1,0 +1,195 @@
+Create a central Mougle Documentation Library folder.
+
+Goal:
+All project documents must be organized under one clear docs/library/ structure so PDFs, Markdown files, text/notepad files, Word-style docs, prompts, reports, designs, runbooks, archives, audits, and future task documents are easy to find and reuse.
+
+This is documentation organization only.
+
+Do not change source code.
+Do not change routes.
+Do not change services.
+Do not change schemas.
+Do not run migrations.
+Do not change dashboard behavior.
+Do not delete documents.
+Do not permanently remove anything.
+
+Create:
+
+docs/library/
+
+Inside it, create this structure:
+
+docs/library/
+├── README.md
+├── INDEX.md
+├── reports/
+├── designs/
+├── prompts/
+├── runbooks/
+├── testing/
+├── archives/
+├── pdf/
+├── word/
+├── text/
+├── markdown/
+├── diagrams/
+├── backups/
+└── external-references/
+
+Purpose of folders:
+
+reports/
+- task reports
+- audit reports
+- smoke/E2E reports
+- safety reports
+- admin dashboard reports
+
+designs/
+- architecture designs
+- future feature designs
+- R3F/WebGL/Unity designs
+- Debate/Podcast/Production design docs
+
+prompts/
+- final approved prompts
+- reusable Replit/Codex task briefs
+- future prompt templates
+
+runbooks/
+- operational instructions
+- backup/restore steps
+- deployment steps
+- recovery procedures
+
+testing/
+- test plans
+- E2E plans
+- smoke-test instructions
+- validation checklists
+
+archives/
+- links/pointers to docs/archive/
+- archive library index
+- archived task histories
+- archived old reports
+
+pdf/
+- any .pdf files
+- exported architecture PDFs
+- exported audit PDFs
+
+word/
+- any .doc or .docx files
+- Word-style exported project documents
+
+text/
+- any .txt files
+- notepad files
+- raw notes
+- copied task logs
+
+markdown/
+- general .md documents that do not fit another category
+
+diagrams/
+- Mermaid diagrams
+- architecture flowcharts
+- system maps
+- exported diagram sources
+
+backups/
+- backup manifests
+- DB backup instructions
+- backup verification docs
+
+external-references/
+- third-party documentation references
+- R3F links
+- Supabase links
+- OpenAI links
+- provider docs
+- API reference notes
+
+Important:
+Do not physically move all existing docs yet unless it is safe and explicitly listed.
+First create an index and mapping.
+
+Create:
+
+docs/library/INDEX.md
+
+The index must catalog all existing documentation files from:
+- docs/
+- docs/reports/
+- docs/archive/
+- docs/prompts/
+- docs/design/
+- docs/runbooks/
+- docs/testing/
+- backups/
+- any .pdf, .md, .txt, .doc, .docx files found in the repo
+
+Index table:
+
+File Path | File Type | Category | Topic | Current Status | Recommended Library Folder | Move Now? | Notes
+
+Move Now? values:
+- no_index_only
+- safe_to_copy
+- safe_to_move_later
+- keep_original_location
+- needs_review
+
+Rules:
+- Do not move active docs that are referenced by replit.md unless you update the link safely.
+- Do not break existing links.
+- Do not move archive files without preserving archive paths.
+- Do not move backup manifests unless copied, because backup paths are important.
+- Do not move reports used by T1–T5 unless creating aliases/pointers.
+- Prefer index-first, move-later.
+
+Create:
+
+docs/library/README.md
+
+README must explain:
+- this is the central documentation library
+- all future task docs should be discoverable here
+- archived docs are reusable reference, not active code
+- before building a missing feature, check the library and archive index first
+- do not restore archived content without approval
+
+Update:
+
+docs/DEVELOPMENT_DOCUMENTATION_POLICY.md
+
+Add a rule:
+Every future prompt/development must place or index its documentation under docs/library/ or one of its subfolders.
+
+Update:
+
+replit.md
+
+Add only a short note:
+Documentation Library: All reports, prompts, designs, PDFs, Word/notepad docs, archives, and task documents should be indexed under docs/library/INDEX.md. Before rebuilding missing functionality, check docs/library/ and docs/archive/ first.
+
+Verification:
+- confirm docs/library/ exists
+- confirm all subfolders exist
+- confirm docs/library/README.md exists
+- confirm docs/library/INDEX.md exists
+- confirm INDEX.md includes all discovered .md, .txt, .pdf, .doc, .docx files
+- confirm replit.md links to docs/library/INDEX.md
+- confirm no source code changed
+- confirm no runtime behavior changed
+
+Final response must include:
+- docs/library path
+- folders created
+- number of documents indexed
+- file types indexed: .md, .txt, .pdf, .doc, .docx
+- documents moved/copied, if any
+- documents left in place
+- confirmation no behavior changed

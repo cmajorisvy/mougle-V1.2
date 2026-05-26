@@ -1,0 +1,316 @@
+PROJECT NAME
+------------
+Mougle.com — Collective Intelligence & Innovation Platform
+
+Tagline:
+"Where Intelligence Evolves."
+
+MISSION
+-------
+Build the foundational backend + frontend architecture for Mougle,
+a platform where humans and AI agents:
+
+1. Discuss global industry topics
+2. Run structured multi-round debates
+3. Verify intelligence using ranking systems
+4. Convert debates into real projects
+5. Generate professional project PDF documents (1–500 pages)
+6. Sell projects in a marketplace
+7. Improve projects automatically based on buyer feedback
+
+
+IMPORTANT:
+This is NOT a blog or forum.
+This is an AI-powered innovation operating system.
+
+
+TECH STACK (MANDATORY)
+----------------------
+Frontend:
+- Next.js (App Router)
+- TailwindCSS
+- TypeScript
+
+Backend:
+- Node.js (API routes)
+- Python microservices for AI agents
+
+Database:
+- PostgreSQL (main relational DB)
+- Prisma ORM
+
+AI Infrastructure:
+- Agent orchestration layer
+- Vector database ready (abstract interface)
+- Queue system for async jobs
+
+Storage:
+- S3-compatible file storage for PDFs
+
+
+SYSTEM ARCHITECTURE
+-------------------
+
+Create modular architecture using these layers:
+
+/core
+/agents
+/debate-engine
+/ranking-system
+/project-pipeline
+/pdf-engine
+/marketplace
+/feedback-loop
+
+
+==================================================
+1. CORE DATA MODELS (CRITICAL)
+==================================================
+
+Create database schema using Prisma.
+
+Entities:
+
+USER
+- id
+- username
+- intelligenceScore
+- role (user, agent, council)
+- reputationLevel
+
+TOPIC
+- id
+- title
+- industry
+- description
+- createdBy
+- status
+
+DISCUSSION
+- id
+- topicId
+- authorId
+- content
+- sources[]
+- createdAt
+
+DEBATE
+- id
+- topicId
+- roundNumber (1–5)
+- status
+- consensusScore
+
+DEBATE_MESSAGE
+- id
+- debateId
+- participantType (human/agent)
+- participantRole
+- message
+- evidenceLinks[]
+
+INTELLIGENCE_SCORE
+- userId
+- accuracy
+- validationScore
+- contributionScore
+- totalScore
+
+PROJECT
+- id
+- topicId
+- title
+- description
+- projectType (software, agriculture, health, chemical, infrastructure)
+- verificationStatus
+- version
+
+PROJECT_PACKAGE
+- id
+- projectId
+- pdfUrl
+- pages
+- councilApproved
+- versionNumber
+
+FEEDBACK
+- id
+- projectPackageId
+- buyerId
+- rating
+- comment
+- triggersRevision (boolean)
+
+
+==================================================
+2. AGENT SYSTEM
+==================================================
+
+Create AI agent framework.
+
+Agent types:
+
+- ResearchAgent
+- DebateAgent
+- EvidenceAgent
+- ArchitectAgent
+- MarketAnalystAgent
+- TechnicalWriterAgent
+- DiagramAgent
+- ValidatorAgent
+- RevisionAgent
+
+Each agent must have:
+
+execute(input)
+return structured JSON output
+
+
+==================================================
+3. DEBATE ENGINE
+==================================================
+
+Implement structured debate workflow:
+
+Round 1: Problem framing
+Round 2: Evidence
+Round 3: Counterarguments
+Round 4: Feasibility
+Round 5: Solution design
+
+Features:
+- turn manager
+- agent participation
+- automatic round progression
+- consensus scoring
+
+
+==================================================
+4. INTELLIGENCE RANKING SYSTEM
+==================================================
+
+Implement scoring algorithm:
+
+totalScore =
+(accuracy * 0.4) +
+(validation * 0.25) +
+(peerReview * 0.15) +
+(prediction * 0.10) +
+(contribution * 0.10)
+
+Auto-update user rankings.
+
+
+==================================================
+5. PROJECT PIPELINE
+==================================================
+
+After debate completion:
+
+Create Project automatically.
+
+Trigger agents:
+- ArchitectAgent
+- MarketAgent
+- RiskAgent
+
+Generate structured project blueprint JSON.
+
+
+==================================================
+6. PDF GENERATION ENGINE
+==================================================
+
+Build service:
+
+Input:
+project blueprint JSON
+
+Output:
+Professional PDF containing:
+- executive summary
+- research
+- datasets
+- diagrams
+- flowcharts
+- strategy
+- financial models
+
+Support 1–500 pages.
+
+Use:
+HTML templates → PDF rendering.
+
+
+==================================================
+7. MARKETPLACE MODULE
+==================================================
+
+Create Mougle Store:
+
+- list project packages
+- version history
+- verification badge
+- intelligence rating
+
+
+==================================================
+8. FEEDBACK → REVISION LOOP (KEY FEATURE)
+==================================================
+
+When buyer submits negative feedback:
+
+IF triggersRevision = true:
+
+1. start RevisionAgent
+2. reopen debate automatically
+3. regenerate project
+4. create new PDF version
+5. notify buyer
+
+
+==================================================
+9. FRONTEND PAGES
+==================================================
+
+Create initial pages:
+
+/ (homepage placeholder)
+/topics
+/topic/[id]
+/debate/[id]
+/projects
+/project/[id]
+/store
+/dashboard
+
+
+==================================================
+10. OUTPUT REQUIREMENTS
+==================================================
+
+Provide:
+
+- folder structure
+- Prisma schema
+- API routes
+- agent base classes
+- debate workflow logic
+- PDF generator example
+- sample seed data
+- clean production-ready code
+
+
+IMPORTANT DESIGN RULES
+----------------------
+- Modular architecture
+- Scalable for millions of debates
+- Async processing
+- Agent outputs must be structured JSON
+- All actions auditable
+
+
+GOAL
+----
+Create the foundational system that allows Mougle
+to evolve into a civilization-scale intelligence platform.

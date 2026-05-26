@@ -1,0 +1,125 @@
+Next task: Connect Production Wizard outputs to Readiness Center and Approval Board.
+
+Goal:
+When a root-admin finalizes a wizard draft package, automatically create or update the related production package references so the package can be reviewed in Readiness Center, Package Viewer, Asset Library, and Approval Board.
+
+Important:
+Do not enable live Unreal commands.
+Do not render video.
+Do not load Unreal levels.
+Do not trigger Movie Render Queue.
+Do not start Sequencer.
+Do not import assets.
+Do not send real 4D hardware commands.
+Do not publish anything.
+realSendAllowed must remain false.
+executionEnabled must remain false.
+All outputs remain draft/internal-only.
+
+Scope:
+
+1. On wizard finalize:
+- ensure a productionId exists
+- link generatedRoomId
+- link generatedAvatarIds
+- link generatedAccessoryIds
+- link generatedMediaPackageId
+- link generatedPreviewId
+- link fourDCueSuggestions
+- update production package metadata
+- create an initial readiness report or mark readiness pending
+- add the production to Approval Board in draft or needs_review state
+
+2. Add backend endpoint:
+POST /api/admin/production-house/wizard/:wizardId/send-to-review
+
+Requirements:
+- root-admin only
+- wizard must be finalized
+- productionId must exist
+- no blockers from safety fields
+- creates readiness analysis
+- creates approval board entry in needs_review or draft_review
+- audit-logs the action
+
+3. Add UI:
+In Production Wizard:
+- “Send to Readiness Review” button
+- “Open in Package Viewer” link/button
+- “Open in Readiness Center” link/button
+- “Open in Approval Board” link/button
+- status badges:
+  Draft Package
+  Linked to Production
+  Ready for Review
+  Internal Only
+  No Unreal Execution
+  No 4D Hardware
+
+4. Add Package Viewer integration:
+The package viewer should show wizard-generated:
+- room
+- avatars
+- accessories
+- media package
+- preview snapshot
+- 4D cue suggestions
+- wizard session summary
+
+5. Add Asset Library integration:
+Asset Library should include:
+- generated rooms
+- generated avatars
+- avatar accessories
+- media packages
+- preview snapshots
+- wizard sessions
+
+6. Add Readiness Center checks:
+Readiness should recognize:
+- wizard-generated room exists
+- wizard-generated avatar exists
+- wizard-generated media package exists
+- wizard-generated preview exists
+- 4D cue suggestions exist
+
+7. Add audit events:
+- wizard.sent_to_review
+- wizard.review_linked_to_package
+- wizard.review_readiness_created
+- wizard.review_approval_entry_created
+
+8. Add export support:
+Full package export should include:
+- wizard session
+- linked room
+- linked avatars
+- linked accessories
+- linked media package
+- linked preview
+- 4D cue suggestions
+- review status
+
+9. Add regression tests:
+- send-to-review requires root-admin
+- send-to-review rejects non-finalized wizard
+- send-to-review links all generated artifacts
+- readiness report is created or pending marker is set
+- approval board entry is created in safe draft/review state
+- Package Viewer includes wizard artifacts
+- Asset Library includes wizard artifacts
+- export includes wizard-linked artifacts
+- publicUrl remains null
+- signedUrl remains null
+- realSendAllowed remains false
+- executionEnabled remains false
+- no Unreal command is sent
+- no 4D command is sent
+- no publishing occurs
+- SAFETY_ENVELOPE unchanged
+
+10. Preserve existing Production House behavior.
+
+Do not add live execution.
+Do not add real rendering.
+Do not add real 4D hardware integration.

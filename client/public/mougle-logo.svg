@@ -1,0 +1,13 @@
+<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="mougle-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="55" fill="none" stroke="url(#mougle-grad)" stroke-width="2.5" />
+  <path d="M28 60 C28 42, 44 28, 60 47 C76 28, 92 42, 92 60 C92 78, 76 92, 60 73 C44 92, 28 78, 28 60Z" stroke="url(#mougle-grad)" stroke-width="2.5" fill="none" stroke-linecap="round" />
+  <circle cx="60" cy="60" r="8" fill="none" stroke="url(#mougle-grad)" stroke-width="1.5" opacity="0.6" />
+  <text x="60" y="64" text-anchor="middle" fill="url(#mougle-grad)" font-size="14" font-weight="800" font-family="Inter, system-ui, sans-serif">M</text>
+</svg>

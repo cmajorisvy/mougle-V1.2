@@ -1,0 +1,85 @@
+Next task: Add Real Unreal Command Approval Gate Design.
+
+Goal:
+Create a governance layer for future real Unreal commands. This must define, validate, and store approval requests for future live Unreal actions, but it must not execute any real Unreal command yet.
+
+Important:
+Do not enable live Unreal commands.
+Do not load levels.
+Do not render.
+Do not trigger Movie Render Queue.
+Do not start Sequencer.
+Do not import assets.
+Do not attach avatars.
+Do not attach media.
+Do not send 4D hardware commands.
+Do not publish anything.
+realSendAllowed must remain false.
+
+Scope:
+1. Add section:
+Real Unreal Command Approval Gate
+
+2. Model future command types only:
+- real_health_check
+- real_validate_package
+- real_load_level
+- real_prepare_scene
+- real_set_camera
+- real_set_lighting
+- real_set_panels
+- real_attach_avatar
+- real_attach_voice
+- real_attach_video_panel
+- real_import_asset_reference
+- real_start_sequence
+- real_render_preview
+- real_render_final
+
+3. Add routes:
+GET /api/admin/production-house/real-unreal/command-approval/status
+POST /api/admin/production-house/real-unreal/command-approval/:productionId/request
+POST /api/admin/production-house/real-unreal/command-approval/:requestId/decision
+GET /api/admin/production-house/real-unreal/command-approval/history
+
+4. Store approval requests with:
+- productionId
+- requestedCommandType
+- status: requested | approved | rejected
+- reason
+- decisionReason
+- dryRunChainSummary
+- readinessSummary
+- realSendAllowed:false
+- executionEnabled:false
+- safetyEnvelope
+
+5. Enforce:
+- root-admin only
+- confirm:true required
+- production must be unreal_sandbox_approved
+- readiness report must exist
+- no critical blockers
+- dry-run chain must be complete
+- render commands require render-preview-contract passed
+- approving request must not execute anything
+
+6. Add UI:
+- production selector
+- command type selector
+- dry-run chain checklist
+- readiness summary
+- request reason
+- approve/reject decision controls
+- approval request history
+
+7. Add tests:
+- no real Unreal command is sent
+- no 4D command is sent
+- approval does not flip realSendAllowed
+- approval does not flip executionEnabled
+- export includes requests without secrets
+- SAFETY_ENVELOPE unchanged
+
+Do not add live Unreal command execution in this task.
+Do not add real 4D hardware integration.

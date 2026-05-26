@@ -1,0 +1,114 @@
+Build Mougle 24/7 Global Cinematic Newsroom Architecture.
+
+Goal:
+Create a legal, verified, 24/7 AI news broadcast pipeline that can compete with CNN/BBC in speed, transparency, and regional coverage, while keeping publishing and live execution behind approval gates.
+
+Important:
+Do not download copyrighted news videos for reuse.
+Do not remove logos or watermarks.
+Do not remake copyrighted footage to bypass rights.
+Do not publish automatically.
+Do not enable real 4D hardware.
+Do not enable live Unreal execution.
+
+Add modules:
+
+1. Global Source Registry
+- free RSS
+- paid feeds
+- regional feeds
+- source country
+- source language
+- reliability score
+- license status
+
+2. Broadcast Brief Builder
+For each verified story extract:
+- location
+- event type
+- entities
+- mood
+- script beats
+- visual needs
+- rights flags
+- impact score
+
+3. Legal B-Roll Resolver
+Sources:
+- licensed paid media
+- public-domain media
+- free-license stock
+- map/satellite fly-in
+- Runway AI-generated visual
+- Remotion motion graphic fallback
+
+Reject:
+- watermark removal
+- logo stripping
+- unauthorized rebroadcast
+- copyrighted footage reuse
+
+4. 3D/4D Newsroom Package Builder
+Map verified data to:
+- LED wall
+- source panel
+- confidence panel
+- claims/timeline panel
+- ticker
+- lower-third
+- anchor teleprompter
+- camera plan
+- 4D cue suggestions
+
+5. AI Anchor Director
+Modes:
+- desk anchor
+- walking presenter
+- corner explainer
+- field-style reporter
+- data-wall analyst
+- shapeshift explainer mode for non-sensitive stories only
+
+6. Broadcast Compositor
+Use Remotion-style layers:
+- background event visual
+- anchor full/corner/PiP
+- lower-third
+- ticker
+- breaking bar
+- source/confidence panel
+- Mougle channel bug
+
+7. 24/7 Playout Queue
+- approved segments only
+- breaking news insert
+- regional playlists
+- loop latest approved packages
+- auto-expire outdated stories
+- kill switch
+
+8. Shorts Cutter
+Automatically create clips from approved full segments:
+- YouTube Shorts
+- Reels
+- TikTok
+- social captions
+- thumbnails
+All remain in approval queue before posting.
+
+9. Cost Control
+Only render premium segments if:
+- impactScore > 70
+- verified confidence passes threshold
+- source/license status is safe
+- admin approval exists for publishing
+
+10. Tests
+Verify:
+- no copyrighted footage stripping
+- no logo removal
+- all media has license status
+- no publishing without approval
+- no real 4D hardware
+- no live Unreal execution
+- all outputs draft/internal until approval

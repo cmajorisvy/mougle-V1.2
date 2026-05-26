@@ -1,0 +1,110 @@
+Next task: Add Local Unreal Bridge Stub App for Mougle AI Production House.
+
+Goal:
+Create a local bridge stub server module that simulates the future external Unreal workstation bridge. It should accept only valid dry-run bridge contract payloads, return deterministic mock responses, and record bridge job history.
+
+Important:
+Do not connect to real Unreal Engine.
+Do not call Unreal Remote Control API.
+Do not trigger Movie Render Queue.
+Do not import assets.
+Do not render video.
+Do not send 4D hardware commands.
+Do not publish anything.
+This is still sandbox/dry-run only.
+
+Scope:
+
+1. Add Local Bridge Stub section in /admin/production-house.
+
+Features:
+- bridge health check
+- dry-run command sender
+- bridge response viewer
+- bridge job history
+- supported command list
+- safety badges:
+  Local Stub
+  Dry Run Only
+  No Real Unreal
+  No Render
+  No Asset Import
+  No 4D Send
+
+2. Add backend endpoints:
+GET /api/admin/production-house/local-bridge/stub/health
+POST /api/admin/production-house/local-bridge/stub/send
+GET /api/admin/production-house/local-bridge/stub/history
+GET /api/admin/production-house/local-bridge/stub/supported-commands
+
+All routes must be root-admin gated.
+
+3. The stub send endpoint should:
+- require a valid bridge contract payload
+- require dryRun:true
+- require realSendAllowed:false
+- require safetyEnvelope
+- reject unsupported command types
+- reject publicUrl or signedUrl non-null
+- reject visibility values other than admin_only_internal
+- return deterministic mock job IDs using SHA-256
+- save bridge job history through the storage adapter
+- audit-log accepted and rejected attempts
+
+4. Add local bridge job model/storage:
+- id
+- commandId
+- productionId
+- commandType
+- mode: local_stub
+- dryRun:true
+- realSendAllowed:false
+- status: stub_accepted | stub_rejected | failed
+- requestPayload
+- responsePayload
+- createdAt
+- safetyEnvelope
+
+5. Add audit events:
+- local_bridge.stub.health_viewed
+- local_bridge.stub.commands_viewed
+- local_bridge.stub.send_attempted
+- local_bridge.stub.accepted
+- local_bridge.stub.rejected
+- local_bridge.stub.history_viewed
+
+6. Add UI:
+- Health card
+- Supported commands list
+- Payload editor using example payloads from the bridge contract
+- Send dry-run button
+- Response panel
+- History table
+
+7. Add export support:
+- include localBridgeStubJobs in full production package export
+- no secrets
+- no public URLs
+- no signed URLs
+
+8. Add regression tests:
+- all stub endpoints require root-admin
+- health returns dryRunOnly:true and realSendAllowed:false
+- supported commands match bridge contract commands
+- send rejects realSendAllowed:true
+- send rejects dryRun:false
+- send rejects missing safetyEnvelope
+- send rejects publicUrl/signedUrl non-null
+- send rejects unsupported command type
+- valid dry-run payload is accepted
+- accepted job ID is deterministic
+- job persists through storage adapter
+- export includes local bridge jobs but no secrets
+- no real Unreal command is sent
+- no 4D command is sent
+- SAFETY_ENVELOPE unchanged
+
+9. Preserve all existing tests.
+
+Do not add real Unreal Remote Control API calls in this task.
+Do not add real 4D hardware integration in this task.

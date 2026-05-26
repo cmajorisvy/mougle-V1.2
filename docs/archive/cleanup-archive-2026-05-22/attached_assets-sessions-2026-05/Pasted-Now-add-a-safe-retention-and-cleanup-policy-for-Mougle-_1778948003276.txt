@@ -1,0 +1,169 @@
+Now add a safe retention and cleanup policy for Mougle AI jobs, audit events, and worker records.
+
+Context:
+The project already has:
+
+1. Postgres-backed ai_jobs table.
+2. ai_job_events audit table.
+3. ai_workers table.
+4. TypeScript AI job service.
+5. TypeScript AI worker service.
+6. Python worker bridge with heartbeat.
+7. Admin AI Job Monitor:
+   - /admin/ai-jobs
+8. Admin AI Workers page:
+   - /admin/ai-workers
+9. Retry/cancel controls.
+10. Lifecycle audit logging.
+
+Goal:
+Add safe admin-controlled cleanup for old AI operational data.
+
+Do not rewrite the app.
+Do not expose Python directly to the frontend.
+Do not bypass the TypeScript API.
+Do not add Redis.
+Do not add background cron infrastructure unless the project already has a safe pattern.
+Do not automatically delete active/running jobs.
+Keep Python worker optional.
+
+Part A — Retention policy constants/config
+
+Add retention settings using environment variables with safe defaults:
+
+- AI_JOB_COMPLETED_RETENTION_DAYS default 90
+- AI_JOB_FAILED_RETENTION_DAYS default 180
+- AI_JOB_EVENT_RETENTION_DAYS default 180
+- AI_WORKER_STALE_RETENTION_DAYS default 30
+
+Rules:
+
+1. Never delete jobs with status pending or running.
+2. Never delete workers seen recently.
+3. Never delete audit events for jobs that still exist unless the event itself exceeds retention and policy allows it.
+4. Prefer dry-run first.
+5. All cleanup should be admin-only.
+
+Part B — Backend service methods
+
+Add cleanup/retention methods, either in existing services or a new service such as:
+
+server/services/aiRetentionService.ts
+
+Methods:
+
+1. previewCleanup(policy)
+   Returns counts only:
+   - completed jobs eligible
+   - failed/rejected jobs eligible
+   - audit events eligible
+   - stale workers eligible
+
+2. runCleanup(policy, { adminId, dryRun })
+   If dryRun=true, return preview only.
+   If dryRun=false, delete eligible rows safely.
+
+Deletion behavior:
+
+- Completed/succeeded jobs older than completed retention may be deleted.
+- Failed/rejected jobs older than failed retention may be deleted.
+- Audit events older than event retention may be deleted.
+- Worker rows older than stale worker retention may be deleted if derived status is offline/stale and no currentJobId.
+- Do not delete pending/running jobs.
+- Do not delete workers with currentJobId.
+- Use transactions where practical.
+- Return deleted counts.
+
+3. Write an audit event or system log entry for cleanup execution if it fits the existing audit model.
+   If ai_job_events requires a job_id, use a safe logging alternative or skip global cleanup audit for now.
+
+Part C — Backend routes
+
+Add admin-only routes:
+
+1. GET /api/admin/ai-retention/preview
+
+Returns retention policy and eligible counts.
+
+2. POST /api/admin/ai-retention/run
+
+Body:
+
+{
+  "dryRun": true,
+  "completedRetentionDays": 90,
+  "failedRetentionDays": 180,
+  "eventRetentionDays": 180,
+  "workerStaleRetentionDays": 30
+}
+
+Behavior:
+
+- requireRootAdmin
+- validate integer day values
+- enforce safe minimums:
+  - completed jobs minimum 7 days
+  - failed jobs minimum 7 days
+  - events minimum 7 days
+  - workers minimum 1 day
+- if dryRun omitted, default to true
+- return policy, eligible counts, and deleted counts if executed
+
+Part D — Admin UI
+
+Add an admin page:
+
+/admin/ai-retention
+
+Name it something like:
+“AI Retention & Cleanup”
+
+The page should show:
+
+- current retention policy
+- preview counts
+- dry-run button
+- run cleanup button
+- clear warnings that cleanup is irreversible
+- confirmation prompt before real cleanup
+- latest result summary
+
+Link this page from:
+- /admin/ai-jobs
+- /admin/ai-workers if practical
+
+UI behavior:
+
+- require admin auth
+- loading/empty/error states
+- default to dry-run
+- do not auto-run cleanup on page load except preview
+- no destructive action without confirmation
+
+Part E — Validation
+
+Run existing checks/tests.
+
+Confirm:
+
+- unauthenticated users cannot access retention endpoints.
+- normal users cannot access retention endpoints.
+- admin can preview cleanup.
+- dry-run does not delete rows.
+- real cleanup requires explicit dryRun=false and confirmation in UI.
+- pending/running jobs are never deleted.
+- workers with currentJobId are never deleted.
+- safe minimum retention days are enforced.
+- /admin/ai-retention loads.
+- no Python changes are required.
+
+After changes, summarize:
+- files created
+- files modified
+- service methods added
+- endpoints added
+- retention defaults
+- deletion safeguards
+- UI behavior
+- validation results
+- what remains for the next step

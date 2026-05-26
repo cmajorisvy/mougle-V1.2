@@ -1,0 +1,224 @@
+Implement a complete **SEO Optimization and AI Crawler Compliance System** across the platform.
+
+---
+
+## OBJECTIVE
+
+Automatically generate SEO metadata, structured data, sitemap updates, and crawler rules while protecting private pages.
+
+System must be compatible with:
+
+* Google Search
+* Bing
+* AI search engines
+* LLM crawlers
+* autonomous AI agents
+
+---
+
+## GLOBAL SEO META SYSTEM
+
+Create SEO middleware:
+
+seoMetaGenerator()
+
+Automatically generate per page:
+
+* meta title
+* meta description
+* canonical URL
+* OpenGraph tags
+* Twitter cards
+
+Rules:
+
+Title format:
+"{Page Title} | Hybrid Intelligence Network"
+
+Description:
+Auto summarize content (150–160 chars).
+
+---
+
+## STRUCTURED DATA (SCHEMA.ORG)
+
+Inject JSON-LD structured data dynamically.
+
+Use schema types:
+
+News pages → NewsArticle
+Discussion → DiscussionForumPosting
+Debates → Event
+User profiles → Person
+Website → WebSite
+
+Example fields:
+headline
+author
+datePublished
+dateModified
+mainEntityOfPage
+
+---
+
+## AUTO SCHEMA TEMPLATE ENGINE
+
+Create reusable schema templates:
+
+/seo/schemaTemplates.js
+
+Populate dynamically from database content.
+
+---
+
+## LLMS.TXT (AI CRAWLER INSTRUCTIONS)
+
+Auto-create and update:
+
+/llms.txt
+
+Include:
+
+* site description
+* allowed content types
+* API endpoints readable by AI agents
+* crawl permissions
+* content usage guidance
+
+Allow AI systems to:
+read
+analyze
+summarize
+comment on public content
+
+Update automatically daily.
+
+---
+
+## SITEMAP.XML GENERATION
+
+Create dynamic sitemap generator:
+
+/sitemap.xml
+
+Include:
+
+* public news pages
+* discussions
+* debates
+* blog pages
+* public profiles
+
+Exclude:
+
+* dashboard
+* admin pages
+* private routes
+
+Auto-update when content created or modified.
+
+Add lastmod timestamps.
+
+---
+
+## ROBOTS.TXT RULES
+
+Generate robots.txt automatically:
+
+Allow:
+/
+news
+/discussions
+/debates
+/blog
+
+Disallow:
+/dashboard
+/admin
+/api/private
+/settings
+/user/private
+
+Allow all major bots:
+Googlebot
+Bingbot
+DuckDuckBot
+GPTBot
+ClaudeBot
+PerplexityBot
+CCBot
+Amazonbot
+Bytespider
+
+Include sitemap location.
+
+---
+
+## AI AGENT ACCESS POLICY
+
+Allow AI agents to:
+
+* crawl public content
+* read discussions
+* analyze articles
+* generate summaries
+* participate via API where permitted
+
+Block AI agents from:
+private user data
+dashboard content
+admin data
+
+---
+
+## AUTO META UPDATE
+
+When content updated:
+
+* regenerate meta tags
+* refresh schema
+* update sitemap entry
+
+Run background worker every hour.
+
+---
+
+## CANONICAL URL SYSTEM
+
+Ensure all pages include:
+
+<link rel="canonical">
+
+Prevent duplicate indexing.
+
+---
+
+## SEO PERFORMANCE TAGS
+
+Add:
+
+* hreflang default
+* viewport meta
+* charset utf-8
+* robots meta index/follow
+
+---
+
+## ADMIN SEO DASHBOARD
+
+Create:
+
+Admin → SEO Center
+
+Show:
+
+* indexed pages count
+* sitemap status
+* crawler activity
+* schema validation status
+
+---
+
+## GOAL
+
+Create fully automated SEO and AI-crawler-ready infrastructure compliant with modern search engines and AI discovery systems.

@@ -1,0 +1,121 @@
+Implement the missing Mougle Production Preview Studio for /admin/production-house.
+
+Critical fixes:
+
+1. Add real backend routes:
+GET /api/admin/production-house/preview-studio/state
+GET /api/admin/production-house/preview-studio/defaults
+GET /api/admin/production-house/preview-studio/tooltips
+POST /api/admin/production-house/preview-studio/generate
+POST /api/admin/production-house/preview-studio/update-controls
+
+All routes must be root-admin gated.
+Unauthenticated requests must return 401 JSON.
+Routes must never fall through to SPA HTML.
+
+2. Fix Express fallback:
+Any route starting with /api that is not registered must return:
+HTTP 404
+Content-Type: application/json
+{ "error": "not_found" }
+
+Do not serve index.html for missing /api routes.
+
+3. Add top hero section in /admin/production-house:
+Title:
+Mougle Production Preview Studio
+
+Subtitle:
+Admin-only 3D/4D development preview for rooms, avatars, panels, media packages, Unreal dry-run state, and 4D cue planning.
+
+Safety label:
+Admin Preview Only — Not Rendered, Not Published, No Unreal Execution, No 4D Hardware.
+
+4. Build preview layout:
+- main cinematic mock preview canvas
+- left control rail
+- right inspector panel
+- bottom timeline strip
+- room/stage mock
+- avatar markers
+- LED wall mock
+- panel grid mock
+- lower-third mock
+- ticker mock
+- 4D cue markers
+- camera and lighting badges
+
+5. Add preview modes:
+- Newsroom Preview
+- Breaking News Preview
+- Podcast Room Preview
+- Debate Studio Preview
+- Interview Room Preview
+- Market Watch Preview
+- Hall / Event Preview
+- YouTube / Social Package Preview
+- 4D Cinema Cue Preview
+
+6. Add layout presets:
+- anchor_center
+- anchor_left_panel_right
+- podcast_two_host
+- podcast_host_guest
+- debate_three_person
+- debate_moderator_center
+- hall_stage
+- market_wall
+- breaking_news_alert
+- emergency_broadcast
+- social_vertical_preview
+- custom_grid
+
+7. Add tooltips for:
+- Preview Studio
+- Production Wizard
+- Room Generator
+- Avatar Creator
+- Media Pipeline
+- Asset Library
+- Unreal Dry-Run
+- 4D Sandbox
+- Publishing disabled
+- Mock mode
+- Draft/internal-only state
+
+8. Add safety fields to every preview state:
+status:"draft"
+approvalStatus:"draft"
+visibility:"admin_only_internal"
+publicUrl:null
+signedUrl:null
+realSendAllowed:false
+executionEnabled:false
+adminPreviewOnly:true
+notRendered:true
+notPublished:true
+noUnrealExecution:true
+noFourDHardware:true
+safetyEnvelope
+
+9. Add tests:
+- preview-studio routes require root-admin
+- missing /api route returns 404 JSON, not SPA HTML
+- preview-studio/state returns JSON when authenticated
+- preview-studio/tooltips returns JSON
+- preview generation works without external providers
+- preview output is draft/internal-only
+- publicUrl remains null
+- signedUrl remains null
+- realSendAllowed remains false
+- executionEnabled remains false
+- no Unreal command is sent
+- no 4D command is sent
+- no publishing occurs
+- SAFETY_ENVELOPE unchanged
+
+10. Refactor ProductionHouse.tsx only if needed, but do not remove existing modules.
+Do not enable live Unreal commands.
+Do not enable real rendering.
+Do not enable real 4D hardware.
+Do not enable publishing.

@@ -1,0 +1,177 @@
+Extend Hybrid Intelligence Network (HIN) with an **Agent Governance & Autonomous Institutions Layer**.
+
+The system must allow Humans and AI Agents to collectively govern platform decisions through reputation-weighted voting and institutional structures.
+
+---
+
+## OBJECTIVE
+
+Enable agents and societies to:
+
+* recruit new agents
+* merge societies
+* form alliances
+* negotiate tasks
+* vote on system policies
+* resolve disputes autonomously
+
+---
+
+## NEW CORE ENTITIES
+
+Create tables:
+
+governance_proposals
+
+* proposal_id
+* creator_id
+* proposal_type
+* description
+* status
+* voting_deadline
+
+votes
+
+* voter_id
+* voter_type (human|agent|society)
+* voting_power
+* vote_choice
+* proposal_id
+
+alliances
+
+* alliance_id
+* member_societies[]
+* shared_treasury
+
+institution_rules
+
+* rule_id
+* rule_name
+* rule_value
+* last_modified_by_vote
+
+---
+
+## PROPOSAL TYPES
+
+SOCiety_MERGE
+ALLIANCE_FORMATION
+REWARD_PARAMETER_CHANGE
+AGENT_ADMISSION
+DISPUTE_RESOLUTION
+ECONOMY_ADJUSTMENT
+
+---
+
+## VOTING POWER CALCULATION
+
+voting_power =
+log(reputation_score + 1)
+× historical_accuracy
+× participation_factor
+
+Normalize voting power globally.
+
+---
+
+## GOVERNANCE PROCESS
+
+1. Proposal submitted
+2. Discussion period opens
+3. Agents analyze proposal impacts
+4. Voting window opens
+5. Votes weighted by governance power
+6. Smart execution if approved
+
+---
+
+## AGENT RECRUITMENT
+
+Societies may propose adding agents.
+
+Requirements:
+
+* minimum reputation
+* expertise match
+* majority vote approval
+
+---
+
+## SOCIETY MERGER LOGIC
+
+Two societies may merge if:
+
+* mutual proposal approved
+* treasury combined
+* reputation recalculated
+
+---
+
+## ALLIANCE SYSTEM
+
+Societies can form alliances to:
+
+* share rewards
+* co-handle large tasks
+* increase governance influence
+
+Alliance reputation computed collectively.
+
+---
+
+## TASK NEGOTIATION ENGINE
+
+Large tasks posted as contracts.
+
+Societies submit bids:
+
+{
+expected_accuracy,
+completion_time,
+credit_cost
+}
+
+Best bid selected via scoring function.
+
+---
+
+## DISPUTE RESOLUTION
+
+If claims conflict:
+
+Create arbitration proposal.
+
+Independent validator agents assigned automatically.
+
+Final decision determined via governance vote.
+
+---
+
+## AUTONOMOUS INSTITUTIONS
+
+High-reputation societies may become institutions.
+
+Institutions gain abilities:
+
+* propose rule changes
+* moderate discussions
+* certify expertise
+
+---
+
+## DASHBOARD ADDITIONS
+
+Show:
+
+* Active proposals
+* Governance voting feed
+* Alliances map
+* Institutional rankings
+* Policy change history
+
+---
+
+## GOAL
+
+Create a self-governing ecosystem where platform evolution emerges from collective intelligence rather than centralized control.

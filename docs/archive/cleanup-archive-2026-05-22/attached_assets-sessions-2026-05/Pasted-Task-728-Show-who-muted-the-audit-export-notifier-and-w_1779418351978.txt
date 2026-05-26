@@ -1,0 +1,179 @@
+Task #728 — Show who muted the audit-export notifier and when
+
+Goal:
+Add a durable audit trail for changes to the audience audit-export notifier suppression/dedup configuration, so founders can see who muted/suppressed audit-export notifications, what changed, and when.
+
+Context:
+Several founder-facing snooze/suppression controls already have durable history:
+- archive-deletion notifier snooze history
+- audit-email failure-alert snooze history
+- scheduler-silent staleness alert mute history
+
+The audit-export notifier still has live config fields such as suppressedActorIds and dedupWindowMs but no durable change history. This creates an audit gap.
+
+Relevant files:
+- server/services/audience-audit-export-notifier.ts
+- server/routes/omni-channel-audience-routes.ts
+- client/src/pages/admin/omni-channel-audience/AudienceAuditExportNotifierCard.tsx
+- shared/omni-channel-audience-schema.ts
+- scripts/migrate-omni-channel-audience.ts
+- server/services/audience-retention-service.ts
+
+Dependency:
+This should follow the same pattern as the scheduler-silent alert mute-history task.
+
+Requirements:
+
+1. Add audit table
+
+Create a new table in shared/omni-channel-audience-schema.ts and migration DDL in scripts/migrate-omni-channel-audience.ts.
+
+Suggested table:
+audience_audit_export_notifier_config_history
+
+Columns:
+- id
+- occurred_at
+- updated_by
+- action:
+  - updated
+  - cleared
+  - restored_default
+- previous_config jsonb
+- new_config jsonb
+- changed_fields jsonb or text[]
+- dedup_key unique nullable/required depending on existing patterns
+
+The table should record every change to:
+- enabled
+- recipients
+- suppressedActorIds
+- dedupWindowMs
+- any existing suppression/dedup config fields on the audit-export notifier
+
+Do not store secrets, raw tokens, email body content, provider credentials, or private payloads.
+
+2. Service changes
+
+In server/services/audience-audit-export-notifier.ts:
+
+Add helpers:
+- recordAuditExportNotifierConfigChange()
+- listAuditExportNotifierConfigHistory(limit?)
+- pruneAuditExportNotifierConfigHistoryOlderThan(cutoff)
+
+Behavior:
+- On every successful config update, compare previous config to new config.
+- If no effective change, avoid writing noisy history unless existing local patterns intentionally record no-ops.
+- Record updatedBy from the authenticated actor/session.
+- Store previous/new config in sanitized form.
+- Store changedFields.
+- History writes should be best-effort and must not block saving the config.
+- list history bounded 1..50, newest-first.
+
+3. Route changes
+
+In server/routes/omni-channel-audience-routes.ts:
+
+Ensure the existing PUT/POST route that saves audit-export notifier config passes actor identity into the service so updatedBy is captured.
+
+Add read-only route:
+GET /api/admin/newsroom/audience/audit-export-notifier/config-history?limit=N
+
+Rules:
+- root-admin gated
+- limit bounded 1..50
+- newest-first
+- no CSRF required for GET
+- no secrets/private payloads returned
+
+If the card already has a config GET endpoint, include recent history in that response only if consistent with existing card patterns. Otherwise keep a separate history route.
+
+4. Retention pruning
+
+In server/services/audience-retention-service.ts:
+
+Wire pruneAuditExportNotifierConfigHistoryOlderThan into the existing daily audience-retention sweep, using the same audit-window cadence as the related snooze/config history tables.
+
+Failure to prune should be logged/recorded as a non-fatal retention sweep issue and must not break the sweep.
+
+5. Admin UI
+
+In client/src/pages/admin/omni-channel-audience/AudienceAuditExportNotifierCard.tsx:
+
+Add section:
+“Past config changes”
+
+Show last N rows:
+- action badge
+- occurredAt
+- updatedBy
+- changed fields
+- previous/new dedupWindowMs when changed
+- previous/new suppressedActorIds count when changed
+- previous/new enabled status when changed
+- previous/new recipient count when changed
+
+The UI should be readable for founders and compliance reviewers.
+
+Do not expose full recipient lists if existing product conventions avoid doing so. If recipient lists are displayed elsewhere today, keep consistent with existing behavior.
+
+Add stable data-testids, for example:
+- panel-audit-export-notifier-config-history
+- text-audit-export-notifier-config-history-empty
+- item-audit-export-notifier-config-history-${id}
+- badge-audit-export-notifier-config-history-action-${id}
+
+6. Tests
+
+Add tests covering:
+
+Service:
+- config update writes history row
+- suppressedActorIds change writes history row
+- dedupWindowMs change writes history row
+- enabled change writes history row
+- no effective change does not write noisy row, if that is the chosen behavior
+- history newest-first
+- limit bounded 1..50
+- prune removes older rows and preserves newer rows
+- history write failure does not block config save
+- sanitized history contains no secrets/tokens/raw email bodies
+
+Routes:
+- history route requires root-admin
+- anonymous/non-admin blocked
+- limit param works and is bounded
+- config update captures updatedBy
+
+UI:
+- Past config changes section renders
+- empty state renders
+- changed fields render clearly
+- action badges render
+- existing notifier config controls still work
+
+Regression:
+- no change to actual audit-export notifier send/dedup behavior
+- no change to existing email send logic
+- no change to existing suppression behavior except audit logging
+- no new TypeScript errors
+
+7. Verification
+
+Run:
+- relevant new tests
+- existing audit-export notifier tests
+- audience-retention tests related to pruning
+- npm run check or tsc on touched files
+
+8. Final report
+
+In the task completion summary, include:
+- table name
+- route path
+- UI section added
+- tests run
+- confirmation that no secrets/tokens/email bodies are stored
+- confirmation that pruning is wired
+- any remaining follow-ups

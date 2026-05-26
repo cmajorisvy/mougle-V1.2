@@ -1,0 +1,67 @@
+Please verify T608 before approval:
+
+1. notifyLegacyTokenKillSwitchFlip is truly fire-and-forget and never blocks or throws back into setEnvFallbackDisabledOverride or the bulk variant.
+
+2. The notifier is called only after the audit record is written, so a failed audit write does not produce a misleading notification.
+
+3. Email content includes:
+   - platform
+   - previous value
+   - new value
+   - actor
+   - batchId
+   - suppressedCount / suppressedSince when applicable
+
+4. Email content never includes:
+   - plaintext legacy token values
+   - API keys
+   - provider secrets
+   - raw credentials
+   - raw system_settings values
+
+5. Dedup key behavior is correct:
+   - same platform + same newValue + same actor within window deduplicates
+   - different platform bypasses dedup
+   - different newValue bypasses dedup
+   - different actor bypasses dedup
+   - dedupWindowMs=0 disables dedup
+
+6. Suppressed burst behavior is correct:
+   - repeated suppressed events increment suppressedCount
+   - next actual sent email reports suppressedCount and suppressedSince
+   - after send, suppressed state resets correctly
+
+7. Suppressed actor IDs:
+   - actor_suppressed history entry is recorded
+   - no email is sent
+
+8. Config behavior:
+   - disabled records disabled history
+   - empty recipients records no_recipients history
+   - PUT validates recipients, suppressedActorIds, enabled, dedupWindowMs
+   - settings are stored under audience_legacy_token_kill_switch_notifier
+
+9. History behavior:
+   - ring buffer capped at 50
+   - newest-first or documented order is stable
+   - GET history?limit=N respects limit
+   - reasons include sent / disabled / no_recipients / actor_suppressed / deduplicated / send_failed
+
+10. Admin routes:
+   - GET/PUT config require root-admin
+   - PUT requires CSRF
+   - GET history requires root-admin
+   - POST test requires root-admin + CSRF
+   - non-admin/anonymous blocked
+
+11. UI:
+   - LegacyTokenKillSwitchNotifierCard appears next to kill-switch history
+   - enable/disable, recipients, suppressed actors, dedup window save correctly
+   - send-test button works
+   - recent notification history displays reasons clearly
+
+12. Tests:
+   - tests/audience-legacy-token-kill-switch-notifier.test.ts passes all 11 cases
+   - npm run check shows no new TypeScript errors from T608
+
+13. Confirm no schema/migration changes were introduced unless system_settings was already the intended persistence mechanism.

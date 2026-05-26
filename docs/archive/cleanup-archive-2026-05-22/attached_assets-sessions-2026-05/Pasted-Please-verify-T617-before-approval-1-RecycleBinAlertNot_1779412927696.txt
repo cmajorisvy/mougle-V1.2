@@ -1,0 +1,58 @@
+Please verify T617 before approval:
+
+1. RecycleBinAlertNotifierCard renders on /admin/omni-channel-audience in the intended location, immediately after the existing archive deletion/recycle-bin related card specified by the task.
+
+2. Initial config loads from:
+GET /api/admin/newsroom/audience/retention/archive/trash-bin-notifier
+
+3. Save button sends the correct payload to the existing config route and preserves:
+- enabled
+- recipients
+- alert interval hours
+- existing server-controlled fields
+
+4. Recipients editor correctly handles comma/space-separated recipients.
+
+5. Alert interval input validates/sends hours correctly and does not accidentally convert to the wrong unit if the API expects milliseconds or hours.
+
+6. “Send test email” calls:
+POST /api/admin/newsroom/audience/retention/archive/trash-bin-notifier/test
+
+7. “Run alert now” calls:
+POST /api/admin/newsroom/audience/retention/archive/trash-bin-notifier/run
+
+8. Snooze 1 day, Snooze 1 week, custom snooze-until, and Unsnooze call:
+POST /api/admin/newsroom/audience/retention/archive/trash-bin-notifier/snooze
+with the expected payload shapes.
+
+9. Recent notifications load from:
+GET /api/admin/newsroom/audience/retention/archive/trash-bin-notifier/history?limit=20
+
+10. History list renders:
+- reason/kind badges
+- files-over flag
+- bytes-over flag
+- file count
+- byte size
+- timestamp
+- recipients on success
+- error message on failure
+
+11. Status badge correctly shows:
+- Enabled/Disabled
+- recipient count
+- interval
+
+12. Snoozed badge appears only when snooze is active and displays the correct snooze-until time.
+
+13. All POST routes are called through the existing admin API helper with CSRF and credentials, not raw unprotected fetch.
+
+14. Anonymous/non-admin users remain blocked by backend route protections.
+
+15. Existing ArchiveDeletionNotifierCard behavior is unchanged.
+
+16. No backend, schema, route, or migration changes were introduced.
+
+17. No new TypeScript errors were introduced by T617.
+
+18. Start application still boots cleanly.

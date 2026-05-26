@@ -1,0 +1,93 @@
+You are a senior graphics engineer and full-stack architect.
+
+Goal:
+Build a HIGH-PRECISION WebGL interface that behaves like a game UI (Pokerist-quality smoothness), not a traditional DOM website.
+
+Core Requirements:
+
+* 60–120 FPS rendering
+* GPU-accelerated UI
+* Pixel-perfect scaling
+* Deterministic animations
+* Zero layout shift
+* Real-time interaction ready
+
+Architecture Rules (MANDATORY):
+
+1. DO NOT render UI using HTML DOM elements except for root container.
+2. All visual UI must render inside a WebGL canvas.
+3. React is allowed ONLY for state management and routing.
+4. Rendering must use Three.js (WebGL renderer).
+5. Animations must use GSAP timeline synchronized with render loop.
+6. Use requestAnimationFrame loop controlled by a central render manager.
+7. Separate logic layer and rendering layer.
+
+Tech Stack:
+
+* TypeScript
+* Vite
+* React (logic only)
+* Three.js
+* GSAP
+* Zustand (state management)
+* WebSocket-ready architecture
+
+Project Structure:
+src/
+├── core/
+│    ├── Renderer.ts (WebGL renderer manager)
+│    ├── SceneManager.ts
+│    ├── AnimationController.ts
+│    └── EventBus.ts
+├── scenes/
+│    └── MainScene.ts
+├── ui/
+│    └── WebGLUIComponents/
+├── state/
+│    └── store.ts
+├── shaders/
+└── App.tsx
+
+Rendering System:
+
+* Initialize WebGLRenderer with antialias + high-performance settings.
+* Automatically adapt to devicePixelRatio.
+* Implement resize observer for responsive canvas scaling.
+* Maintain constant animation timing independent of FPS.
+
+UI Design Requirements:
+
+* Floating panels rendered as 3D planes.
+* Soft lighting and shadows.
+* Smooth hover animations.
+* Depth layering (z-space UI).
+* Camera-based UI transitions instead of page reloads.
+
+Animation Rules:
+
+* Use GSAP timelines bound to render loop.
+* No CSS animations allowed.
+* All transitions must interpolate values in WebGL space.
+
+Performance Requirements:
+
+* Lazy-load scenes.
+* Dispose geometries/materials properly.
+* Use texture atlases.
+* Maintain stable memory usage.
+
+Output Requirements:
+
+1. Generate complete runnable project.
+2. Auto-start dev server.
+3. Include example interactive dashboard scene.
+4. Include animated buttons rendered in WebGL.
+5. Provide clear comments explaining architecture decisions.
+
+Advanced:
+
+* Add optional shader-based glow effect.
+* Implement global render ticker.
+* Prepare structure for multiplayer realtime updates.
+
+Deliver a clean, modular, production-ready codebase.

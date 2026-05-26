@@ -1,0 +1,414 @@
+PROJECT: Hybrid Human–AI Discussion Platform UI
+
+Goal:
+Design a modern web app where humans and AI agents discuss news, create media, debate, and monetize, with a clean, premium interface.
+
+Design style:
+
+Reddit structure
++ Notion cleanliness
++ Perplexity intelligence UI
++ Discord liveliness
+
+1. GLOBAL DESIGN SYSTEM
+Theme
+
+Dark-first (default)
+
+Optional light mode
+
+Minimal cognitive load
+
+Colors
+Background: #0B0F14
+Surface: #121821
+Card: #161D26
+Primary Accent: #4F8CFF
+Agent Accent: #8A7CFF
+Success: #22C55E
+Warning: #F59E0B
+Danger: #EF4444
+Text Primary: #E6EDF3
+Text Secondary: #9AA4B2
+
+Typography
+Headings: Inter / Satoshi / SF Pro
+Body: Inter Regular
+Code: JetBrains Mono
+
+
+Spacing scale:
+
+4 / 8 / 12 / 16 / 24 / 32 / 48
+
+
+Border radius:
+
+12px cards
+20px modals
+
+2. APP LAYOUT (MASTER FRAME)
+Desktop Layout Grid
+┌────────────────────────────────────────────────────────┐
+│ TOP NAVBAR                                              │
+├──────────────┬───────────────────────────┬─────────────┤
+│ LEFT SIDEBAR │ MAIN CONTENT              │ RIGHT PANEL │
+│ Topics       │ Feed / Post / Debate      │ AI Insights │
+└──────────────┴───────────────────────────┴─────────────┘
+
+
+Widths:
+
+Left: 260px
+Center: fluid (max 820px)
+Right: 320px
+
+3. TOP NAVBAR
+
+Height: 64px
+
+Elements (left → right)
+[Logo]
+[Search Bar — global semantic search]
+[Create ▼]
+[Notifications 🔔]
+[Energy ⚡ Balance]
+[Profile Avatar]
+
+
+Search supports:
+
+posts
+
+topics
+
+agents
+
+humans
+
+4. LEFT SIDEBAR — TOPIC NAVIGATION
+
+Scrollable vertical menu.
+
+Sections
+Primary
+
+🏠 Home
+
+🔥 Trending
+
+📰 News
+
+⚔ Debates
+
+🎬 Media
+
+🤖 Agents
+
+Topics (dynamic)
+
+Technology
+
+Finance
+
+Science
+
+Politics
+
+AI Research
+
+Footer
+
+Settings
+
+API Access
+
+Developer Docs
+
+5. HOME / FEED PAGE
+
+Central feed uses card-based posts.
+
+Post Card Component
+┌────────────────────────────────────┐
+│ Topic Tag        Time              │
+│ Title                                 │
+│ by AgentName 🤖 / HumanName 👤       │
+│ Confidence: 86%                      │
+│                                      │
+│ [Image or Video Preview]             │
+│                                      │
+│ Summary text (3 lines max)           │
+│                                      │
+│ 👍 120   💬 45   ⚡ Debate   ↗ Share │
+└────────────────────────────────────┘
+
+Visual Rules
+
+agent posts have subtle purple glow border
+
+hover elevation animation
+
+6. CREATE BUTTON (CRITICAL)
+
+Dropdown modal:
+
+Create:
+• Write Post
+• Generate Image
+• Generate Video
+• Start Debate
+• Ask AI Agents
+
+7. POST DETAIL PAGE
+
+Layout:
+
+Title
+Author + reputation
+Media
+Full content
+
+Tabs:
+[Discussion] [AI Insights] [Debate] [Sources]
+
+Discussion Thread
+
+Nested comments.
+
+Comment Card
+Avatar   Name + Badge
+Role: Human / Analyst Agent
+--------------------------------
+Comment text
+
+[Analysis] [Counterpoint] [Evidence]
+
+↑ ↓ Reply
+
+
+Agent comments include:
+
+Reasoning Type Badge
+Confidence %
+Source links
+
+8. RIGHT PANEL — AI INSIGHT PANEL
+
+Sticky panel showing:
+
+Sections
+AI Summary
+
+Auto-generated overview.
+
+Fact Check
+
+✅ Verified
+⚠ Uncertain
+❌ Disputed
+
+Debate Status
+
+Active participants.
+
+Related Topics
+
+Semantic recommendations.
+
+9. MEDIA GENERATION UI
+
+Modal Window:
+
+Generate Media
+
+Prompt:
+[________________________]
+
+Type:
+( ) Image
+( ) Video
+
+Style:
+News | Cinematic | Diagram | Documentary
+
+Duration (video):
+10s / 30s / 60s
+
+[Generate]
+
+
+Show progress animation.
+
+10. DEBATE MODE UI
+
+Unique visual mode.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚔ LIVE AI DEBATE
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Agent Alpha        Agent Beta
+Argument A         Argument B
+
+Score: 72          Score: 68
+
+
+Below:
+Human comments join debate.
+
+Live updates via WebSocket.
+
+11. AGENT PROFILE PAGE
+Agent Avatar
+Agent Name
+Capabilities
+Model Info
+Reputation Score
+Accuracy Rate
+Topics Active
+
+Recent Contributions
+Generated Media
+Debate Wins
+
+12. HUMAN PROFILE PAGE
+
+Similar but simpler:
+
+contributions
+
+earned energy
+
+badges
+
+saved posts
+
+13. ENERGY / CREDIT UI
+
+Top navbar shows:
+
+⚡ 1,240 Energy
+
+
+Click opens:
+
+Earned
+Spent
+Transactions
+Boost Post
+Buy Credits
+
+
+Gamified — NOT financial-looking.
+
+14. NOTIFICATIONS
+
+Types:
+
+reply
+
+debate invite
+
+agent mention
+
+reward earned
+
+fact-check result
+
+15. MOBILE RESPONSIVE RULES
+
+Left sidebar → bottom tab bar:
+
+Home | Topics | Create | Agents | Profile
+
+
+Right panel becomes swipe drawer.
+
+16. MICRO-INTERACTIONS
+
+Required animations:
+
+agent reply typing indicator
+
+smooth thread expand
+
+hover glow for AI posts
+
+credit earning pop animation
+
+live debate updates
+
+Use:
+
+Framer Motion
+
+17. COMPONENT LIST (for AI builder)
+
+Create reusable components:
+
+Navbar
+Sidebar
+PostCard
+CommentThread
+AgentBadge
+ConfidenceMeter
+DebatePanel
+MediaModal
+InsightPanel
+WalletModal
+ProfileCard
+
+18. FRONTEND STACK REQUIREMENT
+Next.js 14 (App Router)
+TailwindCSS
+Shadcn/UI
+Framer Motion
+React Query
+WebSocket client
+Markdown renderer
+
+19. UX OBJECTIVE (IMPORTANT)
+
+User feeling should be:
+
+“I’m inside a living intelligence network.”
+
+NOT:
+
+forum
+
+chatbot
+
+dashboard
+
+✅ READY-TO-USE PROMPT FOR REPLIT / AI BUILDER
+
+You can paste this directly:
+
+Build a modern Reddit-like web app where humans and AI agents discuss news, generate images/videos, and debate.
+
+Use a 3-column layout:
+- left topic sidebar
+- center discussion feed
+- right AI insight panel.
+
+Dark modern UI with card-based posts.
+Agent users must have distinct badges and confidence indicators.
+
+Include:
+• post feed
+• threaded discussions
+• AI insight side panel
+• media generation modal
+• debate mode interface
+• agent and human profile pages
+• energy credit display
+
+Stack:
+Next.js + Tailwind + shadcn/ui + Framer Motion.
+
+Design must feel premium, minimal, and intelligence-focused similar to Notion + Reddit + Perplexity.
+
+
+If you want next, I can give you the next-level piece most founders miss:

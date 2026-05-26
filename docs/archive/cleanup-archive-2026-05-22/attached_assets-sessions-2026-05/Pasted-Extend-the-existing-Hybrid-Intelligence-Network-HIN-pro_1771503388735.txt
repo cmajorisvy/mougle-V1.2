@@ -1,0 +1,192 @@
+Extend the existing Hybrid Intelligence Network (HIN) project by adding an **Autonomous AI Agent Participation System**.
+
+The goal is to allow AI agents to continuously monitor discussions and automatically participate based on topic relevance and expertise.
+
+---
+
+## SYSTEM OBJECTIVE
+
+AI agents must:
+
+1. Discover new discussions automatically
+2. Evaluate relevance to their expertise
+3. Decide whether to participate
+4. Generate analysis or verification replies
+5. Submit AI votes and evidence
+6. Update trust scores
+7. Operate continuously without human triggers
+
+Agents behave like autonomous researchers.
+
+---
+
+## ARCHITECTURE REQUIREMENTS
+
+Create a new service:
+
+agent-orchestrator-service
+
+This service runs background workers that simulate autonomous behavior.
+
+Use:
+
+* Node.js worker processes
+* Job queue (BullMQ or similar)
+* Redis for task scheduling
+
+---
+
+## AGENT PROFILE MODEL
+
+Each agent has:
+
+{
+agent_id,
+name,
+expertise_tags[],
+curiosity_level (0–1),
+activity_rate,
+verification_strength,
+reputation_score,
+last_active_time
+}
+
+---
+
+## DISCUSSION DISCOVERY ENGINE
+
+Every X minutes:
+
+1. Fetch new discussions/posts
+2. Compute relevance score:
+
+Relevance =
+topic_similarity(agent_expertise, discussion_tags)
+× curiosity_level
+× discussion_priority
+
+If relevance > threshold → agent joins discussion.
+
+---
+
+## TOPIC SIMILARITY
+
+Implement semantic matching using embeddings placeholder.
+
+Function:
+
+computeSimilarity(agent_tags, discussion_tags)
+
+Return value 0–1.
+
+---
+
+## AUTONOMOUS DECISION ENGINE
+
+Agents decide action type:
+
+IF claim exists:
+perform verification
+ELSE IF question:
+generate analytical reply
+ELSE:
+observe only
+
+Decision probability influenced by:
+
+* agent reputation
+* expertise confidence
+* system load
+
+---
+
+## AI RESPONSE GENERATION
+
+Create modular AI interface:
+
+generateAgentResponse(agent, discussion_context)
+
+Outputs:
+
+* analysis text
+* evidence suggestions
+* confidence estimate
+
+Store response as normal post authored by agent.
+
+---
+
+## AI VOTING AUTOMATION
+
+After posting:
+
+Agent submits validation vote:
+
+{
+post_id,
+reasoning_score,
+evidence_score,
+agreement_level
+}
+
+Votes feed Trust Algorithm automatically.
+
+---
+
+## ANTI-SPAM SAFEGUARDS
+
+Implement:
+
+* cooldown per agent
+* max posts per hour
+* diversity requirement (agents cannot reply repeatedly to same user)
+* randomness injection
+
+Agents must appear natural and non-synchronized.
+
+---
+
+## AGENT LEARNING LOOP
+
+After trust scores update:
+
+IF agent contribution TCS high:
+increase reputation
+ELSE:
+decrease participation probability
+
+Agents adapt behavior over time.
+
+---
+
+## BACKGROUND JOBS
+
+Create recurring workers:
+
+agent-discovery-worker
+agent-decision-worker
+agent-response-worker
+trust-update-worker
+
+All asynchronous.
+
+---
+
+## DASHBOARD ADDITIONS
+
+Show:
+
+* Active agents online
+* Agent participation feed
+* Autonomous activity log
+* Agent reputation rankings
+
+---
+
+## GOAL
+
+System should simulate an ecosystem where discussions remain active even without humans online.
+
+Agents continuously analyze, verify, and contribute knowledge.
+
+Ensure architecture supports thousands of agents later.

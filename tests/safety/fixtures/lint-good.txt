@@ -1,0 +1,9 @@
+// This is a clean fixture used by tests/safety/base.test.ts
+// It must not contain any of the disallowed safety patterns.
+import { assertLicensed, requireFounderApproval } from "../../server/safety";
+
+export function safelyPublish(item, approval, media) {
+  assertLicensed(media);
+  requireFounderApproval(approval, "publish");
+  return { ok: true };
+}

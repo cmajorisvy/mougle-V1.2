@@ -1,0 +1,123 @@
+Now upgrade the Mougle AI job system from the temporary in-memory store to real Postgres persistence.
+
+Context:
+The project already has:
+
+1. Python worker scaffold in:
+   python-workers/
+
+2. TypeScript AI job contracts in:
+   shared/aiJobContracts.ts
+
+3. TypeScript AI job service in:
+   server/services/aiJobService.ts
+
+4. AI job routes in:
+   server/routes.ts
+
+Current issue:
+server/services/aiJobService.ts stores jobs in an in-memory Map. Replace that with a persistent Postgres-backed ai_jobs table using the existing database/ORM pattern already used in this project.
+
+Do not rewrite the app.
+Do not change the React frontend.
+Do not expose Python directly to the frontend.
+Do not start the Python worker automatically.
+Do not add Python dependencies to the TypeScript app startup.
+
+Goal:
+Create durable AI job persistence so jobs survive server restarts and can later be consumed by Python workers.
+
+Add a database table/model for ai_jobs with fields similar to:
+
+- id / job_id
+- job_type
+- origin
+- status
+- payload JSON
+- result JSON nullable
+- error JSON nullable
+- provenance JSON
+- requested_by_user_id nullable
+- requested_by_admin_id nullable
+- request_id nullable
+- retry_count integer default 0
+- max_retries integer default 3
+- locked_at nullable timestamp
+- locked_by nullable text
+- started_at nullable timestamp
+- completed_at nullable timestamp
+- failed_at nullable timestamp
+- created_at timestamp
+- updated_at timestamp
+
+Statuses should support:
+- pending
+- running
+- succeeded
+- failed
+- rejected
+
+Implementation requirements:
+
+1. Use the existing project database style.
+   - If the project uses Drizzle, add the table to the existing schema file.
+   - If the project uses another ORM/persistence layer, follow that existing pattern.
+   - Do not introduce a second ORM.
+
+2. Update server/services/aiJobService.ts so it no longer relies on the in-memory Map as the source of truth.
+
+3. Preserve the existing public service API where possible:
+   - createJob
+   - createClaimExtractionJob
+   - createSemanticClusteringJob
+   - createNewsroomPackageJob
+   - listPending
+   - getJob
+   - getView
+   - markRunning
+   - recordResult
+
+4. Store full JobEnvelope-compatible data.
+5. Store JobResult-compatible results.
+6. Keep Zod validation before writing jobs.
+7. Keep user-vs-inhouse origin boundary checks.
+8. Keep auth/admin responsibility in TypeScript.
+9. Add safe filtering so normal users can only see their own user-origin jobs.
+10. Admin/root-admin routes may see in-house jobs.
+11. Pending-job listing should support a limit parameter.
+12. Add ordering so pending jobs are returned oldest-first.
+13. Add basic locking support for worker consumption:
+    - mark job as running
+    - set locked_at
+    - set locked_by
+    - increment or track retry_count as appropriate
+14. recordResult should update:
+    - status
+    - result or error
+    - completed_at or failed_at
+    - updated_at
+
+Important:
+Do not yet implement a full distributed queue.
+Do not yet implement Redis.
+Do not yet implement Python polling.
+This task is only durable Postgres persistence for the existing AI job API.
+
+Validation:
+- Run the existing TypeScript checks/tests.
+- Confirm the app starts normally.
+- Confirm existing routes still work.
+- Confirm creating an AI job writes to Postgres.
+- Confirm fetching job status reads from Postgres.
+- Confirm pending jobs come from Postgres, not memory.
+- Confirm Python remains optional.
+
+After changes, summarize:
+- files created
+- files modified
+- database table added
+- fields added
+- service methods updated
+- how jobs are now stored
+- how worker locking works
+- what remains for the next step

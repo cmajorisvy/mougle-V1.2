@@ -1,0 +1,741 @@
+Build Mougle Neural Newsroom Automation + Broadcast-Grade Virtual Screen Director.
+
+Goal:
+Create a fully automated but safety-constrained orchestration layer for Mougle’s 24/7 AI newsroom.
+
+The system must connect:
+- raw news feeds
+- verified newsroom data
+- BroadcastBriefs
+- LegalEventVisualPlans
+- NewsroomScreenData
+- AI anchor
+- robot explainer / robot screen director
+- all newsroom displays
+- ticker
+- lower-third
+- source/confidence panels
+- claims/timeline panels
+- event display wall
+- YouTube chat/gifts/spam safety
+- 4D cue simulation
+- Preview Studio
+
+The robot anchor should behave like a precise automatic broadcast screen director while another anchor reads the news. It can select verified sources, route visuals, zoom/crop, trigger fullscreen displays, move anchor to corner mode, restore the world map, and point to claims/sources/timeline — but only through validated simulation records.
+
+Hard rules:
+- no copyrighted footage reuse
+- no logo/watermark removal
+- no unauthorized rebroadcast
+- no private admin data on screens
+- no YouTube/social posting without approval
+- no direct Spyder/Barco/Novastar command in this phase
+- no real LED processor command
+- no live Unreal execution
+- no Movie Render Queue
+- no Sequencer
+- no real 4D hardware
+- no publishing
+- all outputs draft/internal-only unless separately approved
+
+Architecture:
+Raw News Feeds
+→ Source Trust / Verification
+→ BroadcastBrief
+→ LegalEventVisualPlan
+→ NewsroomScreenData
+→ ApexLoad Optimizer
+→ PreCognition Planner
+→ FlowState Conductor
+→ Virtual Screen Director
+→ Broadcast-Grade Screen Safety
+→ Preview Studio / Simulation
+→ Approval / Future Gateway
+
+The final authority must be deterministic safety validation, not free AI generation.
+
+------------------------------------------------------------
+1. ApexLoad Optimizer
+------------------------------------------------------------
+
+Create:
+server/services/apexload-newsroom-optimizer.ts
+
+Purpose:
+Score every incoming story and decide how much production effort it deserves.
+
+Inputs:
+- article
+- sourceReliability
+- verificationConfidence
+- impactScore
+- freshness
+- region
+- publicInterest
+- visualPotential
+- rightsReadiness
+
+Output:
+ApexLoadDecision {
+  decisionId,
+  storyId,
+  apexScore,
+  productionTier:
+    - text_only
+    - voice_summary
+    - newsroom_read
+    - full_visual_package
+    - cinematic_4d_treatment
+  reasonCodes[],
+  costEstimate,
+  approvalStatus:"draft",
+  visibility:"admin_only_internal",
+  publicUrl:null,
+  signedUrl:null,
+  realSendAllowed:false,
+  executionEnabled:false,
+  safetyEnvelope
+}
+
+Formula:
+apexScore =
+0.25*impactScore +
+0.20*sourceReliability +
+0.15*verificationConfidence +
+0.10*freshnessScore +
+0.10*regionalImportance +
+0.10*publicInterest +
+0.05*visualPotential +
+0.05*rightsReadiness
+
+Tier routing:
+- < 40: text_only
+- 40–60: voice_summary
+- 60–75: newsroom_read
+- 75–90: full_visual_package
+- 90+: cinematic_4d_treatment
+
+------------------------------------------------------------
+2. PreCognition Planner
+------------------------------------------------------------
+
+Create:
+server/services/precognition-newsroom-planner.ts
+
+Purpose:
+Predict screen, anchor, robot, legal visual, chat, and 4D cue needs before each script beat plays.
+
+Input:
+- BroadcastBrief
+- NewsroomScreenData
+- LegalEventVisualPlan
+- anchorTeleprompter
+- screenBindings
+- sensitivityFlags
+
+Output:
+PreCognitionPlan {
+  planId,
+  storyId,
+  productionId,
+  scriptBeatPlans[],
+  preloadSources[],
+  screenTakePlans[],
+  robotIntentPlans[],
+  anchorModePlan[],
+  fallbackRoutes[],
+  validationStatus,
+  approvalStatus:"draft",
+  visibility:"admin_only_internal",
+  publicUrl:null,
+  signedUrl:null,
+  realSendAllowed:false,
+  executionEnabled:false,
+  safetyEnvelope
+}
+
+Each scriptBeatPlan includes:
+- beatId
+- startsAtSec
+- expectedVisualNeed
+- selectedSourceId
+- targetScreenObjectName
+- anchorMode
+- robotMode
+- sensitivityClass
+- fallbackSourceId
+- confidenceVector
+
+Rules:
+- Preload next visual before anchor reaches that beat.
+- Always include fallback route.
+- Never plan fullscreen if source is rights_unknown, prohibited, unapproved, or mismatched to story.
+- Sensitive stories must use serious visual modes.
+
+------------------------------------------------------------
+3. FlowState Conductor
+------------------------------------------------------------
+
+Create:
+server/services/flowstate-newsroom-conductor.ts
+
+Purpose:
+Run the simulated live newsroom state machine.
+
+States:
+- idle
+- calm_read
+- focused_explainer
+- breaking_alert
+- sensitive_story
+- chat_reaction
+- fallback_mode
+- kill_switch
+
+FlowState controls:
+- anchor mode
+- robot mode
+- screen route plan
+- ticker
+- lower-third
+- back display
+- side screens
+- legal visual plan
+- chat highlights
+- 4D cue suggestions
+
+No real hardware, Unreal, 4D, publishing, or external live commands.
+
+------------------------------------------------------------
+4. Neural Newsroom Bus
+------------------------------------------------------------
+
+Create:
+server/services/neural-newsroom-bus.ts
+
+Purpose:
+Provide clean event connectivity between anchors, robot, screens, chat, legal visuals, and simulation state.
+
+Events:
+- story.selected
+- story.verified
+- apexload.decided
+- precognition.plan_created
+- flowstate.changed
+- anchor.beat_started
+- robot.intent_created
+- screen.take_requested
+- screen.take_validated
+- screen.take_simulated
+- chat.message_received
+- chat.message_filtered
+- chat.highlight_approved
+- fallback.triggered
+- kill_switch.activated
+
+Rules:
+- Store audit history.
+- Do not expose private admin fields.
+- Components may only subscribe to approved events.
+- Raw DB/admin objects must never be broadcast to display components.
+
+------------------------------------------------------------
+5. YouTube Chat Safety Layer
+------------------------------------------------------------
+
+Create:
+server/services/youtube-chat-safety-service.ts
+
+Input:
+- raw chat message
+- author metadata
+- gift/superchat metadata
+- current story sensitivity
+- current broadcast state
+
+Output:
+ChatSafetyDecision {
+  messageId,
+  action:
+    - ignore
+    - hide
+    - safe_highlight
+    - robot_acknowledge
+    - moderator_review
+  reasonCodes[],
+  toxicityScore,
+  spamScore,
+  misinformationRisk,
+  piiRisk,
+  relevanceScore,
+  allowedForRobotSpeech,
+  allowedForScreenDisplay,
+  approvalStatus:"draft",
+  visibility:"admin_only_internal"
+}
+
+Rules:
+- block abuse
+- block spam
+- block PII
+- block misinformation
+- block copyrighted text dumps
+- gifts/superchats can be acknowledged only if safe
+- no playful reactions during sensitive stories
+- never show unsafe chat on newsroom displays
+
+------------------------------------------------------------
+6. Confidence Vector
+------------------------------------------------------------
+
+For every automatic action calculate:
+
+C_total = min(
+  C_source,
+  C_verification,
+  C_license,
+  C_screen_match,
+  C_sensitivity,
+  C_chat_safety,
+  C_fallback
+)
+
+Rules:
+- C_total >= 0.90: automatic simulation allowed
+- 0.75 <= C_total < 0.90: assisted preview only
+- 0.50 <= C_total < 0.75: admin review required
+- C_total < 0.50: reject and fallback
+
+Important:
+Use minimum confidence, not average. A story can be verified while the media source is still unsafe.
+
+------------------------------------------------------------
+7. Broadcast-Grade Virtual Screen Director
+------------------------------------------------------------
+
+Create:
+server/services/virtual-production-screen-director.ts
+
+Purpose:
+Let the AI anchor and robot explainer automatically direct newsroom screens in simulation.
+
+The AI/robot may decide:
+- which verified source to show
+- which screen zone to use
+- when to go fullscreen
+- when to zoom/crop
+- when anchor moves to corner mode
+- when robot points to claims/sources/timeline
+- when to restore default world map
+
+But every action must become a validated ScreenTakePlan.
+
+------------------------------------------------------------
+8. Schemas
+------------------------------------------------------------
+
+Add schema: ScreenTakePlan
+
+Fields:
+- takePlanId
+- productionId
+- storyId
+- broadcastBriefId
+- screenDataId
+- visualPlanId
+- requestedBy:
+  - ai_anchor
+  - robot_explainer
+  - system_director
+- mode:
+  - fully_automatic_simulation
+  - assisted_operator
+  - future_hardware_gateway
+- currentScriptBeatId
+- sourceId
+- sourceLicenseStatus
+- sourceApprovalStatus
+- targetScreenObjectName
+- targetOutputId
+- screenRole
+- presetId
+- action:
+  - preview_source
+  - route_to_output
+  - fullscreen_take
+  - picture_in_picture_take
+  - split_screen_take
+  - zoom_in
+  - zoom_out
+  - crop
+  - pan
+  - take
+  - cut
+  - fade
+  - restore_default
+- transition
+- durationMs
+- fallbackSourceId
+- fallbackPresetId
+- restoreDefaultRouteId
+- sensitivityClass:
+  - normal
+  - sensitive
+  - disaster
+  - war
+  - crime
+  - medical
+  - children
+  - active_crisis
+- validationStatus:
+  - pending
+  - passed
+  - failed
+- approvalStatus:"draft"
+- visibility:"admin_only_internal"
+- publicUrl:null
+- signedUrl:null
+- realSendAllowed:false
+- executionEnabled:false
+- hardwareSendAllowed:false
+- notPublished:true
+- safetyEnvelope
+
+Add schema: ScreenSafetyValidation
+
+Fields:
+- validationId
+- takePlanId
+- passed boolean
+- blockers[]
+- warnings[]
+- checkedAt
+- checks:
+  - sourceMatchesStory
+  - sourceLicenseAllowed
+  - sourceApproved
+  - noCopyrightViolation
+  - noWatermarkRemoval
+  - noLogoStripping
+  - noPrivateAdminData
+  - targetScreenKnown
+  - presetKnown
+  - cropWithinBounds
+  - fallbackExists
+  - sensitivityModeAllowed
+  - anchorModeAllowed
+  - robotModeAllowed
+  - noRealHardware
+  - noPublishing
+  - safetyEnvelopeLocked
+
+Add schema: ScreenPreset
+
+Fields:
+- presetId
+- name
+- targetScreenObjectName
+- screenRole
+- x
+- y
+- width
+- height
+- cropRect nullable
+- zoomRect nullable
+- safeArea
+- allowedSourceTypes[]
+- allowedSensitivityClasses[]
+- fallbackPresetId
+- locked:true
+
+------------------------------------------------------------
+9. Broadcast-Grade Screen Safety Service
+------------------------------------------------------------
+
+Create:
+server/services/broadcast-grade-screen-safety-service.ts
+
+Functions:
+- validateScreenTakePlan()
+- buildTakePlanFromAnchorIntent()
+- buildTakePlanFromRobotIntent()
+- simulateTakePlan()
+- restoreDefaultScreenRoute()
+- failClosedToWorldMap()
+- rejectUnsafeSource()
+- rejectUnsafeCrop()
+- rejectUnsafeSensitivityMode()
+
+Safety checks:
+- source matches story
+- source license allowed
+- source approved
+- no copyright violation
+- no watermark removal
+- no logo stripping
+- no private admin data
+- target screen known
+- preset known
+- crop within bounds
+- fallback exists
+- sensitivity mode allowed
+- anchor mode allowed
+- robot mode allowed
+- no real hardware
+- no publishing
+- safety envelope locked
+
+Fail-closed rule:
+If any check fails:
+- do not route the source
+- do not go fullscreen
+- do not show the clip
+- restore default world map
+- show safe lower-third only
+- log blocker
+- keep approvalStatus:"draft"
+
+------------------------------------------------------------
+10. Legal Media Rule
+------------------------------------------------------------
+
+Allowed license statuses:
+- licensed
+- public_domain
+- creative_commons
+- free_stock
+- ai_generated
+- internal_generated
+
+Blocked:
+- rights_unknown
+- prohibited
+- copyrighted_without_license
+- watermark_removed
+- logo_stripped
+- unauthorized_rebroadcast
+
+------------------------------------------------------------
+11. Sensitivity Rule
+------------------------------------------------------------
+
+For sensitive stories:
+- disaster
+- war
+- death
+- crime
+- medical emergency
+- terrorism
+- children
+- active crisis
+
+Disable:
+- shapeshift_explainer
+- playful robot gestures
+- dramatic fake reconstructions
+- sensational visual effects
+- aggressive light/fog/impact cues
+- humor reactions
+- gift celebration overlays
+
+Use:
+- serious desk_anchor
+- map_explainer
+- source_confidence panel
+- verified timeline
+- calm alert visuals
+- safe lower-third
+- default world map fallback
+
+------------------------------------------------------------
+12. Virtual Screen Routing Behavior
+------------------------------------------------------------
+
+For disaster/hurricane story:
+- MGL_BACK_DISPLAY_Main shows satellite/map fly-in
+- MGL_EVENT_DISPLAY_Fullscreen takes full wall only if source is legal and approved
+- anchor moves to MGL_ANCHOR_CORNER_Left or MGL_ANCHOR_CORNER_Right
+- robot points at storm path and impact metrics
+- source panel shows NOAA/NASA/public-domain/licensed sources
+- claims panel shows verified claims
+- timeline panel shows event timeline
+- ticker shows safety updates
+- 4D cue timeline suggests alert pulse/light flash only as draft
+
+For AI/technology story:
+- big wall shows AI data visualization
+- robot points at chip/brain/network diagram
+- anchor remains desk or side presenter
+- side panels show source verification and model performance
+
+For debate/podcast:
+- background switches to discussion wall
+- source/confidence panels stay visible
+- lower-third and ticker remain active
+
+------------------------------------------------------------
+13. Routes
+------------------------------------------------------------
+
+Add root-admin gated routes:
+
+POST /api/admin/newsroom/apexload/:storyId/evaluate
+POST /api/admin/newsroom/precognition/:storyId/plan
+POST /api/admin/newsroom/flowstate/:productionId/simulate
+GET /api/admin/newsroom/neural-bus/:productionId/history
+POST /api/admin/newsroom/chat-safety/evaluate
+POST /api/admin/newsroom/automation/:productionId/run-simulation
+
+POST /api/admin/newsroom/screen-safety/:productionId/validate-take-plan
+POST /api/admin/newsroom/screen-safety/:productionId/simulate-take-plan
+POST /api/admin/newsroom/screen-safety/:productionId/restore-default
+GET /api/admin/newsroom/screen-safety/:productionId/history
+
+GET /api/admin/newsroom/screen-director/sources/:productionId
+GET /api/admin/newsroom/screen-director/outputs/:productionId
+POST /api/admin/newsroom/screen-director/:productionId/generate-plan
+POST /api/admin/newsroom/screen-director/:productionId/simulate-command
+GET /api/admin/newsroom/screen-director/:productionId/preview-state
+POST /api/admin/newsroom/screen-director/:productionId/open-preview
+
+All POST routes require root-admin and CSRF.
+
+------------------------------------------------------------
+14. Admin UI
+------------------------------------------------------------
+
+Add section:
+Neural Newsroom Automation
+
+Show:
+- ApexLoad score
+- production tier
+- PreCognition timeline
+- FlowState current state
+- anchor mode
+- robot mode
+- screen take plan
+- confidence vector
+- legal visual status
+- YouTube chat safety queue
+- fallback route
+- kill switch status
+
+Buttons:
+- evaluate story
+- generate PreCognition plan
+- run simulation
+- restore world map
+- clear chat queue
+- send to Preview Studio
+
+Add section:
+Virtual Screen Director
+
+Controls:
+- select production / broadcast brief
+- select verified source
+- select target screen
+- preview source
+- zoom / crop / resize
+- route to screen
+- take / cut / fade
+- fullscreen event display
+- anchor corner left/right
+- robot explainer zone
+- restore default world map
+- generate automatic anchor-directed screen plan
+- open in Preview Studio
+
+Warning:
+“Simulation only — no real Spyder, Barco E2, Novastar, LED processor, Unreal, 4D hardware, or publishing command is sent.”
+
+Add section:
+Broadcast Screen Safety
+
+Show:
+- current story
+- active source
+- target screen
+- selected preset
+- validation result
+- blockers
+- warnings
+- fallback route
+- simulated output
+- restore default button
+- kill switch status
+
+------------------------------------------------------------
+15. Tests
+------------------------------------------------------------
+
+Add tests:
+- low license confidence blocks automation
+- rights_unknown source cannot auto-route
+- prohibited source cannot auto-route
+- copyrighted_without_license source cannot auto-route
+- watermark_removed source rejected
+- logo_stripped source rejected
+- unauthorized_rebroadcast source rejected
+- no watermark removal
+- no logo stripping
+- wrong story source rejected
+- private admin data cannot be displayed
+- source without approval cannot go fullscreen
+- unknown target screen rejected
+- unknown preset rejected
+- bad crop rejected
+- missing fallback blocks take plan
+- sensitive story disables shapeshift
+- disaster story uses serious mode
+- abusive chat blocked
+- spam chat blocked
+- PII chat blocked
+- misinformation chat blocked
+- safe superchat can be acknowledged only in non-sensitive state
+- C_total uses minimum confidence, not average
+- failed validation restores default world map
+- robot route command remains draft/internal-only
+- AI anchor route command remains draft/internal-only
+- fullscreen event display command does not call hardware
+- zoom/crop/cut/take/fade are simulated only
+- no real Spyder command
+- no real Barco command
+- no real Novastar command
+- no LED processor command
+- no Unreal command
+- no Movie Render Queue
+- no Sequencer
+- no real 4D hardware
+- no YouTube/social publishing
+- publicUrl:null
+- signedUrl:null
+- realSendAllowed:false
+- executionEnabled:false
+- hardwareSendAllowed:false
+- safetyEnvelope unchanged
+
+------------------------------------------------------------
+16. Documentation
+------------------------------------------------------------
+
+Add:
+docs/reports/NEURAL_NEWSROOM_AUTOMATION_AND_SCREEN_DIRECTOR_REPORT.md
+
+Explain:
+- ApexLoad
+- PreCognition
+- FlowState
+- Neural Newsroom Bus
+- YouTube chat safety
+- confidence vector
+- Virtual Screen Director
+- Broadcast-Grade Screen Safety
+- fallback routing
+- why automation is constrained, not free AI
+- how robot/anchor screen direction works
+- how source selection works
+- how fullscreen/take/cut/zoom is simulated
+- how this can later map to Spyder/Barco/E2/Novastar through a separate hardware gateway
+- why no real hardware commands are sent in this phase

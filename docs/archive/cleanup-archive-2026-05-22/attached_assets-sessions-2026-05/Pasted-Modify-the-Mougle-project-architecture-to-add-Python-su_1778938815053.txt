@@ -1,0 +1,200 @@
+Modify the Mougle project architecture to add Python support for both:
+
+1. User-facing AI agents
+2. Local in-house Mougle AI agents for advanced complex work
+
+Do NOT convert the existing core app away from Node.js / TypeScript.
+
+Important:
+Do NOT convert the React frontend, Vite app, Express API, admin dashboard, auth, billing, routes, render workflow, Replit deployment setup, GitHub workflow, or existing TypeScript services to Python.
+
+Keep Mougle core app as:
+
+React / Vite frontend
+↓
+TypeScript / Express API
+↓
+Agent Orchestrator / Job Queue
+↓
+Python AI Worker Layer
+↓
+Postgres / Vector DB / Object Storage
+
+Goal:
+Add a separate Python AI-agent layer that supports:
+
+A. User AI agents
+These are agents available to Mougle users for complex tasks such as:
+- content research
+- newsroom assistance
+- claim extraction
+- fact-checking support
+- document analysis
+- semantic clustering
+- summarization
+- media analysis
+- audio/video processing
+- personalized AI workflows
+- long-running user jobs
+- batch processing
+- report generation
+
+B. Local in-house Mougle agents
+These are internal Mougle agents used by the platform/admin team for advanced operations such as:
+- quality evaluation
+- LLM output scoring
+- moderation assistance
+- duplicate detection
+- newsroom intelligence
+- source credibility analysis
+- vector search experiments
+- model comparison
+- agent benchmarking
+- system monitoring intelligence
+- research notebooks
+- internal workflow automation
+- advanced ML experiments
+- computer vision
+- audio/video ML pipelines
+
+Create this new separate folder structure:
+
+python-workers/
+  requirements.txt
+  README.md
+  main.py
+
+  agents/
+    user_agents/
+      __init__.py
+      user_research_agent.py
+      user_claim_extraction_agent.py
+      user_summary_agent.py
+      user_media_analysis_agent.py
+      user_report_agent.py
+
+    inhouse_agents/
+      __init__.py
+      newsroom_agent.py
+      quality_eval_agent.py
+      source_credibility_agent.py
+      duplicate_detection_agent.py
+      system_monitoring_agent.py
+      model_benchmark_agent.py
+
+  evals/
+    __init__.py
+    llm_eval_runner.py
+    scoring.py
+    benchmarks.py
+
+  vector/
+    __init__.py
+    embeddings_worker.py
+    vector_search_worker.py
+    clustering_worker.py
+
+  media/
+    __init__.py
+    audio_video_ml_worker.py
+    computer_vision_worker.py
+    transcription_worker.py
+
+  jobs/
+    __init__.py
+    job_consumer.py
+    job_router.py
+    job_types.py
+
+  shared/
+    __init__.py
+    contracts.py
+    config.py
+    logging.py
+    security.py
+
+Implementation requirements:
+
+1. Add the `python-workers/` directory as a separate subsystem.
+2. Do not mix Python files into the existing TypeScript server folders.
+3. Keep TypeScript as the main Mougle orchestrator.
+4. Python should handle advanced AI/ML/agent workloads only.
+5. Add a minimal Python entrypoint in `python-workers/main.py`.
+6. Add placeholder modules for all user-facing agents.
+7. Add placeholder modules for all local in-house agents.
+8. Add shared job contracts using Pydantic in `shared/contracts.py`.
+9. Add a simple job router in `jobs/job_router.py`.
+10. Add a simple job consumer placeholder in `jobs/job_consumer.py`.
+11. Add job type definitions in `jobs/job_types.py`.
+12. Add basic configuration handling in `shared/config.py`.
+13. Add basic structured logging helper in `shared/logging.py`.
+14. Add basic security notes/helpers in `shared/security.py`.
+15. Add `requirements.txt` with basic dependencies suitable for future AI workers:
+    - fastapi
+    - uvicorn
+    - pydantic
+    - python-dotenv
+    - requests
+    - numpy
+    - pandas
+    - scikit-learn
+16. Add a README explaining the architecture clearly.
+
+Design rules:
+
+- User-facing agents and in-house agents must be clearly separated.
+- User agents must never access admin-only or internal-only workflows by default.
+- In-house agents must be marked as internal/admin-only.
+- All jobs should go through a controlled job router.
+- TypeScript should create jobs and control permissions.
+- Python should consume jobs, execute AI/ML work, and return results.
+- Long-running complex work should be handled by Python workers, not the TypeScript request/response path.
+- Do not expose Python agents directly to the frontend.
+- The frontend should only call the TypeScript API.
+- The TypeScript API should decide whether a job is allowed, then pass the job to Python.
+
+Preferred long-term pattern:
+
+User or admin action
+↓
+React frontend
+↓
+TypeScript / Express API
+↓
+Permission checks
+↓
+Job creation
+↓
+Python job router
+↓
+Correct user or in-house AI agent
+↓
+Result saved to database/storage
+↓
+TypeScript API returns result/status to frontend
+
+Add clear comments that this Python layer is for advanced complex AI work, including:
+- user AI agents
+- internal Mougle AI agents
+- ML experiments
+- evaluation pipelines
+- vector/search pipelines
+- media intelligence
+- complex batch jobs
+
+Do not break the current app.
+Do not remove existing TypeScript logic.
+Do not rewrite the current app into Python.
+Do not add unfinished hard dependencies that prevent the existing TypeScript app from running.
+
+After making changes, summarize:
+- files created
+- files modified
+- how the current TypeScript app still runs
+- how to run the Python worker manually
+- where user agents live
+- where in-house agents live
+- what the next integration step should be
+
+Recommended next integration step:
+Add a TypeScript job-creation service that can enqueue jobs for Python workers, starting with claim extraction, semantic clustering, and newsroom data package generation.

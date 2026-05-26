@@ -1,0 +1,125 @@
+Next task: Add Meshy 3D Asset Draft Jobs to Mougle AI Production House.
+
+Goal:
+Allow root-admin users to create mock and real Meshy 3D asset generation draft jobs for rooms, props, desks, screens, panels, halls, environments, and cinematic set elements.
+
+Important:
+Mock mode must remain default.
+Do not enable real Unreal sends.
+Do not enable real 4D hardware sends.
+Do not enable publishing.
+Do not expose secrets.
+Do not auto-approve any asset or production.
+Do not import assets into Unreal yet.
+
+Scope:
+
+1. Add Meshy availability endpoint:
+GET /api/admin/production-house/assets/meshy/availability
+
+Return booleans only:
+- available
+- hasCredential
+- mockMode
+- realSendAllowed:false
+
+Never return MESHY_API_KEY or any secret value.
+
+2. Add mock 3D asset generation route:
+POST /api/admin/production-house/assets/meshy/generate-mock
+
+Mock mode should:
+- not call external APIs
+- generate deterministic mock asset job metadata using SHA-256
+- work without MESHY_API_KEY
+- remain available for tests and local development
+
+3. Add real Meshy draft job route:
+POST /api/admin/production-house/assets/meshy/generate
+
+Requirements:
+- root-admin only
+- requires MESHY_API_KEY
+- requires explicit confirm:true
+- validates productionId or standalone asset prompt
+- validates asset type
+- audit-logs every attempt
+- saves output as a draft asset job only
+- does not approve the production
+- does not send anything to Unreal
+- does not send anything to 4D hardware
+- does not publish assets publicly
+
+4. Add asset job model/storage through the existing ProductionHouseStorage adapter.
+
+Asset job fields:
+- id
+- productionId nullable
+- provider: mock | meshy
+- assetType: room | prop | desk | panel | screen | avatar_accessory | hall | environment | custom
+- prompt
+- promptHash
+- status: draft | submitted | generated | failed
+- approvalStatus: draft
+- providerJobId nullable
+- internalAssetPath nullable
+- modelUrl:null
+- publicUrl:null
+- signedUrl:null
+- visibility:admin_only_internal
+- createdAt
+- metadata
+- safetyEnvelope
+
+5. If real Meshy returns model URLs, do not expose them as public production URLs.
+Store them only as internal provider metadata, unless the schema requires null for public-facing URLs.
+
+6. Add UI section:
+Asset Studio
+
+Features:
+- select production
+- choose asset type
+- enter asset prompt
+- provider selector: Mock / Meshy
+- generate draft asset job
+- show asset job cards
+- show status badges:
+  Draft
+  Internal Only
+  No Public URL
+  No Unreal Import
+  No 4D Send
+
+7. Add export support:
+- include assetJobs in full production package export
+- do not expose secrets
+- do not create public URLs
+
+8. Add audit log events:
+- asset.meshy.mock.attempted
+- asset.meshy.mock.succeeded
+- asset.meshy.real.attempted
+- asset.meshy.real.succeeded
+- asset.meshy.real.failed
+- asset.meshy.rejected
+
+9. Add regression tests:
+- Meshy availability requires root-admin
+- availability returns booleans only
+- secret canary never appears in any asset response
+- mock asset generation works without API key
+- real Meshy route returns 412 without API key
+- real Meshy route requires confirm:true
+- real Meshy route requires root-admin
+- generated asset job is draft only
+- generated asset job has no publicUrl or signedUrl
+- asset job persists through storage adapter
+- full export includes asset job metadata but no secrets
+- no Unreal command is sent
+- no 4D command is sent
+- SAFETY_ENVELOPE remains unchanged
+
+10. Preserve all existing tests.
+
+Do not add Runway, Convai, NVIDIA ACE, real Unreal sends, real Unreal imports, or real 4D sends in this task.

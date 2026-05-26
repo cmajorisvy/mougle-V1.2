@@ -1,0 +1,135 @@
+Now add frontend UI surfaces for the Mougle AI job workflows.
+
+Context:
+The backend AI job infrastructure is already complete:
+
+1. Postgres-backed ai_jobs table.
+2. TypeScript AI job service.
+3. Worker-token Python bridge.
+4. Real Python handlers for:
+   - user.claim_extraction
+   - vector.clustering
+   - inhouse.newsroom
+
+5. User-facing endpoints:
+   - POST /api/posts/:postId/claim-extraction
+   - POST /api/ai-jobs/claim-extraction
+   - POST /api/ai-jobs/semantic-clustering
+   - GET /api/ai-jobs/:jobId
+
+6. Admin-only endpoint:
+   - POST /api/admin/ai-jobs/newsroom-package
+
+Goal:
+Add practical frontend UI so users and admins can trigger and view AI job results.
+
+Do not rewrite the frontend.
+Do not expose Python directly to the frontend.
+Do not bypass the TypeScript API.
+Do not add new backend architecture.
+Do not require Redis or external AI APIs.
+Keep Python worker optional.
+
+Implementation requirements:
+
+A. User post claim extraction UI
+
+1. Find the existing post detail, post editor, or post management UI.
+2. Add a small “Extract Claims” button or action for eligible posts.
+3. On click:
+   - call POST /api/posts/:postId/claim-extraction
+   - show pending/running state
+   - poll GET /api/ai-jobs/:jobId
+   - render extracted claims when succeeded
+   - render failure message when failed
+
+4. Claims display should show:
+   - claim text
+   - claim type
+   - confidence
+   - detected entities
+   - evidence_needed flag
+   - notes if present
+
+5. Avoid noisy UI. Use a compact panel/card.
+
+B. User semantic clustering UI
+
+1. Add a small UI surface for clustering multiple posts or direct text items.
+2. Use the best existing UI location, such as:
+   - posts list
+   - newsroom workspace
+   - content tools page
+   - AI tools page
+
+3. Allow user to choose at least two posts where practical.
+4. Call POST /api/ai-jobs/semantic-clustering.
+5. Poll GET /api/ai-jobs/:jobId.
+6. Render clusters when succeeded.
+
+Cluster display should show:
+   - cluster label
+   - item count
+   - representative text
+   - keywords
+   - confidence
+
+C. Admin newsroom package UI
+
+1. Add an admin-only UI surface for newsroom package generation.
+2. Use the existing admin dashboard or admin tools route.
+3. UI should let root/admin users provide one or more:
+   - post IDs
+   - claim job IDs
+   - cluster job IDs
+   - direct source text
+
+4. Call POST /api/admin/ai-jobs/newsroom-package.
+5. Show 202 job response.
+6. Poll GET /api/ai-jobs/:jobId if admin is allowed to view it.
+7. Render newsroom package output when succeeded.
+
+Newsroom package display should show:
+   - summary
+   - top claims
+   - topic clusters
+   - risk flags
+   - source questions
+   - suggested followups
+   - editorial notes
+   - confidence
+   - generated_at
+
+D. Shared frontend behavior
+
+1. Add a reusable AI job polling helper or hook if the project already uses React hooks.
+2. Poll with a reasonable interval, such as every 2–5 seconds.
+3. Stop polling when status is succeeded, failed, or rejected.
+4. Handle 400/403/404 errors cleanly.
+5. Do not show admin-only controls to normal users.
+6. Keep styling consistent with the existing frontend.
+7. Do not introduce heavy new UI dependencies.
+8. Preserve existing routes and behavior.
+
+E. Validation
+
+- Run existing TypeScript checks/tests.
+- Confirm frontend build/check passes.
+- Confirm unauthenticated users cannot trigger AI jobs.
+- Confirm normal users do not see admin newsroom controls.
+- Confirm claim extraction UI can enqueue and poll a job.
+- Confirm clustering UI validates at least two items.
+- Confirm admin newsroom UI is gated.
+- Confirm Python worker remains optional.
+
+After changes, summarize:
+- files created
+- files modified
+- UI components added
+- routes/screens updated
+- user claim extraction flow
+- user clustering flow
+- admin newsroom flow
+- polling behavior
+- validation results
+- what remains for the next step

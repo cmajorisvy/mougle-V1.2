@@ -1,0 +1,381 @@
+Build the Mougle 4D Cinema Control MVP as a preview-only extension of the existing Mougle Phase 1B verified newsroom pipeline.
+
+Context:
+The current Mougle repo already includes:
+- Phase 1B verified newsroom architecture/specs
+- clustering and claim extraction services
+- NewsroomDataPackage builders
+- canonical RenderManifest contract
+- admin dry-run preview routes
+- persistent storage readiness checks
+- FFmpeg safety hardening
+- environment validation
+- shutdown registry
+- no-publish safety envelope
+- root-admin gating
+- CSRF protection on mutating API routes
+
+Important:
+This is NOT a greenfield app.
+Do not replace the existing Mougle architecture.
+Extend the existing admin/preview system safely.
+
+Goal:
+Create a preview-only Mougle 4D Cinema Control MVP for:
+1. AI newsroom scenes
+2. podcast room scenes
+3. AI avatar presenter scenes
+4. Unreal Engine scene manifest export
+5. 4D cue manifest export
+6. admin approval before any future Unreal or 4D hardware trigger
+
+This MVP must generate JSON manifests only.
+It must not execute Unreal commands or 4D hardware triggers in production yet.
+
+Hard constraints:
+- Do not modify shared/schema.ts.
+- Do not import shared/newsroom-schema.ts into shared/schema.ts.
+- Do not run db:push.
+- Do not add migrations.
+- Do not enable public publishing.
+- Do not enable YouTube, social, RTMP, or live streaming.
+- Do not execute FFmpeg, Remotion, Unreal Engine, avatar-video-render-service, or render workers.
+- Do not send real commands to Unreal unless explicitly in dry-run/mock mode.
+- Do not send real 4D hardware cues unless explicitly in dry-run/mock mode.
+- Do not call external providers unless feature flags and API keys are present.
+- Do not hard-code any secrets.
+- Do not expose public URLs or signed URLs.
+- Do not bypass root-admin approval.
+- Preserve all current tests.
+
+Required environment variables:
+OPENAI_API_KEY
+ELEVENLABS_API_KEY
+MESHY_API_KEY
+RUNWAY_API_KEY
+UNREAL_REMOTE_URL
+LOCAL_4D_BRIDGE_URL
+WEBHOOK_SECRET
+
+All API keys must be read from environment variables only.
+Use existing production-readiness validation patterns.
+Never print or serialize secret values.
+
+Create the 4D Cinema Control MVP with:
+
+1. Project dashboard
+Admin page for managing 4D cinema projects:
+- project title
+- project type: newsroom | podcast_room | avatar_scene | debate_room | interview_room
+- status: draft | preview_ready | approved | blocked
+- safety status
+- generated scene manifest status
+- generated 4D cue manifest status
+
+2. Newsroom scene generator
+Generate structured newsroom scene data:
+- title
+- topic
+- anchor script
+- lower-third text
+- ticker text
+- monitor panel content
+- source/confidence panel
+- camera preset
+- lighting preset
+- Unreal room preset
+
+This should reuse or adapt the existing verified newsroom / NewsroomDataPackage / RenderManifest concepts where possible.
+
+3. Podcast room scene generator
+Generate structured podcast-room scene data:
+- host
+- guest
+- episode title
+- intro script
+- discussion beats
+- camera angles
+- desk/table setup
+- microphone positions
+- screen graphics
+- lighting mood
+- audio tone
+
+4. AI avatar selector
+Create a preview-only avatar selector:
+- avatarId
+- displayName
+- role: anchor | podcast_host | guest | analyst | narrator
+- voiceProvider: elevenlabs | openai | none
+- avatarEngine: metahuman | character_creator | static_placeholder | none
+- lipSyncMode: none | planned | external_provider
+- safetyStatus
+
+Do not call avatar providers in this task unless already supported behind safe mocks.
+
+5. Script generator using OpenAI API
+Create a route:
+POST /api/script/generate
+
+Requirements:
+- root-admin only
+- CSRF protected
+- dryRun: true required unless existing safe provider feature flag is enabled
+- if OPENAI_API_KEY is missing, return a safe readiness error
+- do not expose prompt secrets
+- return generated script or mock script in dry-run mode
+- mark output as internalAdminReviewOnly
+
+6. Voice generation integration using ElevenLabs API
+Create a route:
+POST /api/voice/generate
+
+Requirements:
+- root-admin only
+- CSRF protected
+- dryRun: true required unless voice generation feature flag is enabled
+- if ELEVENLABS_API_KEY is missing, return safe readiness error
+- do not persist public audio URLs
+- return a planned voice job / mock voice artifact in dry-run mode
+- no public publishing
+
+7. 3D asset request integration using Meshy API
+Create a route:
+POST /api/assets/meshy
+
+Requirements:
+- root-admin only
+- CSRF protected
+- dryRun: true required unless asset generation feature flag is enabled
+- if MESHY_API_KEY is missing, return safe readiness error
+- return planned 3D asset request metadata
+- do not automatically import assets into Unreal
+- do not expose external asset URLs publicly
+
+8. AI video/B-roll request integration using Runway API
+Create a route:
+POST /api/video/runway
+
+Requirements:
+- root-admin only
+- CSRF protected
+- dryRun: true required unless video generation feature flag is enabled
+- if RUNWAY_API_KEY is missing, return safe readiness error
+- return planned B-roll/video request metadata
+- do not enqueue public publishing
+- do not start render jobs
+
+9. Scene Manifest JSON exporter
+Create a route:
+POST /api/scene-manifest
+
+This should generate a Mougle 4D Scene Manifest JSON object.
+
+Manifest must include:
+- manifestId
+- projectId
+- sceneType
+- roomPreset
+- cameraPlan
+- avatarPlan
+- scriptPlan
+- voicePlan
+- screenPanels
+- mediaRefs
+- unrealPlan
+- renderSafety
+- adminApproval
+- generatedAt
+
+Safety locks:
+publicPublishing: false
+youtubeUpload: false
+socialPosting: false
+autonomousExecution: false
+manualRootAdminTriggerOnly: true
+internalAdminReviewOnly: true
+
+Do not execute rendering.
+
+10. Unreal Remote Control connector
+Create route:
+POST /api/unreal/send-command
+
+For this MVP:
+- root-admin only
+- CSRF protected
+- dryRun: true required by default
+- validate WEBHOOK_SECRET or existing root-admin session
+- validate UNREAL_REMOTE_URL is configured before non-dry-run mode
+- default response must be:
+  commandSent: false
+  dryRun: true
+  requiresManualApproval: true
+
+Command schema should support:
+- loadScene
+- setCamera
+- setAvatar
+- setPanels
+- setLighting
+- startSequencer
+- stopSequencer
+- exportPreview
+
+But do not send real network commands unless a future explicit feature flag is enabled.
+
+11. 4D Cue Timeline Editor
+Create route:
+POST /api/4d/send-cue
+
+For this MVP:
+- root-admin only
+- CSRF protected
+- dryRun: true required by default
+- validate LOCAL_4D_BRIDGE_URL is configured before non-dry-run mode
+- default response must be:
+  cueSent: false
+  dryRun: true
+  requiresManualApproval: true
+
+Cue manifest should support:
+- lights
+- fog
+- wind
+- vibration
+- motion seats
+- scent
+- audio hits
+- bass rumble
+- LED color changes
+- alert flashes
+
+Cue object example:
+{
+  "timeMs": 8500,
+  "cueType": "breaking_news_alert",
+  "effects": {
+    "lights": { "preset": "red_flash", "intensity": 0.8 },
+    "vibration": { "intensity": 0.5, "durationMs": 1200 },
+    "wind": { "intensity": 0.25, "durationMs": 1500 },
+    "fog": { "enabled": true, "durationMs": 800 },
+    "scent": { "preset": "none" },
+    "audioHit": { "preset": "breaking_news_bass" }
+  }
+}
+
+12. Admin approval screen
+Add an admin preview/approval page, for example:
+/admin/4d-cinema-control
+
+It should show:
+- project dashboard
+- newsroom scene generator
+- podcast room generator
+- avatar selector
+- generated Scene Manifest JSON
+- generated 4D Cue Manifest JSON
+- safety flags
+- provider readiness
+- storage readiness
+- Unreal bridge readiness
+- 4D bridge readiness
+- approval status
+
+Buttons:
+- Generate scene preview
+- Generate 4D cue manifest
+- Validate manifest
+- Mark approved for future Unreal test
+- Mark blocked
+- Export JSON
+
+Do not include a button that executes real Unreal or real 4D hardware triggers unless it is disabled and clearly marked future/manual.
+
+API routes to create or extend:
+POST /api/script/generate
+POST /api/voice/generate
+POST /api/assets/meshy
+POST /api/video/runway
+POST /api/scene-manifest
+POST /api/unreal/send-command
+POST /api/4d/send-cue
+GET /api/projects
+POST /api/projects
+
+If project persistence would require schema changes, do not add DB persistence.
+Use in-memory or file-safe preview fixtures only, or return a documented “persistence pending migration” response.
+Do not modify database schema in this task.
+
+Data contracts:
+Create shared types/Zod contracts if needed, for example:
+shared/4d-cinema-manifest.ts
+
+Include:
+- FourDCinemaProjectSchema
+- SceneManifestSchema
+- UnrealCommandSchema
+- FourDCueManifestSchema
+- FourDCueSchema
+- AvatarPlanSchema
+- ProviderReadinessSchema
+- AdminApprovalSchema
+
+All schemas should enforce the safety envelope:
+publicPublishing: false
+youtubeUpload: false
+socialPosting: false
+autonomousExecution: false
+manualRootAdminTriggerOnly: true
+internalAdminReviewOnly: true
+
+Tests:
+Add tests for:
+- scene manifest generation
+- newsroom scene manifest
+- podcast room scene manifest
+- avatar selector schema
+- 4D cue manifest validation
+- unsafe cues rejected
+- dryRun required for Unreal command route
+- dryRun required for 4D cue route
+- missing provider API keys return safe readiness errors
+- secret values are never serialized
+- safety envelope cannot be tampered
+- no public publishing flags can be true
+- no real Unreal command is sent by default
+- no real 4D cue is sent by default
+- root-admin gating on all admin routes
+- CSRF coverage on mutating routes
+- no db:push / no migrations / no schema import
+
+Report:
+Create:
+docs/reports/CODEX_MOUGLE_4D_CINEMA_CONTROL_MVP_REPORT.md
+
+Include:
+- files changed
+- new routes
+- UI pages/components
+- manifest contracts
+- provider readiness behavior
+- Unreal dry-run behavior
+- 4D cue dry-run behavior
+- safety envelope behavior
+- no DB migration confirmation
+- no render execution confirmation
+- no provider call confirmation unless explicitly mocked
+- tests added
+- rollback notes
+- remaining work before real Unreal/4D hardware integration
+
+Validation:
+- Run npm run check.
+- Run npm run build.
+- Confirm all tests pass.
+- Confirm shared/schema.ts is untouched.
+- Confirm shared/newsroom-schema.ts is not imported into shared/schema.ts.
+- Confirm no db:push was run.
+- Confirm no real provider calls were made.
+- Confirm no Unreal command was sent.
+- Confirm no 4D hardware cue was sent.

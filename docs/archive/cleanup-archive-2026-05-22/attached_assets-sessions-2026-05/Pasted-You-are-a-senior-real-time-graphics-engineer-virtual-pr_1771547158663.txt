@@ -1,0 +1,134 @@
+You are a senior real-time graphics engineer, virtual production designer, and AI interaction architect.
+
+Goal:
+Build a web-based AI Debate Studio with THREE realistic humanoid avatars sitting in a professional news/podcast environment.
+
+The system must look like a LIVE BROADCAST, not a website UI.
+
+CORE EXPERIENCE:
+
+* 3 AI agents debating at a table
+* realistic humanoid avatars (male and female)
+* cinematic environment lighting
+* podcast/news studio background
+* natural human voices with lip-sync
+* smooth camera cuts between speakers
+
+MANDATORY ARCHITECTURE:
+
+Rendering:
+
+* Use Three.js with WebGLRenderer
+* Entire scene rendered in WebGL canvas (no DOM avatars)
+* Physically based rendering (PBR materials)
+* HDR lighting environment
+
+Avatar System:
+
+* Use VRM humanoid avatars or ReadyPlayerMe avatars
+* Load 3 different avatars:
+  Agent A: professional male host
+  Agent B: female analyst
+  Agent C: neutral expert character
+
+Each avatar must support:
+
+* facial blendshapes
+* lip-sync animation
+* idle breathing animation
+* head movement while speaking
+
+Voice System:
+
+* Integrate human-quality TTS:
+  OpenAI TTS or ElevenLabs API
+* Assign:
+  Male voice → Agent A
+  Female voice → Agent B
+  Different tone voice → Agent C
+
+Speech must trigger:
+
+* mouth animation
+* subtle head motion
+* blinking
+
+Scene Design:
+Create a realistic debate studio including:
+
+* round discussion table
+* soft studio lighting
+* blurred newsroom background
+* depth-of-field camera effect
+* reflections and shadows
+
+Camera System:
+Implement cinematic camera controller:
+
+* focus on active speaker
+* smooth transitions
+* slight camera motion (broadcast realism)
+* over-the-shoulder angle option
+
+Debate Layout:
+Agents seated around table.
+When agent speaks:
+
+* camera moves to speaker
+* others idle naturally
+* subtle listening animations
+
+Animation:
+
+* idle loop animations
+* breathing
+* eye blinking
+* small gestures
+
+Audio:
+
+* spatial audio positioning
+* synchronized voice playback
+* no robotic timing
+
+Project Structure:
+src/
+├── engine/
+│    ├── SceneManager.ts
+│    ├── AvatarManager.ts
+│    ├── CameraDirector.ts
+│    └── VoiceController.ts
+├── avatars/
+├── environment/
+├── animation/
+└── App.ts
+
+Performance:
+
+* maintain 60 FPS
+* lazy-load avatars
+* optimized textures
+* proper disposal of assets
+
+Visual Quality:
+Target realistic broadcast look:
+NOT cartoon.
+NOT gaming HUD.
+Should resemble a YouTube podcast or TV debate.
+
+Deliver:
+
+1. Fully runnable project.
+2. Three avatars loaded automatically.
+3. Demo debate conversation script.
+4. Working voice + lip sync.
+5. Camera auto-switching between speakers.
+
+Advanced (optional but preferred):
+
+* soft volumetric light
+* studio ambient sound
+* subtle camera shake for realism
+* background animated screens
+
+Output a clean production-ready architecture.

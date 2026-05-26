@@ -1,0 +1,128 @@
+Next task: Add Real Unreal Live Command Safety Switch Design.
+
+Goal:
+Create a global safety-switch system for future live Unreal command execution. This must define, validate, store, and display the safety state for future live commands, but it must not execute any live Unreal command yet.
+
+Important:
+Do not enable live Unreal commands.
+Do not load levels.
+Do not render.
+Do not trigger Movie Render Queue.
+Do not start Sequencer.
+Do not import assets.
+Do not attach avatars.
+Do not attach media.
+Do not send 4D hardware commands.
+Do not publish anything.
+realSendAllowed must remain false.
+executionEnabled must remain false.
+
+Scope:
+
+1. Add section:
+Real Unreal Safety Switch
+
+Features:
+- view global live-command safety state
+- view required prerequisites
+- view blocked command categories
+- view emergency lock status
+- create safety-switch evaluation report
+- view safety-switch history
+- show safety badges:
+  Live Execution Disabled
+  Emergency Locked
+  No Real Commands
+  No Render
+  No MRQ
+  No Level Load
+  No 4D Send
+
+2. Add safety switch states:
+- disabled
+- dry_run_only
+- contract_only
+
+Do not add live_enabled.
+
+3. Add endpoints:
+GET /api/admin/production-house/real-unreal/safety-switch/status
+POST /api/admin/production-house/real-unreal/safety-switch/evaluate
+GET /api/admin/production-house/real-unreal/safety-switch/history
+
+All routes must be root-admin gated.
+
+4. Evaluation should check:
+- bridge config mode is dry_run only
+- no live_enabled mode exists
+- all real command approvals have executionEnabled:false
+- level-load contracts have executionEnabled:false
+- render-preview contract has renderRequested:false
+- no publicUrl or signedUrl values exist except null
+- no realSendAllowed:true anywhere
+- no live command route exists
+- no Movie Render Queue command exists
+- no 4D hardware send route is enabled
+
+5. Store safety-switch report:
+realUnrealSafetySwitchReports
+
+Fields:
+- id
+- state:"disabled" | "dry_run_only" | "contract_only"
+- liveExecutionEnabled:false
+- realSendAllowed:false
+- executionEnabled:false
+- emergencyLocked:true
+- checks
+- blockers
+- warnings
+- createdAt
+- safetyEnvelope
+
+6. Add audit events:
+- real_unreal.safety_switch.status_viewed
+- real_unreal.safety_switch.evaluation_attempted
+- real_unreal.safety_switch.evaluation_completed
+- real_unreal.safety_switch.history_viewed
+
+7. Add UI:
+- safety state cards
+- blocker list
+- warning list
+- checks list
+- evaluate button
+- history table
+- warning:
+  “This module does not enable live Unreal execution. It only verifies that live execution remains disabled.”
+
+8. Add export support:
+- include safety-switch reports in full production package export
+- no secrets
+- no public URLs
+- no signed URLs
+- no execution tokens
+
+9. Add regression tests:
+- all endpoints require root-admin
+- status returns liveExecutionEnabled:false
+- status returns realSendAllowed:false
+- status returns executionEnabled:false
+- status returns emergencyLocked:true
+- evaluate detects realSendAllowed:true if injected
+- evaluate detects executionEnabled:true if injected
+- evaluate confirms no live command route exists
+- evaluate confirms no MRQ command exists
+- evaluate confirms no 4D hardware send is enabled
+- report persists through storage adapter
+- export includes safety-switch reports without secrets
+- no network fetch is called
+- no real Unreal command is sent
+- no 4D command is sent
+- SAFETY_ENVELOPE unchanged
+
+10. Preserve existing Production House tests.
+
+Do not add live execution in this task.
+Do not add real rendering.
+Do not add real 4D hardware integration.

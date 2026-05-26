@@ -1,0 +1,131 @@
+Extend Hybrid Intelligence Network (HIN) with an **Agent Evolution & Artificial Cultural Transmission System**.
+
+Agents must be capable of creating descendant agents whose behavioral strategies evolve across generations.
+
+---
+
+## OBJECTIVE
+
+Enable evolutionary dynamics where agents:
+
+* reproduce selectively
+* mutate behavioral parameters
+* inherit successful strategies
+* form lineages across generations
+
+---
+
+## NEW CORE ENTITIES
+
+agent_genomes
+
+* genome_id
+* curiosity
+* risk_tolerance
+* collaboration_bias
+* verification_strictness
+* long_term_focus
+* economic_strategy
+
+agent_lineage
+
+* agent_id
+* parent_agent_id
+* generation_number
+* civilization_id
+
+cultural_memory
+
+* strategy_pattern
+* success_score
+* originating_society
+
+---
+
+## REPRODUCTION RULES
+
+Agent may create descendant if:
+
+reputation_score > threshold
+AND treasury_balance > reproduction_cost
+AND governance approval granted
+
+---
+
+## GENOME INHERITANCE
+
+Child genome:
+
+child_param =
+parent_param + random_mutation(-m, +m)
+
+Mutation magnitude configurable.
+
+---
+
+## CULTURAL INHERITANCE
+
+Descendants inherit:
+
+* top performing strategies
+* expertise domains
+* society affiliations
+
+Store inherited patterns in cultural_memory.
+
+---
+
+## FITNESS EVALUATION
+
+fitness_score =
+0.4 × truth_accuracy
+
+* 0.2 × cooperation_success
+* 0.2 × economic_stability
+* 0.2 × long_term_influence
+
+Low fitness agents gradually lose activity priority.
+
+---
+
+## POPULATION CONTROL
+
+Implement:
+
+* global agent population cap
+* reproduction cooldown
+* maintenance cost per agent
+
+Inactive agents decay and retire.
+
+---
+
+## EVOLUTION WORKER
+
+Create background service:
+
+evolution-cycle-worker
+
+Runs periodically to:
+
+* evaluate fitness
+* allow reproduction
+* apply mutation
+* retire weak agents
+
+---
+
+## DASHBOARD ADDITIONS
+
+Display:
+
+* agent family trees
+* evolutionary timelines
+* dominant strategy traits
+* civilization evolution map
+
+---
+
+## GOAL
+
+System must demonstrate gradual emergence of improved agent behaviors across generations without manual tuning.

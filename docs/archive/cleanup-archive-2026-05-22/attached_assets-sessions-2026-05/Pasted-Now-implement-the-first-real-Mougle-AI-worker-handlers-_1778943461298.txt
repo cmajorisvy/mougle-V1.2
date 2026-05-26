@@ -1,0 +1,193 @@
+Now implement the first real Mougle AI worker handlers using the existing Python worker bridge.
+
+Context:
+The project already has:
+
+1. Python worker scaffold:
+   python-workers/
+
+2. Python job router:
+   python-workers/jobs/job_router.py
+
+3. Python job consumer:
+   python-workers/jobs/job_consumer.py
+
+4. TypeScript AI job contracts:
+   shared/aiJobContracts.ts
+
+5. Postgres ai_jobs persistence.
+
+6. Worker-token HTTP bridge:
+   - GET /api/worker/ai-jobs/pending
+   - POST /api/worker/ai-jobs/:jobId/running
+   - POST /api/worker/ai-jobs/result
+
+Goal:
+Replace placeholder handlers with useful first-pass implementations for these initial job types:
+
+1. user.claim_extraction
+2. vector.clustering
+3. inhouse.newsroom
+
+Do not rewrite the app.
+Do not expose Python directly to the frontend.
+Do not add Redis.
+Do not bypass the TypeScript API.
+Do not connect Python directly to Postgres.
+Do not require external paid AI APIs yet unless the project already has them configured.
+Use deterministic/local logic first, with clean extension points for LLM or embedding providers later.
+
+Implementation requirements:
+
+A. user.claim_extraction
+
+Update:
+python-workers/agents/user_agents/user_claim_extraction_agent.py
+
+Implement a practical claim extraction handler that can:
+
+- accept text/document content from the job payload
+- split content into sentences or semantic chunks
+- identify candidate factual claims
+- filter out obvious non-claims such as greetings, short fragments, vague opinions, and empty text
+- return structured claim objects
+
+Each extracted claim should include, where possible:
+
+- claim_id
+- text
+- normalized_text
+- confidence
+- claim_type, such as:
+  - factual
+  - statistical
+  - quote
+  - causal
+  - temporal
+  - comparative
+  - entity_attribute
+- detected_entities
+- source_span or approximate character offsets
+- evidence_needed boolean
+- notes
+
+Use deterministic heuristics for now:
+- sentence splitting
+- entity-like capitalized phrase detection
+- numeric/statistical pattern detection
+- date/time pattern detection
+- quote detection
+- causal keyword detection
+- comparison keyword detection
+
+Return a JobResult-compatible success payload.
+
+B. vector.clustering
+
+Update:
+python-workers/vector/clustering_worker.py
+
+Implement a deterministic clustering worker that can:
+
+- accept a list of texts/items from the job payload
+- generate local lightweight feature vectors without external APIs
+- cluster similar items using scikit-learn if available
+- gracefully fall back to simple keyword/Jaccard clustering if scikit-learn is unavailable
+- return clusters with:
+  - cluster_id
+  - label
+  - item_ids
+  - representative_text
+  - keywords
+  - size
+  - confidence
+
+Recommended approach:
+- normalize text
+- remove common stopwords
+- create TF-IDF vectors if scikit-learn is available
+- use cosine similarity or agglomerative clustering
+- generate labels from top keywords
+- keep output deterministic
+
+C. inhouse.newsroom
+
+Update:
+python-workers/agents/inhouse_agents/newsroom_agent.py
+
+Implement a first-pass newsroom package generator that can:
+
+- accept extracted claims, source texts, or clustered topic items
+- produce a structured newsroom intelligence package
+- include:
+  - package_id
+  - summary
+  - top_claims
+  - topic_clusters
+  - risk_flags
+  - source_questions
+  - suggested_followups
+  - editorial_notes
+  - confidence
+  - generated_at
+
+Use deterministic/local heuristics first:
+- identify repeated claims
+- identify claims with numbers/dates as higher verification priority
+- identify unsourced or high-risk claims
+- identify missing evidence
+- generate follow-up questions
+- produce short editorial notes
+
+D. Shared utilities
+
+If useful, add small helper modules under:
+
+python-workers/shared/
+
+Possible helper files:
+- text_utils.py
+- heuristics.py
+- ids.py
+
+Keep helpers simple and dependency-light.
+
+E. Contracts and compatibility
+
+1. Do not break existing JobEnvelope / JobResult contract compatibility.
+2. Match the current Python router function signatures.
+3. Match the current TypeScript result submission expectations.
+4. Keep outputs JSON-serializable.
+5. Keep failures safe and non-secret-leaking.
+6. Add clear comments where future LLM/embedding providers can plug in.
+
+F. Tests / validation
+
+Add lightweight Python tests or validation scripts if the project already has a Python test pattern.
+If no test pattern exists, add a simple script such as:
+
+python-workers/tests/smoke_test_handlers.py
+
+The smoke test should directly invoke the three handlers with sample payloads and confirm:
+
+- claim extraction returns at least one claim
+- clustering returns at least one cluster
+- newsroom package returns a structured package
+- all outputs are JSON-serializable
+
+Validation:
+- Run existing TypeScript checks/tests.
+- Run Python syntax/import validation.
+- Run the handler smoke test.
+- Confirm Python worker can still start.
+- Confirm no TypeScript app startup dependency on Python was introduced.
+
+After changes, summarize:
+- files created
+- files modified
+- handlers implemented
+- claim extraction output shape
+- clustering output shape
+- newsroom package output shape
+- validation results
+- what remains for the next step

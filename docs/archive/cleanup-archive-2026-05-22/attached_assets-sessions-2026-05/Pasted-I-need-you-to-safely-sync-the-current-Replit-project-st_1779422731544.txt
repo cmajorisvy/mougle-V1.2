@@ -1,0 +1,84 @@
+I need you to safely sync the current Replit project state up to date with:
+
+1. GitHub repo: `https://github.com/cmajorisvy/mougle/`
+2. Supabase database
+3. Any local Replit DB/data/files that are still being used by the app
+
+This must be done carefully. Do not overwrite, delete, reset, force-push, or destructively migrate anything.
+
+First, perform a read-only audit and show me the results before applying changes.
+
+Required audit:
+
+1. Check current git status, current branch, latest commit, changed files, untracked files, and whether the working tree includes all recent Replit task work up to T737.
+2. Confirm which files changed since the last GitHub push.
+3. Confirm no secrets are staged or pushed:
+
+   * no `.env`
+   * no secret keys
+   * no Supabase service role key
+   * no OpenAI/API provider keys
+   * no local private temp files
+   * no node_modules
+4. Run safe validation:
+
+   * `npm run check`
+   * `npm run build`
+   * any targeted tests relevant to the latest changes if they are safe and not DB-destructive
+5. Confirm the app still starts and the previously fixed endpoints remain healthy:
+
+   * `/api/posts`
+   * `/api/agent-orchestrator/status`
+   * `/api/agent-orchestrator/activity`
+   * `/api/news/latest`
+
+GitHub sync rules:
+
+1. Push all valid current code/file changes to `https://github.com/cmajorisvy/mougle/`.
+2. Do not force push.
+3. Do not delete branches.
+4. Do not revert recent work.
+5. If branch protection blocks direct push to `main`, create a new branch like `sync/replit-current-state` and open a pull request into `main`.
+6. If direct push to `main` is allowed and the working tree is verified safe, commit with a clear message summarizing the latest completed work, then push.
+7. Show me the final commit hash and GitHub URL.
+
+Supabase sync rules:
+
+1. Confirm the active `DATABASE_URL` points to my intended Supabase project/database, without printing secrets.
+2. Compare the app schema/migration files against the actual Supabase schema.
+3. Report missing tables, missing columns, index gaps, type mismatches, and migration status.
+4. Do not run `db:push`, migrations, seed scripts, reset scripts, delete commands, truncate commands, or destructive schema changes without showing me the exact proposed SQL/command first and waiting for my approval.
+5. If a migration/schema sync is needed, create a backup/checkpoint first if available.
+6. Never approve destructive drop prompts.
+7. Do not overwrite Supabase data with stale Replit/local data.
+8. Confirm recent writes are going to Supabase, not an old Replit DB.
+
+Replit local DB/data/files sync rules:
+
+1. Identify whether any local Replit DB, object storage, uploaded files, generated files, or local JSON/file stores are still used by the app.
+2. List what local-only data/files exist and whether they need to be copied, backed up, ignored, or migrated.
+3. Do not delete local files.
+4. Do not overwrite Supabase or GitHub files with local stale data.
+5. If local data must be migrated to Supabase or object storage, show the exact migration plan first and wait for approval.
+
+Scope protection:
+
+* Do not start new feature tasks.
+* Do not modify unrelated code.
+* Do not run old qrcode tasks.
+* Do not run render/Remotion/FFmpeg/journey tasks unless they are only being committed as already-completed code.
+* Do not change Supabase pooler mode.
+* Do not change GitHub branch protection.
+* Do not run broad cleanup or refactors.
+
+After the audit, give me a concise report:
+
+1. Files to commit/push
+2. Files excluded and why
+3. Validation results
+4. GitHub push plan
+5. Supabase sync status
+6. Local Replit DB/file status
+7. Any action requiring my approval
+
+Wait for my approval before doing any database migration or destructive action.

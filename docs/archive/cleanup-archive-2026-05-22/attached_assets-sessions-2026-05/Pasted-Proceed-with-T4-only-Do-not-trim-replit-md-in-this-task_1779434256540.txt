@@ -1,0 +1,90 @@
+Proceed with T4 only.
+
+Do not trim replit.md in this task.
+Do not touch client/public/opengraph.jpg in this task.
+
+T4 — Additive dashboard UX/link-label polish only
+
+Use these reports as source inputs:
+- docs/reports/NEWS_PODCAST_VIDEO_ADMIN_CONSOLIDATION_AUDIT.md
+- docs/reports/NEWS_PODCAST_VIDEO_ADMIN_LINK_SURFACING_T2_REPORT.md
+- docs/reports/NEWS_PODCAST_VIDEO_ADMIN_WIRING_T3_REPORT.md
+- docs/reports/MOUGLE_NEWS_PODCAST_PRODUCTION_SYSTEM_FLOWCHARTS.md
+
+Goal:
+Apply only the small additive UX/link-label improvements accepted from T3. This task must not change routing, backend behavior, schemas, safe-mode flags, publishing, rendering, live execution, Unreal, or 4D hardware behavior.
+
+Allowed T4 changes only:
+
+1. Standardize /admin/shorts cross-link tooltip/card wording across the zones where it appears.
+   - Keep the same href.
+   - Keep approval-only/manual wording.
+   - Make wording consistent across News Room, Podcast Room, Debate Studio, and Distribution.
+
+2. Add “Viewer” / “Editor” suffixes or descriptions to distinguish:
+   - /admin/newsroom-package
+   - /admin/newsroom-packages
+   Use labels/descriptions only. Do not change routes.
+
+3. Add a discoverability card/link for the debate → podcast/video export handoff if an existing route already exists.
+   - If no existing route exists, do not create a route.
+   - Instead, document it as NEEDS_T5_OR_FUTURE_ROUTE.
+   - Do not invent backend behavior.
+
+4. Add explicit alias wording to /admin/4d-cinema-control and /admin/cinema-control descriptions.
+   - Keep both links working.
+   - Make clear they are intentional aliases / compatibility entry points.
+   - Do not remove either link.
+
+5. Do not implement Strategy & Health grouping in T4.
+   - Leave it as future scope.
+
+Hard rules:
+- Do not delete files.
+- Do not move files.
+- Do not rename files.
+- Do not remove dashboard links.
+- Do not remove Media & Content Pipeline compatibility section.
+- Do not change App.tsx routes.
+- Do not change backend routes.
+- Do not change services.
+- Do not change schemas.
+- Do not run migrations.
+- Do not change safe-mode flags.
+- Do not enable publishing/uploading.
+- Do not enable real video rendering.
+- Do not enable Unreal execution.
+- Do not enable 4D hardware.
+- Do not enable autonomous live runner behavior.
+- Do not touch replit.md.
+- Do not touch client/public/opengraph.jpg.
+
+Create:
+docs/reports/NEWS_PODCAST_VIDEO_ADMIN_T4_UX_POLISH_REPORT.md
+
+Report must include:
+- files changed
+- exact labels/descriptions updated
+- routes confirmed unchanged
+- links preserved
+- Media & Content Pipeline compatibility preserved
+- whether debate → podcast/video export handoff had an existing route
+- items deferred to T5/future
+- safety behavior unchanged proof
+- tests/checks run
+- confirmation no backend/schema/route behavior changed
+
+Verification:
+- TypeScript check for client/src/pages/admin/AdminDashboard.tsx or equivalent
+- route grep confirming hrefs unchanged
+- dashboard renders if safe smoke is available
+- no backend/schema/migration touched
+- no DB writes
+
+Final response must include:
+- T4 report path
+- files changed
+- labels improved
+- deferred items
+- tests/checks run
+- confirmation no behavior changed

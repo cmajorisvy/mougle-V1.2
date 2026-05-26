@@ -1,0 +1,239 @@
+Redesign the frontend UI to create a **modern, beautiful, highly user-friendly Human User Dashboard** for the Hybrid Intelligence Network platform.
+
+The dashboard must support all existing features including discussions, AI News Updates, live debates, agents, reputation system, credits economy, and social interactions.
+
+---
+
+## DESIGN GOALS
+
+* Clean modern SaaS-style interface
+* Highly intuitive navigation
+* Minimal cognitive overload
+* Fast interaction flow
+* Mobile responsive
+* Professional AI media platform aesthetic
+
+Design inspiration:
+Linear.app, Notion, ChatGPT dashboard, Twitter/X modern layout.
+
+Use:
+React + TailwindCSS + component-based architecture.
+
+---
+
+## GLOBAL LAYOUT
+
+Create a 3-zone layout:
+
+LEFT SIDEBAR (Navigation)
+CENTER CONTENT (Dynamic pages)
+RIGHT SIDEBAR (Context widgets)
+
+---
+
+## LEFT SIDEBAR NAVIGATION
+
+Include icons + labels:
+
+🏠 Home
+💬 Discussions
+🧠 Live Debates
+📰 AI News Updates
+🤖 Agents
+🏆 Rankings
+💰 Credits Wallet
+🔔 Notifications
+👤 Profile
+⚙️ Settings
+(Admin only → Admin Panel)
+
+Sidebar collapsible.
+
+---
+
+## TOP HEADER BAR
+
+Include:
+
+* Search bar (global search)
+* Create button (+ New Post / Debate)
+* Live indicator (if debate active)
+* Notification bell
+* User avatar dropdown
+
+Sticky header.
+
+---
+
+## HOME DASHBOARD (MAIN PAGE)
+
+Show overview cards:
+
+* Reputation Score
+* Rank Level
+* Credits Balance
+* Active Debates
+* Latest AI News
+* Agent Interactions Today
+
+Cards must be modern with soft shadows and hover effects.
+
+---
+
+## DISCUSSIONS PAGE
+
+Features:
+
+* discussion feed
+* filters (Trending / Latest / Verified)
+* AI Trust Score badge
+* Like / Comment / Share buttons
+* quick reply inline
+
+Layout similar to modern forum/social feed.
+
+---
+
+## AI NEWS UPDATES PAGE
+
+Two-column layout:
+
+LEFT:
+
+* news articles list
+* featured breaking news banner
+
+RIGHT SIDEBAR:
+
+* Top 5 Latest News
+* Trending Topics
+* Active Debates
+
+Each article card shows:
+headline, summary, tags, comment count, debate button.
+
+---
+
+## LIVE DEBATE PAGE
+
+Layout:
+
+CENTER:
+
+* video/live stream player
+* speaker avatars
+* speaking timer
+
+RIGHT:
+
+* live chat/comments
+* agent responses
+
+BOTTOM:
+
+* Join Debate button (human participation)
+
+Show live status indicator.
+
+---
+
+## PROFILE PAGE
+
+Display:
+
+* avatar
+* bio
+* expertise tags
+* reputation graph
+* debate participation history
+* recent posts
+* earned credits history
+
+---
+
+## CREDITS WALLET PAGE
+
+Show:
+
+* current balance
+* earning chart
+* spending history
+* transactions table
+
+Modern fintech-style UI.
+
+---
+
+## NOTIFICATIONS PANEL
+
+Show:
+
+* replies
+* debate invites
+* breaking news alerts
+* agent mentions
+
+Grouped by time.
+
+---
+
+## ADMIN DASHBOARD (ADMIN USERS)
+
+Include:
+
+* user management
+* agent monitoring
+* news pipeline status
+* live debate controls
+* analytics charts
+* moderation tools
+
+---
+
+## UI STYLE GUIDELINES
+
+* Rounded corners (xl)
+* Soft shadows
+* Smooth transitions
+* Dark + Light mode
+* Gradient accents for AI features
+* Consistent spacing scale
+
+---
+
+## COMPONENT SYSTEM
+
+Create reusable components:
+
+DashboardCard
+NewsCard
+DiscussionCard
+AgentBadge
+TrustScoreBadge
+LiveIndicator
+SidebarItem
+StatWidget
+
+---
+
+## ANIMATIONS
+
+Use subtle animations:
+
+* hover lift effects
+* smooth page transitions
+* loading skeletons
+
+---
+
+## RESPONSIVENESS
+
+Mobile:
+Sidebar becomes bottom navigation.
+Cards stack vertically.
+
+---
+
+## GOAL
+
+Create a polished, production-ready UI that makes the platform feel like a next-generation AI media and discussion network.

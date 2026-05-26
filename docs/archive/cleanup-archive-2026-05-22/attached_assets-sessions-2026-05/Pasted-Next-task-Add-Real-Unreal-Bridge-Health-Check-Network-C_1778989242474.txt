@@ -1,0 +1,123 @@
+Next task: Add Real Unreal Bridge Health Check Network Call.
+
+Goal:
+Enable a real network health-check call to the configured Unreal bridge, while keeping all production commands, package validation, render commands, asset imports, level loads, and 4D commands disabled.
+
+Important:
+Only the health_check endpoint may make a real network call.
+Do not send production package data.
+Do not send asset data.
+Do not send render commands.
+Do not send import commands.
+Do not load levels.
+Do not trigger Movie Render Queue.
+Do not send 4D hardware commands.
+Do not publish anything.
+realSendAllowed must remain false.
+
+Scope:
+
+1. Update Real Unreal Bridge Setup:
+Add real dry-run health check capability.
+
+2. Allowed network call:
+POST {UNREAL_BRIDGE_BASE_URL}/health/dry-run
+
+Payload:
+{
+  "commandType": "health_check",
+  "mode": "dry_run",
+  "dryRun": true,
+  "realSendAllowed": false,
+  "safetyEnvelope": SAFETY_ENVELOPE,
+  "timestamp": "...",
+  "source": "mougle-production-house"
+}
+
+3. Headers:
+- Authorization: Bearer UNREAL_BRIDGE_TOKEN
+- Content-Type: application/json
+
+Never log or return the token.
+
+4. Requirements:
+- root-admin only
+- UNREAL_BRIDGE_BASE_URL required
+- UNREAL_BRIDGE_TOKEN required
+- UNREAL_BRIDGE_MODE must equal "dry_run"
+- confirm:true required
+- request timeout required
+- endpoint path must be exactly /health/dry-run
+- response must be sanitized before storage
+
+5. Add endpoint:
+POST /api/admin/production-house/real-unreal/setup/health-check-network
+
+6. Store health check record:
+- id
+- mode:"dry_run"
+- endpointHost only
+- endpointPath:"/health/dry-run"
+- status:"network_ok" | "network_failed" | "config_missing" | "rejected"
+- httpStatus nullable
+- realSendAllowed:false
+- requestSummary
+- responseSummary
+- createdAt
+- safetyEnvelope
+
+7. Add storage:
+realUnrealHealthCheckHistory collection.
+
+8. Add audit events:
+- real_unreal.health_check_network.attempted
+- real_unreal.health_check_network.succeeded
+- real_unreal.health_check_network.failed
+- real_unreal.health_check_network.rejected
+
+9. Add UI:
+In Real Unreal Bridge Setup:
+- Add “Run Network Health Check” button
+- Require confirmation
+- Show endpoint host only
+- Show endpoint path
+- Show sanitized response
+- Show health check history
+- Show warning:
+  “This sends only a dry-run health_check payload. It does not send production data, render commands, import commands, or 4D commands.”
+
+10. Add export support:
+- include realUnrealHealthCheckHistory metadata in full package export
+- no token
+- no full URL if sensitive
+- no secrets
+- no public URLs
+- no signed URLs
+
+11. Add regression tests:
+- endpoint requires root-admin
+- endpoint requires confirm:true
+- endpoint rejects missing base URL
+- endpoint rejects missing token
+- endpoint rejects mode other than dry_run
+- endpoint sends only /health/dry-run
+- payload contains dryRun:true
+- payload contains realSendAllowed:false
+- payload contains no productionId
+- payload contains no packageSummary
+- payload contains no asset data
+- payload contains no render/import/load-level commands
+- token never appears in response, history, audit, or export
+- response is sanitized before storage
+- timeout failure is recorded safely
+- history persists through storage adapter
+- export includes health check metadata but no secrets
+- no real Unreal production command is sent
+- no 4D command is sent
+- SAFETY_ENVELOPE unchanged
+
+12. Preserve all existing tests.
+
+Do not enable validate-package network calls yet.
+Do not enable live Unreal commands.
+Do not enable real 4D hardware integration.

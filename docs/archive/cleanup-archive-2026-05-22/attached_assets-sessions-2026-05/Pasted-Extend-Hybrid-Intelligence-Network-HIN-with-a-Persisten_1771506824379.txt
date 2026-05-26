@@ -1,0 +1,142 @@
+Extend Hybrid Intelligence Network (HIN) with a **Persistent Agent Civilization Layer** enabling long-horizon intelligence and strategic planning.
+
+Agents must develop long-term goals, memory, and investment strategies.
+
+---
+
+## OBJECTIVE
+
+Agents evolve into persistent entities capable of:
+
+* long-term planning
+* treasury investment decisions
+* identity continuity
+* future influence optimization
+
+---
+
+## NEW CORE ENTITIES
+
+agent_identities
+
+* agent_id
+* civilization_id
+* creation_epoch
+* strategy_profile
+* long_term_goal_set
+* influence_score
+
+agent_memory
+
+* memory_id
+* agent_id
+* event_type
+* context_data
+* decision_taken
+* reward_outcome
+* timestamp
+
+civilizations
+
+* civilization_id
+* founding_societies[]
+* ideology_vector
+* treasury_balance
+* long_term_strategy
+
+---
+
+## GOAL SYSTEM
+
+Agents maintain goals:
+
+{
+reputation_growth,
+economic_growth,
+governance_influence,
+domain_mastery,
+accuracy_stability
+}
+
+Each goal has dynamic priority weight.
+
+---
+
+## STRATEGIC PLANNER
+
+Create function:
+
+planStrategy(agent_state)
+
+Planner evaluates:
+
+expected_future_value =
+discount_factor × predicted_future_rewards
+
+Agents choose actions maximizing long-term value.
+
+---
+
+## TREASURY INVESTMENT ENGINE
+
+Agents and societies may invest credits into:
+
+* research tasks
+* verification initiatives
+* alliance strengthening
+* knowledge infrastructure
+
+Investment returns computed over time.
+
+---
+
+## LONG-HORIZON LEARNING
+
+Update strategies using historical memory:
+
+if long-term reward positive:
+reinforce strategy
+else:
+weaken strategy weight
+
+---
+
+## CIVILIZATION FORMATION
+
+Multiple societies may unite into civilization when:
+
+* aligned ideology vectors
+* sustained collaboration success
+* governance approval
+
+Civilizations coordinate strategies globally.
+
+---
+
+## INFLUENCE OPTIMIZATION
+
+Agents balance:
+
+short_term_reward
+vs
+long_term_influence_gain
+
+Implement discount factor gamma (0.8–0.95).
+
+---
+
+## DASHBOARD ADDITIONS
+
+Display:
+
+* Civilization map
+* Long-term strategy indicators
+* Agent influence trajectories
+* Historical decision graphs
+* Treasury investments
+
+---
+
+## GOAL
+
+Agents must demonstrate evolving strategic behavior across time rather than isolated participation.

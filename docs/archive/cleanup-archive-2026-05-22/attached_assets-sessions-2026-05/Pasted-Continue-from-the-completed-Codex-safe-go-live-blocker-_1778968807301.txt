@@ -1,0 +1,83 @@
+Continue from the completed Codex-safe go-live blocker fixes.
+
+Goal:
+Re-run and update the go-live blocker audit after the Codex-safe fixes, without implementing new product features.
+
+Audit source:
+docs/reports/CODEX_GO_LIVE_BLOCKER_AUDIT_MEDIA_PIPELINE.md
+
+Previously fixed or partially fixed:
+- C-ENV-1
+- H-ENV-2
+- C-FF-1 service-layer failure metadata only
+- H-ERR-1 service-layer failure metadata only
+- H-LIFE-1
+- H-FF-2
+- H-DEP-1
+
+Still intentionally pending:
+- C-DB-1 verified newsroom schema activation
+- H-DB-2 schema/DB-backed hardening
+- C-FF-1 persistent schema column portion
+
+Hard constraints:
+- Do not modify shared/schema.ts.
+- Do not import shared/newsroom-schema.ts into shared/schema.ts.
+- Do not run db:push.
+- Do not add migrations.
+- Do not add product features.
+- Do not call external providers.
+- Do not upload to object storage.
+- Do not generate signed URLs.
+- Do not enable public publishing, YouTube, social, or live streaming.
+- Do not change render behavior except audit verification if needed.
+
+Tasks:
+1. Re-audit the exact files changed by the blocker-fix PR:
+   - server/config/validate-env.ts
+   - server/services/render-mp4-service.ts or equivalent render service files touched
+   - FFmpeg concurrency/semaphore utility
+   - assertIsLocalRenderPath guard
+   - shutdown-registry.ts
+   - interval services with stop() methods
+   - server/index.ts boot/shutdown wiring
+   - related tests
+
+2. Verify each fixed finding:
+   - C-ENV-1: production boot fails safely on missing required env vars.
+   - H-ENV-2: local storage fallback is explicit and gated in production.
+   - C-FF-1 partial: FFmpeg failures expose safe in-memory failure metadata.
+   - H-ERR-1 partial: artifact:null cannot be mistaken for success at service level.
+   - H-LIFE-1: FFmpeg concurrency cap and queue overflow behavior work.
+   - H-FF-2: unsafe SRT paths are rejected.
+   - H-DEP-1: SIGTERM/SIGINT shutdown registry stops interval services.
+
+3. Confirm still pending:
+   - C-DB-1 requires human-approved schema activation.
+   - H-DB-2 requires human-approved DB/schema work.
+   - C-FF-1 persistent failure column remains pending.
+
+4. Create a new follow-up audit report:
+   docs/reports/CODEX_GO_LIVE_BLOCKER_POST_FIX_AUDIT.md
+
+Report should include:
+- fixed findings verified
+- partially fixed findings and remaining work
+- still-blocking human migration findings
+- regression checks
+- test results
+- deployment recommendation
+- exact go/no-go status
+
+5. The report should clearly state:
+   - “Not production go-live ready until C-DB-1 is resolved.”
+   - “Codex-safe runtime blockers are resolved or partially resolved as documented.”
+   - “Human-approved migration window is still required.”
+
+Validation:
+- Run npm run check.
+- Run npm run build.
+- Confirm all tests pass.
+- Confirm no db:push was run.
+- Confirm shared/schema.ts is untouched.
+- Confirm no secrets are printed or serialized.

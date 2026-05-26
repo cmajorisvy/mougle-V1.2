@@ -1,0 +1,171 @@
+Continue from the completed Real Unreal Set-Lighting Dry-Run feature.
+
+Goal:
+Add Real Unreal Set-Panels Dry-Run support, mirroring the existing prepare-scene, set-camera, and set-lighting dry-run patterns.
+
+Context:
+- prepare-scene dry-run exists.
+- set-camera dry-run exists.
+- set-lighting dry-run exists.
+- stage must be unreal_sandbox_approved.
+- latest prepare-scene dry-run must have passed.
+- latest set-camera dry-run must have passed.
+- latest set-lighting dry-run must have passed.
+- realSendAllowed must remain false.
+- bridge token must never be stored or returned.
+- all routes must remain root-admin only.
+- this is still dry-run only.
+
+Hard constraints:
+- Do not send real Unreal commands.
+- Do not enable realSendAllowed.
+- Do not call production Unreal except dry-run endpoint only.
+- Do not expose bridge token.
+- Do not enable 4D hardware cues.
+- Do not enable public publishing.
+- Do not enable YouTube/social/live streaming.
+- Do not run db:push.
+- Do not add migrations.
+- Do not modify shared/schema.ts.
+- Do not weaken the safety envelope.
+- Preserve all existing tests.
+
+Create/extend contracts:
+In shared/production-house.ts add:
+- allowed panel layout presets
+- RealUnrealSetPanelsRecordSchema
+- related request/response types
+
+Suggested panel presets:
+- newsroom_main_wall
+- newsroom_breaking_news
+- newsroom_source_confidence
+- podcast_topic_cards
+- debate_split_screen
+- interview_guest_profile
+- market_watch_dashboard
+- weather_map
+- emergency_alert_board
+- standby_brand_loop
+
+Panel payload should support:
+- panelPreset
+- headline
+- subtitle
+- tickerItems
+- sourcePanel
+- confidenceLabel
+- mapPanel
+- timelinePanel
+- marketOrDataPanel
+- mediaRefs
+
+All text must be sanitized/truncated for dry-run.
+No external media should be fetched.
+No public URLs should be generated.
+
+Storage:
+In server/services/production-house-storage.ts add:
+- realUnrealSetPanelsDryRunHistory collection
+
+Service:
+In server/services/production-house-service.ts add:
+- getRealUnrealSetPanelsDryRunStatus()
+- sendRealUnrealSetPanelsDryRun()
+- listRealUnrealSetPanelsDryRunHistory()
+- sanitized set-panels payload builder
+
+Behavior:
+- Send only sanitized set_panels dry-run summary to:
+  {UNREAL_BRIDGE_BASE_URL}/set-panels/dry-run
+- Do not include bridge token in stored payload or response.
+- Preserve SAFETY_ENVELOPE.
+- realSendAllowed must remain false.
+- Require stage = unreal_sandbox_approved.
+- Require latest prepare-scene dry-run passed.
+- Require latest set-camera dry-run passed.
+- Require latest set-lighting dry-run passed.
+- Emit audit events for:
+  status_viewed
+  history_viewed
+  attempted
+  passed
+  failed
+  rejected
+
+Routes:
+In server/routes/production-house-routes.ts add:
+- GET /api/admin/production-house/real-unreal/set-panels/status
+- POST /api/admin/production-house/real-unreal/set-panels/send
+- GET /api/admin/production-house/real-unreal/set-panels/history
+
+All routes:
+- root-admin only
+- CSRF protected where mutating
+- no public routes
+- no real Unreal send
+
+UI:
+Add a RealUnrealSetPanelsDryRunPanel.
+
+Mount it inside the existing real-unreal-dry-run section after set-lighting.
+
+Panel should include:
+- panel preset dropdown
+- headline field
+- subtitle field
+- ticker items field
+- source/confidence preview
+- status
+- send dry-run button
+- latest response summary
+- safety flags
+- history list
+
+Tests:
+Add tests for:
+- allowed panel presets validate
+- invalid panel preset rejected
+- status route root-admin only
+- send route root-admin only
+- send route rejects if stage is not unreal_sandbox_approved
+- send route rejects if prepare-scene has not passed
+- send route rejects if set-camera has not passed
+- send route rejects if set-lighting has not passed
+- dry-run payload is sanitized
+- long text is truncated
+- public URLs are rejected or stripped
+- bridge token is redacted
+- realSendAllowed remains false
+- SAFETY_ENVELOPE preserved
+- history route returns sanitized records
+- audit events emitted
+- no real Unreal command is sent
+
+Report:
+Create:
+docs/reports/CODEX_REAL_UNREAL_SET_PANELS_DRY_RUN_REPORT.md
+
+Include:
+- files changed
+- routes added
+- panel preset list
+- payload fields
+- gating behavior
+- text/media sanitization behavior
+- bridge-token redaction
+- safety envelope behavior
+- tests added
+- no real Unreal send confirmation
+- rollback notes
+- remaining work before real Unreal sandbox execution
+
+Validation:
+- Run npm run check.
+- Run npm run build.
+- Confirm all tests pass.
+- Confirm no db:push was run.
+- Confirm shared/schema.ts is untouched.
+- Confirm realSendAllowed remains false.
+- Confirm bridge token is never serialized.
+- Confirm no public URLs or signed URLs are generated.

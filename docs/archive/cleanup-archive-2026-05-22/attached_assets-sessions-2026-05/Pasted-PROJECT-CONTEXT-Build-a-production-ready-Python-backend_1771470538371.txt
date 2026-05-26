@@ -1,0 +1,301 @@
+PROJECT CONTEXT
+
+Build a production-ready Python backend system for an autonomous AI intelligence media platform called “Dig8opia”.
+
+This system must:
+
+Collect AI & tech signals
+
+GitHub trending repos
+
+AI tool launches
+
+Startup funding news
+
+Developer trends
+
+Automation case studies
+
+Generate structured AI analysis articles using OpenAI API (multi-pass refinement).
+
+Store articles in PostgreSQL.
+
+Generate:
+
+SEO-optimized article
+
+YouTube video script
+
+Social media formatted variants (X, LinkedIn, Telegram, Facebook)
+
+Generate voiceover using TTS API.
+
+Render video using FFmpeg:
+
+Background loop
+
+Text overlays
+
+Lower thirds
+
+Subtitles
+
+Audio sync
+
+Push rendered video to YouTube using YouTube Data API.
+
+Send webhook to n8n when article + video are published.
+
+Expose REST API for frontend (Lovable site):
+
+GET /articles
+
+GET /articles/{slug}
+
+GET /categories
+
+GET /weekly-report
+
+Include cron scheduler for automation.
+
+ARCHITECTURE REQUIREMENTS
+
+Use this folder structure:
+
+/app
+    main.py
+    config.py
+    database.py
+    models.py
+    routes/
+        articles.py
+        categories.py
+    services/
+        scraper.py
+        ai_generator.py
+        script_refiner.py
+        tts_engine.py
+        video_renderer.py
+        youtube_uploader.py
+        social_formatter.py
+        scoring_engine.py
+    workflows/
+        daily_pipeline.py
+        weekly_report.py
+    utils/
+        logger.py
+        helpers.py
+/docker
+requirements.txt
+
+
+Use:
+
+FastAPI
+
+SQLAlchemy
+
+PostgreSQL
+
+APScheduler
+
+OpenAI API
+
+FFmpeg subprocess
+
+YouTube Data API
+
+Requests
+
+Pydantic models
+
+CONTENT STRUCTURE
+
+Each article must include:
+
+title
+
+slug
+
+category
+
+summary
+
+executive_analysis
+
+technical_breakdown
+
+market_implications
+
+dev_implications
+
+competitive_landscape
+
+forward_outlook
+
+signal_score
+
+tags
+
+video_url
+
+created_at
+
+SCORING ENGINE
+
+Create a scoring system based on category.
+
+For GitHub repos:
+
+Impact Score =
+(star_velocity * 0.3) +
+(problem_relevance * 0.3) +
+(commercial_viability * 0.2) +
+(ecosystem_alignment * 0.2)
+
+For funding news:
+Weight:
+
+round_size
+
+investor_tier
+
+sector_momentum
+
+valuation_signal
+
+Return score 0–100.
+
+DAILY PIPELINE WORKFLOW
+
+Implement function:
+
+run_daily_pipeline()
+
+Steps:
+
+Collect signals
+
+Rank top 5
+
+Generate article draft
+
+Run multi-pass refinement:
+
+improve clarity
+
+remove hallucinations
+
+add forward outlook
+
+Store in DB
+
+Generate TTS audio
+
+Render video
+
+Upload to YouTube
+
+Save video URL
+
+Send webhook to n8n
+
+Log status
+
+VIDEO RENDERING
+
+Use FFmpeg to:
+
+Loop background video
+
+Overlay dynamic title text
+
+Add subtitles from script
+
+Sync TTS audio
+
+Output 1080p mp4
+
+SOCIAL FORMATTER
+
+Generate structured outputs:
+
+{
+"twitter_thread": "...",
+"linkedin_post": "...",
+"telegram_post": "...",
+"facebook_post": "...",
+"youtube_description": "..."
+}
+
+API SECURITY
+
+Use environment variables for API keys
+
+Add basic rate limiting
+
+Validate request bodies
+
+Include error handling
+
+DEPLOYMENT
+
+Include:
+
+Dockerfile
+
+requirements.txt
+
+Example .env
+
+Instructions to run on Ubuntu VPS
+
+IMPORTANT CONSTRAINTS
+
+Code must be modular
+
+No hardcoded API keys
+
+Add logging
+
+Handle retries
+
+Avoid blocking calls where possible
+
+Use async where beneficial
+
+OUTPUT
+
+Generate:
+
+Complete folder structure
+
+Starter implementation for each file
+
+Working daily_pipeline.py logic
+
+YouTube upload example
+
+FFmpeg command builder
+
+n8n webhook sender
+
+Dockerfile
+
+Setup instructions
+
+The system must be production-grade and ready to deploy on a VPS.
+
+🚀 WHY THIS PROMPT WORKS
+
+It forces Replit to:
+
+Build architecture, not random scripts
+
+Structure services cleanly
+
+Separate concerns
+
+Prepare for scaling
+
+Align with your Lovable frontend

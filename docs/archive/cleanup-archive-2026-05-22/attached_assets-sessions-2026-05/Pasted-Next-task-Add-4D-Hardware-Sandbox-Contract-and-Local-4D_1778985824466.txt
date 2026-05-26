@@ -1,0 +1,160 @@
+Next task: Add 4D Hardware Sandbox Contract and Local 4D Stub to Mougle AI Production House.
+
+Goal:
+Create a sandbox-only 4D hardware contract and local 4D stub that validates 4D cue payloads, simulates hardware responses, records dry-run history, and prepares the system for future physical 4D cinema integrations.
+
+Important:
+Do not connect to real 4D hardware.
+Do not send DMX, OSC, UDP, MIDI, serial, relay, fog, wind, scent, vibration, motion-seat, or lighting commands.
+Do not connect to physical devices.
+Do not enable realSendAllowed.
+Do not publish anything.
+This is sandbox/dry-run only.
+
+Scope:
+
+1. Add new section in /admin/production-house:
+4D Hardware Sandbox
+
+Features:
+- 4D sandbox health check
+- supported effect types
+- cue payload validator
+- dry-run cue sender
+- response viewer
+- dry-run cue history
+- safety badges:
+  4D Sandbox
+  Dry Run Only
+  No Real Hardware
+  No DMX Send
+  No OSC/UDP Send
+  No Motion Seat
+  No Fog/Wind/Scent
+  No Public Output
+
+2. Add backend endpoints:
+GET /api/admin/production-house/4d/sandbox/health
+GET /api/admin/production-house/4d/sandbox/supported-effects
+POST /api/admin/production-house/4d/sandbox/validate-cue
+POST /api/admin/production-house/4d/sandbox/send
+GET /api/admin/production-house/4d/sandbox/history
+
+All routes must be root-admin gated.
+
+3. Supported sandbox effect types:
+- light_flash
+- color_change
+- fog_burst
+- wind
+- vibration
+- bass_hit
+- motion_seat
+- scent
+- water_mist
+- heat
+- spatial_audio
+- led_wall
+- custom
+
+4. Every sandbox cue must require:
+- cueId
+- productionId
+- timecode
+- effectType
+- intensity
+- durationMs
+- target
+- dryRun:true
+- realSendAllowed:false
+- safetyEnvelope
+- visibility:"admin_only_internal"
+
+5. Reject cue payloads if:
+- dryRun is not true
+- realSendAllowed is true
+- safetyEnvelope is missing
+- cueId is missing
+- productionId is missing
+- effectType is unsupported
+- intensity is outside 0–1
+- durationMs is negative or too high
+- publicUrl or signedUrl is non-null
+- visibility is not admin_only_internal
+
+6. Add local 4D sandbox job model/storage:
+- id
+- cueId
+- productionId
+- effectType
+- mode:"4d_sandbox"
+- dryRun:true
+- realSendAllowed:false
+- status:"sandbox_accepted" | "sandbox_rejected" | "failed"
+- requestPayload
+- responsePayload
+- createdAt
+- safetyEnvelope
+
+7. Sandbox send should:
+- never call real hardware
+- generate deterministic mock cue job IDs using SHA-256
+- save job history through the storage adapter
+- audit-log accepted and rejected attempts
+- return response:
+{
+  "ok": true,
+  "mode": "4d_sandbox",
+  "realSendAllowed": false,
+  "status": "sandbox_accepted",
+  "message": "4D sandbox cue accepted. No real hardware command was sent."
+}
+
+8. Add audit events:
+- 4d.sandbox.health_viewed
+- 4d.sandbox.effects_viewed
+- 4d.sandbox.cue_validated
+- 4d.sandbox.cue_rejected
+- 4d.sandbox.send_attempted
+- 4d.sandbox.accepted
+- 4d.sandbox.history_viewed
+
+9. Add UI:
+- Health card
+- Supported effects list
+- Cue payload editor
+- Example cue loader
+- Validate cue button
+- Send dry-run cue button
+- Response panel
+- History table
+- Safety rules panel
+
+10. Add export support:
+- include fourDSandboxJobs in full production package export
+- no secrets
+- no public URLs
+- no signed URLs
+
+11. Add regression tests:
+- all 4D sandbox endpoints require root-admin
+- health returns dryRunOnly:true and realSendAllowed:false
+- supported effects list is stable
+- validator rejects realSendAllowed:true
+- validator rejects dryRun:false
+- validator rejects missing safetyEnvelope
+- validator rejects unsupported effectType
+- validator rejects intensity outside 0–1
+- validator rejects publicUrl/signedUrl non-null
+- valid dry-run cue is accepted
+- accepted job ID is deterministic
+- job persists through storage adapter
+- export includes 4D sandbox jobs but no secrets
+- no real DMX/OSC/UDP/hardware command is sent
+- no real Unreal command is sent
+- SAFETY_ENVELOPE unchanged
+
+12. Preserve all existing tests.
+
+Do not add real 4D hardware integration in this task.
+Do not add real Unreal Remote Control API calls in this task.

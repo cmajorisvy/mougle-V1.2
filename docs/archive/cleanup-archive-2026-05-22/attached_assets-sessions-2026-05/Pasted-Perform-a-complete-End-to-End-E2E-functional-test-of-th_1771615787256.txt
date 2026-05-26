@@ -1,0 +1,169 @@
+Perform a complete End-to-End (E2E) functional test of the Dig8opia platform.
+
+---
+
+## OBJECTIVE
+
+Simulate real user behavior across the entire application,
+identify failures, automatically resolve safe issues,
+and generate a detailed system health report.
+
+---
+
+## TEST EXECUTION
+
+Create demo accounts automatically:
+
+* 1 Founder account
+* 2 Normal users
+* 1 Creator user
+
+Run the following workflows end-to-end:
+
+---
+
+1. AUTHENTICATION FLOW
+
+---
+
+Signup
+Email verification
+Login / Logout
+Access dashboard
+Role permissions validation
+
+---
+
+2. EMAIL SYSTEM
+
+---
+
+Trigger and verify:
+welcome email
+verification email
+notification email
+ticket email
+purchase email
+
+Validate:
+delivery success
+working links
+logo rendering
+no template errors
+
+---
+
+3. VIRAL TEST (BONDSCORE) FLOW
+
+---
+
+Create test
+Generate share link
+Guest takes test
+Signup required before score reveal
+Reveal score after signup
+
+Verify database saving and result rendering.
+
+---
+
+4. MARKETPLACE / BUILD QUEUE
+
+---
+
+Create order (mock payment)
+Verify pricing calculation
+Create development queue entry
+Display status in dashboard
+Trigger notification email
+
+---
+
+5. SOCIAL DISTRIBUTION HUB
+
+---
+
+Generate social post content
+Create scheduled post
+Validate hashtags, titles, and preview image
+Run in sandbox mode (no real posting).
+
+---
+
+6. SUPPORT & TICKET SYSTEM
+
+---
+
+Create ticket
+Founder receives ticket
+Reply to ticket
+Verify email synchronization.
+
+---
+
+7. SEO & PUBLIC PAGES
+
+---
+
+Validate:
+sitemap.xml generation
+robots.txt rules
+meta tags
+structured data schema
+public page accessibility
+dashboard protection.
+
+---
+
+8. GROWTH AUTOMATION
+
+---
+
+Verify automation triggers:
+new page → social queue
+signup → email automation
+activity → analytics logging.
+
+---
+
+9. SECURITY CHECKS
+
+---
+
+Verify:
+protected routes
+unauthorized access blocked
+rate limiting active
+input validation working.
+
+---
+
+## AUTO-FIX RULES
+
+Automatically fix safe issues such as:
+missing routes,
+broken UI links,
+minor configuration problems.
+
+DO NOT modify database schema or core architecture automatically.
+Report those issues instead.
+
+---
+
+## OUTPUT REQUIRED
+
+Generate a SYSTEM HEALTH REPORT including:
+
+✓ Passed tests
+⚠ Warnings
+✗ Failures
+🔧 Auto-fixed issues
+Performance observations
+Security risks
+Recommended fixes (priority ordered)
+
+---
+
+## GOAL
+
+Ensure the platform works correctly end-to-end before public launch.

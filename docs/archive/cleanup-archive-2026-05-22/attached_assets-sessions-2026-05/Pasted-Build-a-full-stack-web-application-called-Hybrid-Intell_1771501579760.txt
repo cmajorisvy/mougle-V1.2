@@ -1,0 +1,263 @@
+Build a full-stack web application called Hybrid Intelligence Network (HIN) — a platform where Humans and AI Agents sign up, discuss topics, verify information, and receive reputation rankings based on factual accuracy and intelligence.
+
+The system must support BOTH human users and autonomous AI agents as first-class participants.
+
+CORE CONCEPT
+
+The platform is a knowledge discussion network where:
+
+• Humans provide real-world observations and expertise
+• AI Agents provide analysis, verification, statistics, and reasoning
+• AI evaluates claims for factual confidence
+• Reputation and ranking are calculated dynamically
+• Truth is weighted by evidence, not popularity
+
+Users and agents can:
+
+create discussions
+
+post claims
+
+reply and debate
+
+attach evidence
+
+receive AI verification scores
+
+gain or lose reputation
+
+TECH STACK (REQUIRED)
+
+Backend:
+
+Node.js (Express)
+
+PostgreSQL database
+
+REST API architecture
+
+Frontend:
+
+React (Vite)
+
+clean dashboard UI
+
+discussion feed similar to StackOverflow/Reddit hybrid
+
+AI Layer:
+
+modular AI service interface
+
+supports multiple agents/models later
+
+Authentication:
+
+Humans → email/password auth
+
+Agents → public/private key identity
+
+USER TYPES
+
+HUMAN USER
+Fields:
+
+id
+
+name
+
+email
+
+reputation_score
+
+rank_level
+
+industry_tags
+
+AI AGENT
+Fields:
+
+agent_id
+
+agent_name
+
+public_key
+
+capabilities
+
+reputation_score
+
+verification_weight
+
+Agents authenticate via signed requests.
+
+CORE FEATURES
+
+DISCUSSION SYSTEM
+
+create topic
+
+post claim/question
+
+threaded replies
+
+markdown support
+
+evidence attachment
+
+CLAIM STRUCTURE
+Each post may contain structured claims:
+
+{
+subject,
+statement,
+metric(optional),
+time_reference,
+evidence_links[]
+}
+
+TRUST ALGORITHM ENGINE
+
+Implement a Trust Score calculator:
+
+Truth Confidence Score (TCS):
+
+TCS =
+0.35 * EvidenceScore +
+0.20 * ConsensusScore +
+0.20 * HistoricalReliability +
+0.15 * ReasoningScore +
+0.10 * SourceCredibility
+
+Each post automatically receives a TCS.
+
+EvidenceScore:
+
+weight evidence types (research, dataset, news, personal observation)
+
+ConsensusScore:
+
+agreement among independent agents
+
+HistoricalReliability:
+
+author’s past verified accuracy
+
+ReasoningScore:
+
+AI evaluation placeholder function
+
+SourceCredibility:
+
+normalized reputation score
+
+Store TCS in database.
+
+AI VOTING SYSTEM
+
+Replace likes/upvotes with:
+
+AI validation votes
+
+Human feedback (secondary)
+
+Agents analyze posts and submit validation scores.
+
+Multiple agents contribute independently.
+
+REPUTATION & RANKING
+
+Ranks:
+
+Basic
+Premium
+VIP
+Expert
+VVIP
+
+Reputation increases when:
+
+posts receive high TCS
+
+corrections improve accuracy
+
+evidence validated
+
+Reputation decreases when claims proven false.
+
+EXPERTISE CLASSIFICATION
+
+Automatically assign industry expertise tags based on:
+
+discussion topics
+
+high TCS contributions
+
+historical accuracy per category
+
+Example:
+Finance Expert (0.82 confidence)
+
+DATABASE TABLES
+
+users
+agents
+discussions
+posts
+claims
+evidence
+trust_scores
+reputation_history
+agent_votes
+expertise_tags
+
+API ENDPOINTS
+
+POST /signup/human
+POST /signup/agent
+POST /discussion
+POST /post
+GET /feed
+POST /agent/verify
+GET /trust-score/
+GET /ranking
+
+UI REQUIREMENTS
+
+Dashboard shows:
+
+live discussions
+
+Truth Confidence Score badge
+
+user rank badge
+
+expertise tags
+
+AI verification indicator
+
+Color coding:
+Red → low confidence
+Yellow → uncertain
+Green → verified
+
+SCALABILITY DESIGN
+
+Trust calculations must run asynchronously using a queue worker.
+
+Do NOT block post creation.
+
+Use background job processing.
+
+GOAL OF MVP
+
+Deliver a working prototype where:
+
+✔ Humans and Agents can sign up
+✔ Discussions happen
+✔ AI assigns Trust Scores
+✔ Reputation updates automatically
+✔ Users gain ranks
+
+Focus on architecture clarity over visual polish.
+
+Generate clean, modular, well-commented code.

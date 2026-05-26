@@ -1,0 +1,131 @@
+Task #729 — Make the audience-audit test suite robust to DB pool exhaustion
+
+Goal:
+Fix the audience-audit test flakiness caused by Supabase pool exhaustion / EMAXCONNSESSION when the dev workflow is running at the same time as the test suite.
+
+Problem:
+During Task #686 verification, tests/audience-audit-history-email-stale-alert.test.ts repeatedly hit:
+
+EMAXCONNSESSION
+max clients reached in session mode
+max clients are limited to pool_size: 15
+
+The product code is fine. The issue is test infrastructure: the audience-audit tests open/hold too many DB sessions and do not release them aggressively enough between files/runs. This causes unrelated assertion failures when the Start application workflow is also running.
+
+Relevant files:
+- tests/audience-audit-history-email-stale-alert.test.ts
+- tests/audience-audit-history-email-failure-alert.test.ts
+- tests/audience-audit-email-failure-alert-snooze.test.ts
+- server/db.ts
+- any shared test DB helper used by these files
+
+Dependency/context:
+This follows the scheduler-silent alert mute-history work and should not change product behavior.
+
+Requirements:
+
+1. Diagnose current DB usage
+
+Inspect the three audience-audit test files and identify:
+- where DB pools/clients are opened
+- whether imports create long-lived pools
+- whether tests run in parallel within a file
+- whether cleanup releases rows but not connections
+- whether shared server/db.ts pool remains open after tests
+- whether test files can be made deterministic without touching production logic
+
+2. Make tests release DB resources aggressively
+
+Apply the smallest safe fix.
+
+Acceptable approaches:
+- add afterAll cleanup that calls pool.end() or the project’s equivalent test DB shutdown helper
+- add afterEach cleanup for long-lived clients if any are checked out
+- reduce test pool size when NODE_ENV=test
+- disable intra-file concurrency for these DB-backed tests if node:test concurrency is active
+- serialize the affected audience-audit files if needed
+- use isolated route/service mocks where live DB is unnecessary
+- use per-test transactions with rollback only if the project already has a safe pattern for it
+
+Do not introduce broad global DB behavior changes that could break production.
+
+3. Add or update test helper if useful
+
+If multiple files need the same fix, create a small shared helper, for example:
+
+tests/helpers/db-cleanup.ts
+
+Possible helpers:
+- closeTestDbPool()
+- resetAudienceAuditTestDbConnections()
+- runSerialDbTest()
+- withDbConnectionCleanup()
+
+Keep it narrow and documented.
+
+4. server/db.ts guardrails
+
+If server/db.ts needs adjustment, keep it test-only.
+
+Acceptable:
+- smaller pool size under NODE_ENV=test
+- environment variable override for test pool size
+- exported close/end helper for tests
+
+Not acceptable:
+- weakening production pool behavior
+- changing production DB URL handling
+- silently swallowing production DB errors
+- changing application query semantics
+
+5. Preserve product behavior
+
+Do not change:
+- audit-email stale alert behavior
+- audit-email failure alert behavior
+- snooze behavior
+- scheduler-silent alert logic
+- notifier email logic
+- production retention logic
+- system_settings schema
+- alert history schema
+
+This is a test stability task only.
+
+6. Tests to run
+
+Run the affected files individually:
+
+NODE_ENV=test node --import tsx --test tests/audience-audit-history-email-stale-alert.test.ts
+NODE_ENV=test node --import tsx --test tests/audience-audit-history-email-failure-alert.test.ts
+NODE_ENV=test node --import tsx --test tests/audience-audit-email-failure-alert-snooze.test.ts
+
+Then run them together:
+
+NODE_ENV=test node --import tsx --test \
+  tests/audience-audit-history-email-stale-alert.test.ts \
+  tests/audience-audit-history-email-failure-alert.test.ts \
+  tests/audience-audit-email-failure-alert-snooze.test.ts
+
+Then run the combined command 3 consecutive times while the Start application workflow is running.
+
+Pass condition:
+- no EMAXCONNSESSION
+- no flaky unrelated assertion failures
+- all audience-audit tests pass across 3 consecutive runs
+
+7. Add regression protection
+
+If practical, add a lightweight test or assertion proving the cleanup helper is invoked. If not practical, document the cleanup pattern in a comment near the affected tests.
+
+8. Final report
+
+In the completion summary, include:
+- root cause found
+- exact files changed
+- whether pool size was changed
+- whether pool.end()/cleanup helper was added
+- whether tests are serialized
+- 3-run result
+- confirmation no production behavior changed
+- any remaining known DB-pool risks

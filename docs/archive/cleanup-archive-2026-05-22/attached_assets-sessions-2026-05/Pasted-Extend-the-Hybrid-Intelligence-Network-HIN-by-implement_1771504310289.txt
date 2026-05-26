@@ -1,0 +1,203 @@
+Extend the Hybrid Intelligence Network (HIN) by implementing an **Agent Economy Layer**.
+
+The system introduces an internal credit currency where Humans and AI Agents automatically earn and spend credits based on participation, verification, and expertise.
+
+The goal is to create a self-sustaining intelligence economy.
+
+---
+
+## ECONOMY CONCEPT
+
+Create an internal virtual currency called:
+
+INTELLIGENCE CREDITS (IC)
+
+Credits represent verified knowledge contribution and platform utility.
+
+Credits are NOT cryptocurrency.
+They are internal ledger-based balances.
+
+---
+
+## CORE ECONOMIC PRINCIPLES
+
+Agents and Humans earn credits when they:
+
+* Provide high Truth Confidence Score (TCS) contributions
+* Verify claims successfully
+* Correct misinformation
+* Supply validated evidence
+* Provide expert-level answers
+
+Agents and Humans spend credits when they:
+
+* Request AI analysis
+* Promote discussions
+* Access advanced verification
+* Boost visibility of posts
+* Hire specialized agents
+
+---
+
+## DATABASE STRUCTURE
+
+Create tables:
+
+wallets
+
+* owner_id
+* owner_type (human | agent)
+* balance
+
+transactions
+
+* id
+* sender_id
+* receiver_id
+* amount
+* transaction_type
+* reference_id
+* timestamp
+
+credit_events
+
+* event_type
+* reward_formula
+* multiplier
+
+---
+
+## WALLET SYSTEM
+
+Every human and agent automatically receives a wallet at signup.
+
+Balance updates must be atomic transactions.
+
+---
+
+## EARNING RULES
+
+Implement reward engine:
+
+IF post TCS > 80:
+reward = base_reward × reputation_multiplier
+
+IF agent verification matches final consensus:
+reward verification_bonus
+
+IF misinformation corrected:
+reward correction_bonus
+
+Store reward history.
+
+---
+
+## SPENDING MECHANISMS
+
+Implement credit usage endpoints:
+
+POST /credits/spend/analysis
+POST /credits/spend/promotion
+POST /credits/spend/agent-hire
+
+Example:
+User spends credits to request deep AI verification.
+
+---
+
+## AGENT MARKETPLACE
+
+Agents expose services:
+
+{
+agent_id,
+service_type,
+price_per_task,
+expertise_tags
+}
+
+Users or agents can hire agents using credits.
+
+Transaction automatically transfers credits.
+
+Platform takes 5% fee.
+
+---
+
+## AUTONOMOUS AGENT ECONOMY
+
+Agents may spend credits automatically if:
+
+* discussion relevance high
+* expected reputation gain positive
+
+Decision function:
+
+expected_value =
+(reputation_gain × visibility_weight)
+− credit_cost
+
+If expected_value > threshold → agent participates.
+
+---
+
+## REPUTATION ↔ ECONOMY LINK
+
+Higher rank users receive:
+
+Basic → normal rewards
+Premium → 1.2x rewards
+VIP → 1.5x rewards
+Expert → 2x rewards
+VVIP → 3x rewards
+
+Prevent runaway inflation using diminishing returns.
+
+---
+
+## ANTI-INFLATION CONTROLS
+
+Implement:
+
+* daily earning caps
+* reward decay for repetitive actions
+* quality-weighted rewards only
+* burn mechanism (credits consumed by services)
+
+---
+
+## DASHBOARD ADDITIONS
+
+Show:
+
+* wallet balance
+* earning history
+* spending history
+* top earning agents
+* top experts leaderboard
+* active economy metrics
+
+---
+
+## BACKGROUND SERVICES
+
+Create:
+
+reward-engine-worker
+economy-settlement-worker
+agent-economy-decision-worker
+
+Run asynchronously.
+
+---
+
+## GOAL
+
+Create a functioning internal economy where:
+
+✔ contributions generate credits
+✔ intelligence has measurable value
+✔ agents autonomously invest credits
+✔ platform earns transaction fees
+
+System must support scaling to millions of transactions.

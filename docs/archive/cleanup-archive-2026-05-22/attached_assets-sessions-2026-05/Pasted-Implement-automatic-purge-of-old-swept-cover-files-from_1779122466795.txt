@@ -1,0 +1,93 @@
+Implement automatic purge of old swept cover files from trash after a retention window.
+
+Goal:
+Cover-orphan cleanup currently sweeps orphaned cover files into trash and auto-clears stale alerts when resolved. Add a safe retention-based purge so trashed swept cover files are permanently deleted only after a configured retention window.
+
+Scope:
+- Extend the existing cover orphan / cover sweep system.
+- Use server/services/cover-orphan-alert-service.ts as the reference area.
+- Do not affect non-cover files.
+- Do not purge files that are not explicitly marked as swept/orphaned/trash.
+- Do not purge recent trash.
+- Do not delete active cover files.
+- Do not delete files still referenced by articles, media packages, render jobs, previews, or production packages.
+
+Requirements:
+
+1. Add retention config
+Create a configurable retention window:
+- default: 30 days
+- env override: COVER_TRASH_RETENTION_DAYS
+- minimum allowed value: 1 day
+- if env is invalid, use default
+
+2. Identify purge candidates
+Only purge files that satisfy all:
+- file is in the cover trash location or marked as trashed by cover sweep
+- file was swept by the cover orphan process
+- file age is older than retention window
+- file is not referenced anywhere active
+- file is not already deleted
+- file is not outside the expected cover trash path
+
+3. Add purge service/helper
+Add a function such as:
+purgeExpiredSweptCoverTrash()
+
+It should return:
+- scannedCount
+- purgedCount
+- skippedCount
+- retainedCount
+- retentionDays
+- cutoffAt
+- purgedFiles[]
+- skippedFiles[]
+- errors[]
+
+4. Safety
+- Path traversal must be impossible.
+- Only allow deletion under the known trash/cover directory.
+- Never delete arbitrary paths from DB rows without normalizing and validating root path.
+- Swallow/log per-file deletion errors so one failure does not stop the entire sweep.
+- Do not delete DB records unless existing project convention already supports soft/hard deletion.
+- Prefer marking purge metadata if available:
+  - purgedAt
+  - purgedBy:"system"
+  - purgeReason:"cover_trash_retention_expired"
+
+5. Alerts
+If old trash files are purged, optionally create or update a platform_alerts/info audit row:
+- type: cover_trash_purge
+- details.purgedCount
+- details.retentionDays
+- details.cutoffAt
+- details.autoPurged:true
+
+Do not create noisy alerts if purgedCount is 0.
+
+6. Admin visibility
+If there is an existing Founder Debug Console / alerts list, no new UI is required unless already easy.
+If a status endpoint exists for cover sweeps, include:
+- retentionDays
+- lastPurgeAt
+- lastPurgedCount
+
+7. Tests
+Add tests proving:
+- files older than retention are purged
+- files newer than retention are retained
+- active/referenced cover files are never purged
+- files outside the allowed trash directory are never purged
+- invalid COVER_TRASH_RETENTION_DAYS falls back to 30
+- per-file deletion errors are logged/skipped
+- purge summary shape is correct
+- cover-orphan auto-clear behavior is not regressed
+
+8. Run:
+- npm run check
+- relevant cover orphan / alert service tests
+- new purge tests
+
+Do not change newsroom, publishing, 4D, Unreal, Production House, or Mac app behavior.
+Do not weaken any safety gates.

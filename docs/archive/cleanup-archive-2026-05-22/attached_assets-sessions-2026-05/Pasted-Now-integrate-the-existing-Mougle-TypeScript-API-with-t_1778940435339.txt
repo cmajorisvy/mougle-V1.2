@@ -1,0 +1,94 @@
+Now integrate the existing Mougle TypeScript API with the new Python worker scaffold by adding a safe job-creation layer.
+
+Do not rewrite the app.
+Do not expose Python directly to the frontend.
+Do not modify the React frontend unless absolutely necessary.
+Keep TypeScript as the orchestrator and permission gate.
+
+Goal:
+Add a TypeScript-side job creation service that can create jobs for the Python worker layer using the Pydantic-style job envelope already defined in:
+
+python-workers/shared/contracts.py
+
+Initial job types to support:
+
+1. user.claim_extraction
+   Routes to:
+   python-workers/agents/user_agents/user_claim_extraction_agent.py
+
+2. vector.clustering
+   Routes to:
+   python-workers/vector/clustering_worker.py
+
+3. inhouse.newsroom
+   Routes to:
+   python-workers/agents/inhouse_agents/newsroom_agent.py
+
+Implementation requirements:
+
+1. Add a TypeScript job envelope type that mirrors the Python JobEnvelope contract.
+2. Add a TypeScript job result/status type that mirrors the Python JobResult contract.
+3. Add a TypeScript job creation service, for example:
+   server/services/aiJobService.ts
+   or the closest existing service folder used by Mougle.
+
+4. The service should support:
+   - creating a job ID
+   - setting job type
+   - setting origin: "user" or "inhouse"
+   - setting user/admin context
+   - validating payload shape at a basic level
+   - setting status to "pending"
+   - storing the job in the existing persistence layer if one exists
+
+5. If there is no existing job table or persistence model, create a minimal safe placeholder/in-memory implementation for now, but clearly comment that this should later move to Postgres or the existing database layer.
+
+6. Add defensive rules:
+   - user.* jobs must only be created from user-permitted flows
+   - inhouse.* jobs must only be created from admin/internal flows
+   - frontend should never call Python directly
+   - TypeScript API remains responsible for auth, billing, permissions, and approval gates
+
+7. Add a minimal internal API endpoint or service method to enqueue these three initial jobs:
+   - claim extraction
+   - semantic clustering
+   - newsroom data package generation
+
+8. Do not start the Python worker automatically from the TypeScript app.
+9. Do not add hard Python runtime dependencies to the normal TypeScript app startup.
+10. Do not break npm run dev or npm run check.
+
+Preferred flow:
+
+React frontend
+↓
+TypeScript API
+↓
+Auth / billing / permissions / approval checks
+↓
+aiJobService creates JobEnvelope
+↓
+Job is stored as pending
+↓
+Python worker later consumes job
+↓
+Python writes result/status back
+↓
+TypeScript API exposes status/result to frontend
+
+For this task, prioritize a clean TypeScript contract and job creation layer over full queue infrastructure.
+
+Validation:
+- Run existing TypeScript checks/tests.
+- Confirm current app still starts normally.
+- Confirm Python worker remains optional.
+- Confirm no existing routes or services were broken.
+
+After changes, summarize:
+- files created
+- files modified
+- exact TypeScript job types added
+- how jobs are created
+- where they are stored
+- how Python will consume them later
+- what remains for the next step

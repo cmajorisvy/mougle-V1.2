@@ -1,0 +1,173 @@
+Now add audit logging for Mougle AI ops CSV exports.
+
+Context:
+The project already has:
+
+1. ai_jobs table.
+2. ai_job_events table.
+3. ai_workers table.
+4. ai_retention_runs table.
+5. ai_ops_snapshots table.
+6. CSV export endpoints:
+   - GET /api/admin/ai-ops/snapshots.csv
+   - GET /api/admin/ai-retention/runs.csv
+7. Admin pages:
+   - /admin/ai-ops
+   - /admin/ai-retention
+8. Pre-filtered admin deep links and filtered CSV exports.
+
+Goal:
+Record every admin CSV export download with admin id, export type, filters, row count, and timestamp.
+
+Do not rewrite the app.
+Do not expose Python directly to the frontend.
+Do not add Redis.
+Do not add cron.
+Do not add external reporting services.
+Keep this server-side and admin-only.
+
+Part A — Database
+
+Add a new table, for example:
+
+ai_export_events
+
+Suggested columns:
+
+- id
+- export_id
+- export_type
+- admin_id nullable
+- filters JSON nullable
+- row_count integer not null
+- filename text not null
+- status text not null
+- error text nullable
+- created_at timestamp not null
+
+Suggested export_type values:
+
+- ai_ops_snapshots_csv
+- ai_retention_runs_csv
+
+Suggested status values:
+
+- succeeded
+- failed
+
+Indexes:
+- created_at
+- admin_id
+- export_type
+- status
+
+Use the existing database/ORM style. Do not introduce a new ORM.
+
+Part B — Backend service
+
+Add a small service, for example:
+
+server/services/aiExportAuditService.ts
+
+Methods:
+
+1. logExportSucceeded
+2. logExportFailed
+3. listExportEvents
+
+Requirements:
+- Do not store exported CSV content.
+- Store filters only.
+- Store row count.
+- Store generated filename.
+- Truncate errors safely.
+- Do not store secrets.
+- Logging failure must not expose stack traces.
+
+Part C — CSV endpoints
+
+Update:
+
+1. GET /api/admin/ai-ops/snapshots.csv
+2. GET /api/admin/ai-retention/runs.csv
+
+Behavior:
+- after fetching rows and building CSV, insert a succeeded export audit event
+- include admin id, export type, query filters, row count, filename, and status=succeeded
+- if an endpoint fails after admin auth, attempt to log status=failed with safe error text
+
+Part D — Admin API
+
+Add admin-only endpoint:
+
+GET /api/admin/ai-export-events
+
+Filters:
+- exportType
+- adminId
+- status
+- since
+- until
+- limit
+- offset
+
+Return:
+- exportId
+- exportType
+- adminId
+- filters
+- rowCount
+- filename
+- status
+- error
+- createdAt
+
+Security:
+- requireRootAdmin
+- normal users cannot access
+- unauthenticated users cannot access
+- do not expose secrets
+
+Part E — Admin UI
+
+Add export history display.
+
+Preferred:
+Update `/admin/ai-retention` or `/admin/ai-ops` with a compact “Export History” panel.
+
+Minimum UI:
+- recent export events table
+- export type
+- admin id
+- row count
+- status
+- filename
+- created time
+- filters summary
+- error if failed
+- refresh button
+
+Part F — Validation
+
+Run existing checks/tests.
+
+Confirm:
+- unauthenticated users cannot access export history.
+- normal users cannot access export history.
+- successful snapshots CSV download logs an event.
+- successful retention runs CSV download logs an event.
+- failed export logs safe failed event if practical.
+- export history UI renders.
+- CSV endpoints still return text/csv.
+- no Python changes are required.
+
+After changes, summarize:
+- files created
+- files modified
+- database table added
+- service methods added
+- endpoints updated
+- export event fields recorded
+- UI behavior
+- validation results
+- what remains for the next step

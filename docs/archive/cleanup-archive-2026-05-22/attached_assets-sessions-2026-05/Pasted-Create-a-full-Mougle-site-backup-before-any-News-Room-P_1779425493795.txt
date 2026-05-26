@@ -1,0 +1,183 @@
+Create a full Mougle site backup before any News Room / Podcast Room consolidation or cleanup.
+
+Do not delete, move, rename, or refactor anything until this backup is complete and I approve it.
+
+Backup scope:
+
+1. Source code backup
+Create a ZIP backup of the whole project source.
+
+Include:
+- client/
+- server/
+- shared/
+- scripts/
+- tests/
+- docs/
+- config/
+- migrations/
+- public assets needed by the app
+- package.json
+- package-lock.json
+- tsconfig files
+- vite config
+- Replit config files
+- app config files
+- docs/reports/
+- all admin dashboard code
+- all Production House / News Room / Podcast Room / Debate files
+
+Exclude:
+- node_modules/
+- dist/
+- build/
+- .cache/
+- logs/
+- temporary files
+- generated large files unless needed
+- .env
+- secrets
+- API keys
+- tokens
+
+Output:
+backups/full-site/mougle-full-site-source-backup-YYYY-MM-DD.zip
+
+2. Git backup branch
+Create a git backup branch from the current working state:
+
+backup/full-site-pre-consolidation-YYYY-MM-DD
+
+Report:
+- branch name
+- commit SHA
+- current branch
+- whether working tree was clean
+- whether branch was pushed or only local
+
+If destructive git commands are restricted for the main agent, assign this step to an isolated task agent.
+
+3. Database backup
+Create a database backup plan and, if possible, actual dumps.
+
+Create:
+backups/full-site/db/schema-YYYY-MM-DD.sql
+backups/full-site/db/data-YYYY-MM-DD.dump
+
+If pg_dump cannot run because credentials are unavailable or blocked, create:
+backups/full-site/db/DB_BACKUP_INSTRUCTIONS_YYYY-MM-DD.md
+
+The database backup instructions must include:
+- Supabase dashboard backup steps
+- pg_dump command template without exposing secrets
+- list of critical tables
+- row-count verification queries
+- restore instructions
+
+Critical tables include:
+- users/admin tables
+- system_settings
+- news articles
+- verified newsroom data
+- broadcast briefs
+- newsroom screen data
+- legal event visuals
+- podcast packages
+- debate packages
+- production house packages
+- preview studio states
+- avatar/media/package tables
+- approval board
+- readiness center
+- audit logs
+- omni-channel audience tables
+- notifier/snooze/history tables
+- publishing/shorts/social approval queues
+
+4. Public/uploads/assets backup
+Create a backup of user/public/static assets.
+
+Include:
+- client/public/
+- uploaded media if stored locally
+- generated preview assets if stored locally
+- production package exports if stored locally
+- Mac app dist files only if needed
+
+Exclude:
+- sensitive downloads
+- private secrets
+- temporary render/cache files
+- files already intentionally removed from git for security
+
+Output:
+backups/full-site/mougle-assets-backup-YYYY-MM-DD.zip
+
+5. Environment/secrets inventory
+Do not copy .env into the normal ZIP.
+
+Instead create:
+backups/full-site/ENVIRONMENT_VARIABLES_INVENTORY_YYYY-MM-DD.md
+
+Include only variable names, not values.
+
+Example:
+- DATABASE_URL — value omitted
+- OPENAI_API_KEY — value omitted
+- RESEND_API_KEY — value omitted
+- SUPABASE_* — value omitted
+- YOUTUBE_* — value omitted
+
+Also include:
+- where secrets are stored
+- how to restore them manually
+- warning that values are intentionally excluded
+
+6. Backup manifest
+Create:
+
+backups/full-site/BACKUP_MANIFEST_YYYY-MM-DD.md
+
+Include:
+- backup date/time
+- current branch
+- current commit SHA
+- git backup branch name
+- source ZIP path
+- assets ZIP path
+- database backup path or DB instructions path
+- environment inventory path
+- included folders
+- excluded folders
+- known warnings
+- restore steps
+- verification checklist
+
+7. Backup verification
+After creating backups, verify:
+
+- source ZIP exists
+- assets ZIP exists if assets were included
+- ZIP files can be listed successfully
+- manifest exists
+- DB backup or DB instructions exist
+- .env is not inside the ZIP
+- secrets/API keys/tokens are not inside the ZIP
+- node_modules is not inside the ZIP
+- backup branch exists
+- current commit SHA is recorded
+- no files were deleted or modified except files under backups/
+
+8. Final response
+Report:
+- source backup path
+- assets backup path
+- database backup path or instructions path
+- manifest path
+- backup branch name
+- commit SHA
+- excluded items
+- verification result
+- any failures or limitations
+
+Do not start consolidation until I approve the backup.

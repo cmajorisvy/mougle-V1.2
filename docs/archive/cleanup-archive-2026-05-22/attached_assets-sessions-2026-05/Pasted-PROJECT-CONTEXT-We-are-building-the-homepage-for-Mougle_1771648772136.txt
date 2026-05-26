@@ -1,0 +1,156 @@
+PROJECT CONTEXT
+---------------
+We are building the homepage for Mougle.com — an AI civilization platform.
+Brand identity:
+Tagline: "Where Intelligence Evolves."
+Theme: futuristic, premium AI ecosystem (NOT crypto, NOT casino style).
+Design inspiration: OpenAI + Replit + Notion + Linear.app aesthetic.
+
+The homepage already has a HERO section.
+Now create a HIGH-CONVERSION section directly BELOW the hero called:
+
+"Mougle Labs"
+
+This section introduces users to earning and building inside the platform.
+
+
+GOAL
+----
+Build a responsive, premium banner/section that explains:
+→ Users can build AI
+→ Publish tools
+→ Monetize intelligence
+→ Join the AI economy
+
+
+SECTION STRUCTURE
+-----------------
+
+Create a full-width section:
+
+<section id="mougle-labs">
+
+Layout:
+- Centered container (max-width 1200px)
+- Two-column layout (desktop)
+- Stacked layout (mobile)
+
+LEFT SIDE:
+-----------
+Headline:
+"Mougle Labs — Build Intelligence. Generate Opportunity."
+
+Subtext:
+"Create AI agents, launch tools, and participate in the evolving intelligence economy."
+
+3 Feature Points with icons:
+- Build AI Tools
+- Publish & Share
+- Earn Automatically
+
+Primary CTA Button:
+"Explore Mougle Labs →"
+
+Secondary CTA:
+"Start Earning"
+
+
+RIGHT SIDE:
+------------
+Visual component (IMPORTANT):
+
+Create a futuristic AI dashboard mock visual using:
+- glassmorphism card
+- soft glow borders
+- animated gradient background
+- fake earnings graph animation
+- floating AI agent avatars or nodes
+
+Use subtle motion:
+- slow floating animation
+- gradient pulse
+- NOT distracting
+
+
+DESIGN STYLE
+------------
+
+Theme:
+- Dark mode default
+- Background gradient:
+  deep blue → near black
+
+Typography:
+- Modern sans-serif
+- Large bold headline
+- High readability
+
+UI Effects:
+- glassmorphism cards
+- blur background
+- soft neon glow
+- hover elevation on buttons
+
+Avoid:
+- crypto visuals
+- gambling design
+- aggressive money wording
+
+
+TECH STACK
+----------
+
+Use:
+- React (or Next.js if project uses it)
+- TailwindCSS
+- Framer Motion for animations
+
+Component name:
+MougleLabsSection.jsx
+
+Make component reusable.
+
+
+ANIMATION REQUIREMENTS
+----------------------
+
+Use Framer Motion:
+
+1. Section fade-in on scroll
+2. Feature items stagger animation
+3. CTA button hover glow
+4. Floating dashboard animation loop
+
+
+RESPONSIVENESS
+--------------
+
+Desktop:
+2 columns (text left, visual right)
+
+Tablet:
+stacked with visual below text
+
+Mobile:
+center aligned
+buttons full width
+
+
+ACCESSIBILITY
+-------------
+- Proper semantic HTML
+- aria-labels for buttons
+- good color contrast
+
+
+OUTPUT
+------
+Return:
+
+1. Full component code
+2. Tailwind styles
+3. Animation setup
+4. Example import into homepage
+5. Any required dependencies
+
+Ensure production-quality clean code.

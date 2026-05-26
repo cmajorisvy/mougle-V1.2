@@ -1,0 +1,103 @@
+Create a thin Phase 1B Implementation Plan based on the existing architecture spec at:
+
+docs/architecture/CODEX_PHASE_1B_VERIFIED_NEWSROOM_ARCHITECTURE.md
+
+Goal:
+Turn the existing Phase 1B Verified Newsroom architecture spec into a step-by-step implementation plan without changing application code.
+
+Hard constraints:
+- Do not implement anything.
+- Do not change database schema.
+- Do not run db:push.
+- Do not add migrations.
+- Do not call external providers.
+- Do not modify production services.
+- Do not add YouTube/social/live publishing scope.
+- This is a planning document only.
+
+Create a new document:
+
+docs/architecture/CODEX_PHASE_1B_IMPLEMENTATION_PLAN.md
+
+The plan should be grounded in the existing codebase and the existing architecture spec.
+
+Required structure:
+
+1. Purpose
+Explain that this document converts the approved Phase 1B architecture into implementation tasks.
+
+2. Implementation Principles
+Include:
+- incremental delivery
+- schema-first but migration-gated
+- root-admin-only APIs
+- no autonomous publishing
+- verified data before render
+- rollback-safe changes
+- no provider calls in tests
+
+3. Phase 1B Task Breakdown
+Break into small PR-sized tasks:
+- types and Zod contracts
+- Drizzle schema draft
+- migration plan
+- raw article to verified candidate model
+- clustering service skeleton
+- claim extraction interface
+- verification status transition model
+- confidence scoring fields
+- source reliability fields
+- VerifiedKnowledge builder
+- NewsroomDataPackage builder
+- RenderManifest adapter
+- admin review endpoints
+- admin review UI
+- tests
+- rollback checks
+
+4. Proposed PR Sequence
+Create a numbered PR plan, with each PR containing:
+- objective
+- files likely touched
+- tests required
+- rollback notes
+- acceptance criteria
+
+5. Safe First PR Recommendation
+Recommend the safest first implementation PR.
+It should likely be:
+- shared types/Zod contracts only
+- no database migration
+- no backend behavior change
+- no render behavior change
+
+6. Database Change Gate
+Explain which tasks are allowed before schema migration and which must wait until migration approval.
+
+7. API Gate
+List proposed root-admin-only POST endpoints from the architecture spec and map them to implementation tasks.
+
+8. Test Plan
+Include:
+- unit tests
+- route tests
+- mock-only provider behavior
+- admin manual walkthrough
+- regression tests for existing render flow
+
+9. Out-of-Scope Confirmation
+Repeat the out-of-scope boundaries from the architecture spec:
+- no YouTube/social/live publishing
+- no autonomous promotion
+- no public push
+- no real provider calls
+- no 4D/Unreal implementation in Phase 1B
+- no marketplace/civilization expansion
+
+10. Completion Criteria
+Define what “Phase 1B implementation complete” means.
+
+Validation:
+- Run npm run check if documentation changes are included in the check pipeline.
+- If npm run check is not relevant for docs-only changes, state that clearly.
+- Summarize files changed.

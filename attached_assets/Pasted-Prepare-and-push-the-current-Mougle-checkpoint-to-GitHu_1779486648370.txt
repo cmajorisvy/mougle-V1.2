@@ -1,0 +1,129 @@
+Prepare and push the current Mougle checkpoint to GitHub and verify Supabase alignment.
+
+Repository:
+https://github.com/cmajorisvy/mougle-V1
+
+Goal:
+Push all current project files up to this checkpoint to GitHub safely, and verify Supabase migration/schema status without exposing secrets.
+
+Hard safety rules:
+- Do not commit .env files.
+- Do not commit secrets, API keys, tokens, DB passwords, service-role keys, or dump files.
+- Do not commit node_modules, dist, build, cache, logs, or temporary generated files.
+- Do not force push.
+- Do not delete branches.
+- Do not run destructive git commands.
+- Do not run db:push unless explicitly needed and reported first.
+- Do not expose secret values in logs or reports.
+
+Before pushing:
+
+1. Git status
+Run:
+git status --short
+git branch --show-current
+git log -1 --oneline
+
+Report:
+- current branch
+- latest commit SHA
+- whether working tree is clean
+- untracked files, if any
+
+2. Secret safety check
+Verify:
+- .env and .env.* are ignored
+- no .env files are staged
+- no database dumps are staged
+- no backup ZIPs with secrets are staged
+- no Supabase service-role key or GitHub token appears in tracked diffs
+
+Run safe name-only checks, not value-dumping commands:
+git status --short
+git diff --cached --name-only
+git ls-files | grep -E '(^|/)\.env|\.dump$|\.zip$|service_role|SUPABASE_SERVICE_ROLE|OPENAI_API_KEY|GITHUB_TOKEN|GH_TOKEN' || true
+
+If any sensitive file is staged, STOP.
+
+3. Documentation checkpoint
+Confirm these exist:
+- docs/library/INDEX.md
+- docs/archive/ARCHIVE_LIBRARY_INDEX.md
+- docs/DEVELOPMENT_DOCUMENTATION_POLICY.md
+- docs/runbooks/PERMANENT_3D_AVATAR_CREATION_RUNBOOK.md
+- docs/design/R7B_PERMANENT_AVATAR_ENTITY_DESIGN.md
+- docs/reports/R7B_PERMANENT_AVATAR_SCHEMA_REPORT.md
+- latest R7B/R7F/R3F reports if present
+
+4. Build/check
+Run safe checks:
+npm run build
+targeted TypeScript check if full tsc has known pre-existing errors
+npm test only if current suite is expected to pass or run targeted recently-added tests
+
+Report:
+- build result
+- test result
+- known pre-existing failures, if any
+
+5. Supabase migration/schema verification
+Do not expose credentials.
+
+Check:
+- migration files are present
+- latest migration journal includes current R7B permanent avatar schema
+- shared/schema.ts includes current tables
+- Supabase schema is aligned if the migration was already applied
+
+If schema is not aligned:
+- report exactly what migration is pending
+- do not run db:push automatically unless I approve
+- if db:push is required, ask first
+
+6. Commit current changes if needed
+If there are unstaged/uncommitted project changes that belong to the checkpoint:
+- stage only safe project files
+- exclude secrets/dumps/build artifacts
+- commit with message:
+
+checkpoint: sync Mougle R3F avatar and admin safety work
+
+7. Push to GitHub
+Push the current branch to:
+https://github.com/cmajorisvy/mougle-V1
+
+Use normal push only.
+No force push.
+
+Report:
+- branch pushed
+- commit SHA pushed
+- remote URL
+- push success/failure
+- whether the branch is local-only or on GitHub
+- whether GitHub token/PAT is missing
+
+8. Final report
+Create or update:
+docs/reports/GITHUB_SUPABASE_SYNC_CHECKPOINT_REPORT.md
+
+Include:
+- current branch
+- commit SHA
+- GitHub push status
+- Supabase migration status
+- build/test status
+- files excluded from commit
+- secret-safety confirmation
+- next steps for Codex / GPT-5.5 Extended High migration
+
+Also update docs/library/INDEX.md with the report row.
+
+Final response must include:
+- GitHub push status
+- branch name
+- commit SHA
+- Supabase status
+- build/test result
+- any failures/blockers
+- confirmation no secrets were committed

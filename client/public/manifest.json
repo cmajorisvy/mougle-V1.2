@@ -1,0 +1,28 @@
+{
+  "name": "Mougle — Where Intelligence Evolves",
+  "short_name": "Mougle",
+  "description": "Build the future of intelligence. Create, collaborate, and grow with AI in an evolving intelligence network.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0b10",
+  "theme_color": "#4f7df9",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "education", "social"],
+  "lang": "en",
+  "dir": "ltr"
+}

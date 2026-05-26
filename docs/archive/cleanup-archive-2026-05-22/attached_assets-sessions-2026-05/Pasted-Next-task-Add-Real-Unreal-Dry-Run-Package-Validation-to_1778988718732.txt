@@ -1,0 +1,170 @@
+Next task: Add Real Unreal Dry-Run Package Validation to Mougle AI Production House.
+
+Goal:
+Allow root-admin users to validate an approved production package against the configured real Unreal bridge in dry-run mode only. This must not send real Unreal commands, render commands, asset imports, Movie Render Queue jobs, or 4D commands.
+
+Important:
+Do not enable real Unreal rendering.
+Do not trigger Movie Render Queue.
+Do not import assets into Unreal.
+Do not load real levels.
+Do not send real scene commands.
+Do not send 4D hardware commands.
+Do not publish anything.
+realSendAllowed must remain false.
+This task is dry-run validation only.
+
+Scope:
+
+1. Add new section in /admin/production-house:
+Real Unreal Dry-Run Validation
+
+Features:
+- select production
+- view approval stage
+- view readiness score
+- validate package locally
+- send sanitized dry-run validation payload to bridge if configured
+- view validation response
+- view validation history
+- safety badges:
+  Dry Run Only
+  Real Send Disabled
+  No Render
+  No Asset Import
+  No Level Load
+  No MRQ
+  No 4D Send
+  No Publishing
+
+2. Add backend endpoints:
+GET /api/admin/production-house/real-unreal/dry-run-validation/status
+POST /api/admin/production-house/real-unreal/dry-run-validation/:productionId/validate-local
+POST /api/admin/production-house/real-unreal/dry-run-validation/:productionId/validate-bridge
+GET /api/admin/production-house/real-unreal/dry-run-validation/history
+
+All routes must be root-admin gated.
+
+3. Local validation should check:
+- production exists
+- production approval stage is internal_review_approved or unreal_sandbox_approved
+- latest readiness report exists
+- no critical blockers
+- production manifest exists
+- Unreal scene manifest exists
+- asset jobs are draft/internal-only
+- voice assets are draft/internal-only
+- video jobs are draft/internal-only
+- publicUrl values are null
+- signedUrl values are null
+- visibility is admin_only_internal
+- safetyEnvelope exists everywhere
+- no realSendAllowed:true anywhere
+
+4. Bridge validation should:
+- require UNREAL_BRIDGE_BASE_URL
+- require UNREAL_BRIDGE_TOKEN
+- require UNREAL_BRIDGE_MODE="dry_run"
+- require explicit confirm:true
+- require local validation passed
+- send only a sanitized dry-run validation payload
+- include dryRun:true
+- include realSendAllowed:false
+- include SAFETY_ENVELOPE
+- never include API keys
+- never include provider secrets
+- never include full public URLs
+- never include signed URLs
+- never include render commands
+- never include import commands
+
+5. If an external network call is implemented, allow only:
+POST {UNREAL_BRIDGE_BASE_URL}/validate-package/dry-run
+
+Payload should include only:
+- commandType:"validate_package"
+- mode:"dry_run"
+- productionId
+- dryRun:true
+- realSendAllowed:false
+- safetyEnvelope
+- packageSummary:
+  - production type
+  - manifest presence booleans
+  - asset counts
+  - readiness scores
+  - approval stage
+  - internal-only flags
+  - no URL values
+- timestamp
+- source:"mougle-production-house"
+
+6. Store validation record:
+- id
+- productionId
+- mode:"dry_run"
+- validationType:"local" | "bridge"
+- status:"passed" | "failed" | "rejected"
+- realSendAllowed:false
+- localChecks
+- requestSummary
+- responseSummary
+- endpointHost nullable
+- createdAt
+- safetyEnvelope
+
+7. Add storage:
+realUnrealDryRunValidationHistory collection.
+
+8. Add audit events:
+- real_unreal.dry_run.status_viewed
+- real_unreal.dry_run.local_validation_attempted
+- real_unreal.dry_run.local_validation_passed
+- real_unreal.dry_run.local_validation_failed
+- real_unreal.dry_run.bridge_validation_attempted
+- real_unreal.dry_run.bridge_validation_passed
+- real_unreal.dry_run.bridge_validation_failed
+- real_unreal.dry_run.bridge_validation_rejected
+- real_unreal.dry_run.history_viewed
+
+9. Add UI:
+- production selector
+- local validation button
+- bridge dry-run validation button
+- validation result cards
+- local checks list
+- sanitized payload preview
+- response viewer
+- validation history table
+- clear warning:
+  “This validation does not load Unreal levels, import assets, render scenes, or execute real Unreal commands.”
+
+10. Add export support:
+- include realUnrealDryRunValidationHistory in full production package export only as metadata
+- no secrets
+- no full bridge token
+- no public URLs
+- no signed URLs
+
+11. Add regression tests:
+- all dry-run validation endpoints require root-admin
+- status returns realSendAllowed:false
+- local validation rejects unknown productionId
+- local validation rejects unapproved production
+- local validation rejects publicUrl or signedUrl non-null
+- local validation rejects realSendAllowed:true
+- bridge validation requires confirm:true
+- bridge validation rejects missing bridge config
+- bridge validation requires local validation passed
+- bridge validation never sends render/import commands
+- bridge validation never sends provider secrets
+- validation history persists through storage adapter
+- export includes validation metadata but no secrets
+- no real Unreal command is sent
+- no 4D command is sent
+- SAFETY_ENVELOPE unchanged
+
+12. Preserve all existing tests.
+
+Do not add live Unreal command sending in this task.
+Do not add real 4D hardware integration in this task.

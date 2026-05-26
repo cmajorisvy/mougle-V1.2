@@ -1,0 +1,68 @@
+Next task: Add persistent storage and production history for Mougle AI Production House.
+
+Goal:
+Replace or supplement the in-memory production-house store with persistent database-backed storage while preserving all current safety gates, mock mode, approval requirements, audit logging, and regression tests.
+
+Scope:
+1. Add persistent models/tables for:
+   - productions
+   - rooms
+   - avatars
+   - manifests
+   - 4D cues
+   - render jobs
+   - integrations
+   - audit logs
+   - Unreal commands
+
+2. Keep the current in-memory behavior available for tests or local fallback if needed.
+
+3. Persist:
+   - generated prompt packages
+   - production manifests
+   - Unreal scene manifests
+   - avatar manifests
+   - 4D cue manifests
+   - approval status
+   - integration test attempts
+   - rejected Unreal send attempts
+   - rejected 4D send attempts
+   - render job records
+
+4. Add filtering/search in the admin UI:
+   - by production type
+   - by status
+   - by room type
+   - by avatar
+   - by approval state
+   - by date created
+
+5. Add audit-log viewer inside /admin/production-house.
+
+6. Add export buttons:
+   - Export Production Manifest JSON
+   - Export Unreal Scene Manifest JSON
+   - Export Avatar Manifest JSON
+   - Export 4D Cue Manifest JSON
+   - Export Full Production Package JSON
+
+7. Preserve all safety rules:
+   - Real Unreal sends remain blocked.
+   - Real 4D sends remain blocked.
+   - No public render URLs.
+   - No signed render URLs.
+   - No secret values in any API response.
+   - Approval is required before any send attempt.
+   - SAFETY_ENVELOPE remains locked.
+
+8. Add regression tests confirming:
+   - persisted productions reload correctly
+   - audit logs persist
+   - manifest exports do not leak secrets
+   - approval status persists
+   - real Unreal sends remain blocked after persistence change
+   - real 4D sends remain blocked after persistence change
+
+Do not enable real external provider calls yet.
+Do not enable real Unreal commands yet.
+Do not enable real 4D hardware commands yet.

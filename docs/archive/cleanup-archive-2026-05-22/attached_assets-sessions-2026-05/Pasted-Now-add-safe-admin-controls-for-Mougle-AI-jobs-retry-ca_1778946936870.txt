@@ -1,0 +1,146 @@
+Now add safe admin controls for Mougle AI jobs: retry, cancel, and retry-policy handling.
+
+Context:
+The project already has:
+
+1. Postgres-backed ai_jobs table.
+2. TypeScript AI job service.
+3. Python worker bridge.
+4. User-facing AI job workflows.
+5. Admin newsroom workflow.
+6. User AI job history page:
+   - /ai-jobs
+7. Admin AI job monitor:
+   - /admin/ai-jobs
+
+Goal:
+Add safe operational controls so admins can retry failed jobs and cancel pending/running jobs where appropriate.
+
+Do not rewrite the app.
+Do not expose Python directly to the frontend.
+Do not bypass the TypeScript API.
+Do not add Redis.
+Do not require external AI APIs.
+Do not let normal users control jobs.
+Keep Python worker optional.
+
+Part A — Backend service methods
+
+Extend aiJobService with safe admin-only lifecycle methods:
+
+1. retryJob(jobId, adminContext)
+2. cancelJob(jobId, adminContext)
+3. optionally releaseStaleRunningJobs(...) if already practical
+
+Retry behavior:
+
+- Only failed or rejected jobs should be retryable.
+- Reset status to pending.
+- Clear lockedAt, lockedBy, startedAt, completedAt, failedAt as appropriate.
+- Clear or archive previous error/result safely.
+- Increment retryCount or preserve retryCount according to existing meaning.
+- Do not exceed maxRetries.
+- Update updatedAt.
+- Preserve original payload and provenance.
+- Record that retry was requested by admin if the schema already supports metadata; otherwise add a small adminAction/audit note if easy.
+
+Cancel behavior:
+
+- Pending jobs can be cancelled/rejected safely.
+- Running jobs may be marked rejected/cancelled only if the system can represent that safely.
+- If there is no cancelled status, use rejected with a clear error reason such as "cancelled_by_admin".
+- Set failedAt or completedAt consistently with the existing schema conventions.
+- Clear locks where appropriate.
+- Do not cancel succeeded jobs.
+- Do not allow normal users to cancel jobs in this task.
+
+Stale running jobs:
+
+If easy, add a method to identify jobs stuck in running beyond a configurable threshold.
+Do not automatically retry them yet unless already safe.
+Expose this only to admins.
+
+Part B — Backend routes
+
+Add admin-only routes:
+
+1. POST /api/admin/ai-jobs/:jobId/retry
+2. POST /api/admin/ai-jobs/:jobId/cancel
+
+Optional:
+3. POST /api/admin/ai-jobs/release-stale-running
+
+Security:
+
+- requireRootAdmin
+- validate jobId
+- return 404 if job not found
+- return 409 if the job is not in a valid state for the action
+- never expose stack traces or secrets
+
+Response shape:
+
+{
+  "jobId": "...",
+  "status": "...",
+  "message": "...",
+  "job": { compact updated job view }
+}
+
+Part C — Admin UI
+
+Update:
+
+/admin/ai-jobs
+
+Add action buttons in the expanded row or actions column:
+
+- Retry for failed/rejected jobs only
+- Cancel for pending/running jobs only
+
+UI behavior:
+
+- Ask for confirmation before retry/cancel.
+- Disable buttons while request is in progress.
+- Show success/error toast or inline message.
+- Refresh the job list after action.
+- Do not show action buttons to normal users.
+- Do not add destructive delete.
+
+Part D — Python worker compatibility
+
+Make sure Python worker behavior remains safe:
+
+- If a job is cancelled/rejected before claim, the worker should not pick it up because it only fetches pending jobs.
+- If a job is cancelled while running, current worker may still submit a result.
+- TypeScript result endpoint should avoid overwriting a cancelled/rejected job with succeeded unless the service already handles this safely.
+- If necessary, update recordResult to reject stale results for jobs no longer running or locked by the same worker.
+
+Part E — Validation
+
+Run existing checks/tests.
+
+Confirm:
+
+- normal users cannot call retry/cancel endpoints.
+- unauthenticated requests return 401/403.
+- admin can retry failed/rejected job.
+- retry respects maxRetries.
+- admin can cancel pending job.
+- admin cannot cancel succeeded job.
+- worker pending endpoint does not return cancelled/rejected jobs.
+- stale worker result cannot overwrite a cancelled/rejected job if that edge case is handled.
+- /admin/ai-jobs UI shows correct action buttons.
+- no Python changes are required unless needed for compatibility.
+
+After changes, summarize:
+- files created
+- files modified
+- service methods added
+- endpoints added
+- UI controls added
+- retry behavior
+- cancel behavior
+- worker-result safety behavior
+- validation results
+- what remains for the next step

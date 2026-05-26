@@ -1,0 +1,136 @@
+Next task: Add Real Unreal Validate-Package Network Call.
+
+Goal:
+Enable a real dry-run validate-package network call to the configured Unreal bridge. This should send only a sanitized production package summary and must not send render commands, import commands, level-load commands, Movie Render Queue commands, asset files, 4D commands, or publishing commands.
+
+Important:
+Do not enable live Unreal commands.
+Do not render video.
+Do not trigger Movie Render Queue.
+Do not import Meshy assets.
+Do not load Unreal levels.
+Do not attach avatars.
+Do not attach video panels.
+Do not send 4D hardware commands.
+Do not publish anything.
+realSendAllowed must remain false.
+
+Scope:
+
+1. Update Real Unreal Dry-Run Validation:
+Add real network bridge validation capability.
+
+2. Allowed network call:
+POST {UNREAL_BRIDGE_BASE_URL}/validate-package/dry-run
+
+Payload must be allowlist-only:
+{
+  "commandType": "validate_package",
+  "mode": "dry_run",
+  "productionId": "...",
+  "dryRun": true,
+  "realSendAllowed": false,
+  "safetyEnvelope": SAFETY_ENVELOPE,
+  "source": "mougle-production-house",
+  "timestamp": "...",
+  "packageSummary": {
+    "productionType": "...",
+    "approvalStage": "...",
+    "readinessScores": {},
+    "manifestPresence": {},
+    "assetCounts": {},
+    "internalOnly": true,
+    "visibility": "admin_only_internal",
+    "publicUrlsPresent": false,
+    "signedUrlsPresent": false
+  }
+}
+
+3. Headers:
+- Authorization: Bearer UNREAL_BRIDGE_TOKEN
+- Content-Type: application/json
+
+Never log or return the token.
+
+4. Requirements:
+- root-admin only
+- UNREAL_BRIDGE_BASE_URL required
+- UNREAL_BRIDGE_TOKEN required
+- UNREAL_BRIDGE_MODE must equal "dry_run"
+- confirm:true required
+- local validation must pass first
+- request timeout required
+- endpoint path must be exactly /validate-package/dry-run
+- response must be sanitized before storage
+
+5. Add endpoint:
+POST /api/admin/production-house/real-unreal/dry-run-validation/:productionId/validate-bridge-network
+
+6. Store validation record in existing realUnrealDryRunValidationHistory:
+- validationType:"bridge_network"
+- mode:"dry_run"
+- status:"passed" | "failed" | "rejected"
+- endpointHost only
+- endpointPath:"/validate-package/dry-run"
+- httpStatus nullable
+- realSendAllowed:false
+- localChecks
+- requestSummary
+- responseSummary
+- createdAt
+- safetyEnvelope
+
+7. Add audit events:
+- real_unreal.dry_run.bridge_network_attempted
+- real_unreal.dry_run.bridge_network_passed
+- real_unreal.dry_run.bridge_network_failed
+- real_unreal.dry_run.bridge_network_rejected
+
+8. Add UI:
+In Real Unreal Dry-Run Validation:
+- Add “Validate Package With Bridge Network” button
+- Require confirmation
+- Show endpoint host only
+- Show endpoint path
+- Show sanitized request summary
+- Show sanitized bridge response
+- Show history entries for bridge_network
+- Add warning:
+  “This sends only a dry-run package summary. It does not load levels, render scenes, import assets, attach avatars, attach media, or execute Unreal commands.”
+
+9. Add export support:
+- include bridge_network validation records as metadata only
+- no token
+- no full URL if sensitive
+- no public URLs
+- no signed URLs
+- no raw provider URLs
+- no secrets
+
+10. Add regression tests:
+- endpoint requires root-admin
+- endpoint requires confirm:true
+- endpoint rejects missing bridge config
+- endpoint rejects mode other than dry_run
+- endpoint rejects unknown productionId
+- endpoint rejects local validation failure
+- endpoint uses only /validate-package/dry-run
+- payload contains dryRun:true
+- payload contains realSendAllowed:false
+- payload contains packageSummary only, not full package
+- payload contains no OpenAI, ElevenLabs, Meshy, Runway, or bridge secrets
+- payload contains no render, movieRender, importAsset, loadLevel, attachAvatar, attachVideo, or startSequence commands
+- token never appears in response, history, audit, or export
+- response is sanitized before storage
+- timeout failure is recorded safely
+- HTTP 4xx/5xx is recorded safely
+- validation history persists through storage adapter
+- export includes validation metadata but no secrets
+- no real Unreal command is sent
+- no 4D command is sent
+- SAFETY_ENVELOPE unchanged
+
+11. Preserve all existing tests.
+
+Do not add live Unreal command sending in this task.
+Do not add real 4D hardware integration.

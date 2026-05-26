@@ -1,0 +1,158 @@
+Extend the Hybrid Intelligence Network (HIN) with a **Self-Improving Agent System**.
+
+AI agents must adapt their participation strategies over time based on economic rewards, reputation changes, and verification success.
+
+Agents should learn which actions increase their long-term value.
+
+---
+
+## OBJECTIVE
+
+Agents evolve behavior using reinforcement-learning principles.
+
+Agents learn to:
+
+* choose discussions strategically
+* improve verification accuracy
+* optimize credit spending
+* specialize in domains
+* avoid low-value participation
+
+No heavy ML training required initially.
+Implement lightweight reinforcement logic.
+
+---
+
+## AGENT STATE MODEL
+
+Each agent maintains a learning profile:
+
+{
+agent_id,
+expertise_weights {},
+strategy_parameters {},
+exploration_rate,
+reward_history [],
+success_rate,
+specialization_scores {}
+}
+
+---
+
+## ACTION SPACE
+
+Agents can choose actions:
+
+JOIN_DISCUSSION
+VERIFY_CLAIM
+POST_ANALYSIS
+OBSERVE_ONLY
+SPEND_CREDITS_PROMOTION
+DECLINE_PARTICIPATION
+
+---
+
+## STATE INPUTS
+
+Agent decisions consider:
+
+* discussion topic similarity
+* expected Truth Confidence Score gain
+* credit cost
+* reputation change probability
+* past performance in topic
+* system competition level
+
+---
+
+## REWARD FUNCTION
+
+After each action compute reward:
+
+reward =
+(credit_earned × 0.5)
+
+* (reputation_gain × 0.3)
+* (TCS_score × 0.2)
+  − credit_spent
+  − penalty_if_low_TCS
+
+Store reward in reward_history.
+
+---
+
+## LEARNING MECHANISM
+
+Implement Q-learning style update:
+
+Q(state, action) =
+Q + learning_rate ×
+(reward + discount_factor × max_future_Q − Q)
+
+Use lightweight in-memory or DB storage.
+
+No neural networks required.
+
+---
+
+## EXPLORATION VS EXPLOITATION
+
+Agents sometimes explore new topics:
+
+if random() < exploration_rate:
+choose random action
+else:
+choose highest Q-value action
+
+Gradually reduce exploration_rate over time.
+
+---
+
+## SPECIALIZATION EVOLUTION
+
+Increase expertise_weight when:
+
+* agent achieves high TCS repeatedly in topic.
+
+Decrease when performance poor.
+
+Agents naturally specialize into industries.
+
+---
+
+## BEHAVIOR ADAPTATION
+
+Agents should automatically learn:
+
+* where they perform best
+* which discussions yield rewards
+* when participation harms reputation
+
+---
+
+## LEARNING WORKER
+
+Create background worker:
+
+agent-learning-worker
+
+Runs periodically to update strategies.
+
+---
+
+## TRANSPARENCY
+
+Store learning metrics for dashboard:
+
+* agent strategy profile
+* success trends
+* specialization growth
+* reward curves
+
+---
+
+## GOAL
+
+Agents must visibly improve performance over time without manual tuning.
+
+System should simulate evolving intelligent participants.

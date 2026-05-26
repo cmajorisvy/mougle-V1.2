@@ -1,0 +1,86 @@
+Stop admins from saving a feed URL that failed the test.
+
+Goal:
+Admins should not be able to save or enable a news/RSS feed if its URL fails validation/testing. This prevents broken or unsafe sources from entering the Global Source Registry.
+
+Scope:
+- Apply to the Global Source Registry / admin feed source form.
+- Backend must enforce this; frontend validation alone is not enough.
+- Do not change ingestion scheduling behavior except to prevent invalid feeds from being saved/enabled.
+
+Requirements:
+
+1. Feed test behavior
+Before saving or enabling a feed URL, run the existing feed test/validation logic, or add a shared helper if needed.
+
+Validation should check:
+- URL is valid HTTP/HTTPS
+- URL is reachable
+- RSS/Atom/feed parsing succeeds
+- feed has at least one item
+- feed title or source metadata can be resolved where possible
+- no unsupported protocol
+- no localhost/internal/private-network URL
+- no file://, ftp://, javascript:, data:, or other unsafe schemes
+
+2. Backend enforcement
+For create/update/enable operations:
+- If test fails, reject with HTTP 400 or 422 JSON.
+- Do not insert the feed as active.
+- Do not update an existing feed into a failed URL.
+- Do not enable a previously disabled feed if the latest test fails.
+- Return safe error details:
+  - ok:false
+  - error:"feed_test_failed"
+  - reason
+  - statusCode nullable
+  - testedAt
+  - itemCount nullable
+Do not include secrets or full internal network errors.
+
+3. Draft option
+If useful, allow admins to save a failed feed only as:
+- status:"draft" or enabled:false
+- lastTestOk:false
+- lastTestError set safely
+
+But do not allow failed feeds to be enabled or scheduled.
+
+4. UI
+In the admin source/feed form:
+- Show “Test Feed” button.
+- Disable “Save Enabled Feed” until test passes.
+- If test fails, show clear message:
+  “This feed failed validation and cannot be enabled.”
+- If saved as draft, show badge:
+  “Draft — failed feed test.”
+- Show lastTestOk, lastTestedAt, lastTestError, itemCount.
+
+5. Tests
+Add tests proving:
+- invalid URL cannot be saved as enabled
+- unsupported protocols are rejected
+- localhost/private network URLs are rejected
+- unreachable URL cannot be saved as enabled
+- parse failure cannot be saved as enabled
+- empty feed cannot be saved as enabled
+- failed feed can only be saved as disabled/draft if supported
+- existing valid feed cannot be updated to failed URL while enabled
+- enabling a feed requires latest passing test
+- successful feed test allows save/enable
+- response does not leak internal errors or secrets
+- admin auth and CSRF still apply
+
+6. Safety
+Do not weaken:
+- source reliability scoring
+- legal media safety
+- publishing approval gates
+- newsroom safety harness
+- no copyrighted footage reuse
+- no logo/watermark removal
+- no auto-publishing
+
+Run:
+- npm run check
+- relevant source registry/feed validation tests

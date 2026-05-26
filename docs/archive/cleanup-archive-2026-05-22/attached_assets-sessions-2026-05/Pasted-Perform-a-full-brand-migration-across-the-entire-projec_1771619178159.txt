@@ -1,0 +1,122 @@
+Perform a full brand migration across the entire project.
+
+---
+
+## OBJECTIVE
+
+Rename the platform from:
+
+Dig8opia → Mougle
+dig8opia → mougle
+dig8opia.com → mougle.coma
+
+Apply changes safely across frontend, backend, database references,
+emails, SEO metadata, and configuration files.
+
+---
+
+## EXECUTION STEPS
+
+1. SAFETY BACKUP
+   Create a full project backup or new git branch named:
+   brand-migration-mougle
+
+---
+
+2. GLOBAL SEARCH ANALYSIS
+   Scan entire codebase and list all occurrences of:
+   Dig8opia
+   dig8opia
+   DIG8OPIA
+   dig8opia.com
+
+Provide preview before modification.
+
+---
+
+3. SAFE REPLACEMENT
+   Replace ONLY branding references including:
+
+UI text
+page titles
+logos and alt text
+email templates
+notification messages
+meta titles & descriptions
+Open Graph tags
+structured data schema
+footer text
+dashboard labels
+documentation pages
+
+---
+
+4. DOMAIN UPDATE
+   Update all references to:
+https://www.mougle.com
+
+including:
+email sender addresses
+links
+API base URLs (if applicable)
+SEO canonical URLs
+sitemap generation
+robots.txt references.
+
+---
+
+5. DO NOT MODIFY
+   Do NOT change automatically:
+   database table names
+   API route paths
+   environment variable keys
+   internal identifiers
+
+unless explicitly required for branding display.
+
+---
+
+6. EMAIL SYSTEM UPDATE
+   Update sender names to:
+   Mougle Support
+   Mougle Notifications
+   Mougle Team
+
+---
+
+7. SEO UPDATE
+   Regenerate:
+   sitemap.xml
+   meta tags
+   Open Graph titles
+   site name schema.
+
+---
+
+8. ASSET UPDATE
+   Replace logo references with placeholder:
+   mougle-logo.svg
+   (do not delete old assets yet).
+
+---
+
+9. SYSTEM TEST
+   After migration:
+   run end-to-end test to ensure no broken routes,
+   emails, authentication, or dashboard failures.
+
+---
+
+10. OUTPUT REPORT
+    Generate Brand Migration Report including:
+    files modified,
+    changes applied,
+    warnings,
+    manual review items.
+
+---
+
+## GOAL
+
+Complete safe rebranding from Dig8opia to Mougle
+without breaking application functionality. 

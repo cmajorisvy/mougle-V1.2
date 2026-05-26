@@ -1,0 +1,186 @@
+Now add audit logging for Mougle AI job lifecycle events.
+
+Context:
+The project already has:
+
+1. Postgres-backed ai_jobs table.
+2. TypeScript AI job service.
+3. Python worker bridge.
+4. User AI job workflows.
+5. Admin AI job monitor:
+   - /admin/ai-jobs
+6. Admin job controls:
+   - retry
+   - cancel
+   - stale running visibility
+7. Worker-result safety against cancelled jobs.
+
+Goal:
+Add durable audit logging so admins can see who created, claimed, completed, failed, retried, cancelled, or otherwise changed each AI job.
+
+Do not rewrite the app.
+Do not expose Python directly to the frontend.
+Do not bypass the TypeScript API.
+Do not add Redis.
+Do not require external AI APIs.
+Do not allow normal users to view global audit logs.
+Keep Python worker optional.
+
+Part A — Database
+
+Add a new table for AI job events, for example:
+
+ai_job_events
+
+Suggested columns:
+
+- id
+- job_id
+- event_type
+- actor_type
+- actor_user_id nullable
+- actor_admin_id nullable
+- actor_worker_id nullable
+- previous_status nullable
+- new_status nullable
+- message nullable
+- metadata JSON nullable
+- created_at
+
+Event types should cover:
+
+- job.created
+- job.claimed
+- job.running
+- job.succeeded
+- job.failed
+- job.rejected
+- job.cancelled
+- job.retried
+- job.result_rejected
+- job.stale_detected
+- job.viewed_admin optional
+- job.viewed_user optional
+
+Actor types should include:
+
+- user
+- admin
+- worker
+- system
+
+Use the existing project database/ORM style. Do not introduce a new ORM.
+
+Part B — Backend service logging
+
+Update aiJobService to write audit events when:
+
+1. A job is created.
+2. A worker marks a job running.
+3. A worker records a succeeded result.
+4. A worker records a failed result.
+5. A late/stale worker result is rejected.
+6. An admin retries a job.
+7. An admin cancels a job.
+8. Stale running jobs are detected through the admin route.
+
+Requirements:
+
+- Audit logging should not break the core job operation if a non-critical event insert fails, unless the event is part of the same transaction and safe to enforce.
+- Prefer transactional writes where the status change and audit event should be atomic.
+- Do not store secrets.
+- Redact large payloads and raw errors.
+- Keep metadata compact and JSON-safe.
+
+Part C — Backend routes
+
+Add admin-only audit endpoints:
+
+1. GET /api/admin/ai-jobs/:jobId/events
+
+Returns audit events for one job, oldest-first.
+
+2. Optional:
+GET /api/admin/ai-job-events
+
+Supports filters:
+- jobId
+- eventType
+- actorType
+- actorUserId
+- actorAdminId
+- actorWorkerId
+- since
+- until
+- limit
+- offset
+
+Security:
+
+- requireRootAdmin
+- normal users cannot access these endpoints
+- unauthenticated requests return 401/403
+- do not expose secrets or full raw payloads
+
+Part D — Admin UI
+
+Update:
+
+/admin/ai-jobs
+
+Add an audit/history panel in each expanded job row.
+
+The panel should show:
+
+- event time
+- event type
+- actor type
+- actor id where available
+- previous status
+- new status
+- message
+- compact metadata
+
+UI behavior:
+
+- Load events only when a row is expanded, or when the user clicks “Show audit log”.
+- Show loading, empty, and error states.
+- Keep it compact and readable.
+- Do not add destructive controls.
+
+Optional:
+Add a separate admin route:
+
+/admin/ai-job-events
+
+Only if easy and consistent with existing admin routing.
+
+Part E — Validation
+
+Run existing checks/tests.
+
+Confirm:
+
+- job creation writes job.created event.
+- worker claim writes job.claimed or job.running event.
+- worker success writes job.succeeded event.
+- worker failure writes job.failed event.
+- retry writes job.retried event.
+- cancel writes job.cancelled or job.rejected event.
+- stale result rejection writes job.result_rejected event.
+- admin can fetch events for a job.
+- normal users cannot fetch audit events.
+- unauthenticated users cannot fetch audit events.
+- /admin/ai-jobs displays audit events in expanded rows.
+- no Python changes are required unless worker id metadata needs a small compatibility fix.
+
+After changes, summarize:
+- files created
+- files modified
+- database table added
+- event types implemented
+- service methods updated
+- endpoints added
+- UI audit panel behavior
+- validation results
+- what remains for the next step

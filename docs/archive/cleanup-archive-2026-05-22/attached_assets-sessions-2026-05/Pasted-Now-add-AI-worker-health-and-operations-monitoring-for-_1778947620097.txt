@@ -1,0 +1,242 @@
+Now add AI worker health and operations monitoring for Mougle.
+
+Context:
+The project already has:
+
+1. Postgres-backed ai_jobs table.
+2. ai_job_events audit table.
+3. TypeScript AI job service.
+4. Python worker bridge.
+5. Worker-token secured endpoints.
+6. User/admin AI job workflows.
+7. Admin AI Job Monitor:
+   - /admin/ai-jobs
+8. Admin retry/cancel controls.
+9. Audit panel inside expanded job rows.
+
+Goal:
+Add worker health visibility so admins can monitor Python AI workers, last-seen time, current status, claimed jobs, and basic processing counters.
+
+Do not rewrite the app.
+Do not expose Python directly to the frontend.
+Do not bypass the TypeScript API.
+Do not add Redis.
+Do not require external AI APIs.
+Keep Python worker optional.
+
+Part A — Database
+
+Add a new table for worker heartbeats, for example:
+
+ai_workers
+
+Suggested columns:
+
+- id
+- worker_id
+- status
+- hostname nullable
+- process_id nullable
+- version nullable
+- capabilities JSON nullable
+- current_job_id nullable
+- last_seen_at
+- started_at nullable
+- jobs_claimed_count integer default 0
+- jobs_succeeded_count integer default 0
+- jobs_failed_count integer default 0
+- last_error nullable
+- metadata JSON nullable
+- created_at
+- updated_at
+
+Suggested statuses:
+
+- online
+- idle
+- busy
+- draining
+- offline
+- unhealthy
+
+Use the existing project database/ORM style. Do not introduce a new ORM.
+
+Part B — Backend worker endpoints
+
+Add worker-token protected endpoints:
+
+1. POST /api/worker/heartbeat
+
+Request body:
+
+{
+  "workerId": "...",
+  "status": "idle|busy|draining|unhealthy",
+  "hostname": "...optional",
+  "processId": "...optional",
+  "version": "...optional",
+  "capabilities": ["user.claim_extraction", "vector.clustering", "inhouse.newsroom"],
+  "currentJobId": "...optional",
+  "metadata": {...optional}
+}
+
+Behavior:
+- require valid worker token
+- upsert by workerId
+- update lastSeenAt and updatedAt
+- do not store secrets
+- compact metadata
+- return 200 with worker status
+
+2. Optional:
+POST /api/worker/heartbeat/error
+
+Or include lastError in heartbeat if simpler.
+
+3. Update existing worker job endpoints to update worker counters:
+- when a job is marked running, increment jobs_claimed_count and set current_job_id
+- when a result succeeds, increment jobs_succeeded_count
+- when a result fails/rejected, increment jobs_failed_count
+- clear current_job_id when terminal result is recorded
+
+Part C — Admin worker APIs
+
+Add admin-only endpoints:
+
+1. GET /api/admin/ai-workers
+
+Returns all workers with derived health:
+
+- workerId
+- status
+- lastSeenAt
+- derivedStatus:
+  - online if recently seen
+  - stale if not seen in threshold
+  - offline if far past threshold
+- currentJobId
+- jobsClaimedCount
+- jobsSucceededCount
+- jobsFailedCount
+- capabilities
+- hostname
+- version
+- lastError
+- createdAt
+- updatedAt
+
+2. Optional:
+GET /api/admin/ai-workers/:workerId
+
+Returns detail for one worker.
+
+Security:
+- requireRootAdmin
+- normal users cannot access worker health
+- unauthenticated requests return 401/403
+- never expose worker token or secrets
+
+Part D — Python worker heartbeat
+
+Update:
+
+python-workers/jobs/job_consumer.py
+python-workers/shared/config.py
+python-workers/main.py if needed
+
+Python behavior:
+
+1. On startup:
+   - generate or read WORKER_ID
+   - send heartbeat with status idle
+   - include capabilities for currently routed job types:
+     - user.claim_extraction
+     - vector.clustering
+     - inhouse.newsroom
+
+2. During polling:
+   - send periodic heartbeat every 15–30 seconds
+   - status idle when no job is running
+   - status busy with currentJobId while processing a job
+   - status draining on graceful shutdown if practical
+   - status unhealthy if repeated errors occur
+
+3. Continue to use:
+   Authorization: Bearer ${MOUGLE_WORKER_TOKEN}
+
+4. Do not crash the worker if heartbeat fails.
+   Log the failure and continue polling.
+
+5. Do not send secrets in metadata.
+
+Part E — Admin UI
+
+Add an admin page:
+
+/admin/ai-workers
+
+Name it something like:
+“AI Workers”
+
+The page should show:
+
+- worker id
+- derived status badge
+- reported status
+- last seen
+- current job
+- hostname
+- version
+- capabilities
+- jobs claimed
+- jobs succeeded
+- jobs failed
+- last error if present
+- refresh button
+
+Optional:
+Add a small link from `/admin/ai-jobs` to `/admin/ai-workers`.
+
+UI behavior:
+- require admin auth using existing admin hook
+- loading/empty/error states
+- manual refresh is enough
+- no destructive controls
+
+Part F — Audit integration
+
+If practical, write ai_job_events or worker-specific events for:
+- worker.heartbeat_first_seen
+- worker.unhealthy
+- worker.draining
+
+Only do this if it fits the existing audit model cleanly. Do not force it.
+
+Part G — Validation
+
+Run existing checks/tests.
+
+Confirm:
+
+- invalid/missing worker token cannot call heartbeat.
+- valid worker token can upsert heartbeat.
+- admin can list workers.
+- normal users cannot list workers.
+- unauthenticated users cannot list workers.
+- Python worker starts and sends heartbeat.
+- Python worker heartbeat failure does not crash worker.
+- job claim/result updates worker counters where workerId is known.
+- /admin/ai-workers loads and renders empty state or worker rows.
+- no frontend access to Python directly.
+
+After changes, summarize:
+- files created
+- files modified
+- database table added
+- worker endpoints added
+- admin endpoints added
+- Python heartbeat behavior
+- worker status derivation
+- admin UI behavior
+- validation results
+- what remains for the next step

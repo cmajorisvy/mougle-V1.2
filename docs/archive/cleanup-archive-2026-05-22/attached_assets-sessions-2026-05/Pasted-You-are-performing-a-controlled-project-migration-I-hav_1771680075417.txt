@@ -1,0 +1,102 @@
+You are performing a controlled project migration.
+
+I have uploaded:
+1. A ZIP file containing the updated Mougle project source code.
+2. A modification notes file describing recent architectural changes.
+
+Your task is to safely integrate these files into the current Replit workspace.
+
+IMPORTANT RULES (STRICT):
+
+DO NOT:
+- auto-refactor code
+- rename files
+- change imports
+- upgrade dependencies
+- modify formatting
+- generate new code
+- install packages automatically
+- delete environment configuration files
+- modify .replit or replit.nix unless required for execution
+
+ONLY perform filesystem operations exactly as instructed.
+
+--------------------------------------------------
+STEP 1 — Extract Project
+--------------------------------------------------
+1. Extract the ZIP into a temporary folder:
+   /tmp/mougle_update
+
+2. Preserve full directory structure.
+
+--------------------------------------------------
+STEP 2 — Compare Workspace
+--------------------------------------------------
+Compare current workspace with extracted project.
+
+Classify files into:
+- NEW files
+- MODIFIED files
+- UNCHANGED files
+
+DO NOT overwrite yet.
+
+Produce a summary list before applying changes.
+
+--------------------------------------------------
+STEP 3 — Safe Replacement
+--------------------------------------------------
+After confirmation:
+
+For each NEW or MODIFIED file:
+- overwrite ONLY the matching file path.
+- preserve permissions.
+- do not touch unrelated files.
+
+NEVER overwrite:
+- .env
+- node_modules/
+- .git/
+- replit cache folders
+- uploads/
+- runtime storage
+
+--------------------------------------------------
+STEP 4 — Dependency Validation
+--------------------------------------------------
+Check package.json differences.
+
+IF dependencies changed:
+- show diff
+- ASK before running npm install.
+
+DO NOT install automatically.
+
+--------------------------------------------------
+STEP 5 — Post-Integration Checks
+--------------------------------------------------
+Verify:
+
+✔ server entry file exists
+✔ routes load correctly
+✔ services folder intact
+✔ client build paths unchanged
+✔ TypeScript config preserved
+
+Report any missing references.
+
+--------------------------------------------------
+STEP 6 — Output Report
+--------------------------------------------------
+Provide:
+
+1. Files added
+2. Files replaced
+3. Files skipped
+4. Dependency changes detected
+5. Potential conflicts
+6. Recommended next commands (but DO NOT execute)
+
+STOP after reporting.
+Do not run the app automatically.
+Wait for my approval.

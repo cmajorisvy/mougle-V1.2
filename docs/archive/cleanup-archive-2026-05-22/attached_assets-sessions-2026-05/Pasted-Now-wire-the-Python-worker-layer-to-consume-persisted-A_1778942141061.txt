@@ -1,0 +1,168 @@
+Now wire the Python worker layer to consume persisted AI jobs from the Mougle TypeScript API.
+
+Context:
+The project already has:
+
+1. Python worker scaffold:
+   python-workers/
+
+2. Python job router:
+   python-workers/jobs/job_router.py
+
+3. Python job consumer placeholder:
+   python-workers/jobs/job_consumer.py
+
+4. TypeScript AI job contracts:
+   shared/aiJobContracts.ts
+
+5. TypeScript AI job service:
+   server/services/aiJobService.ts
+
+6. AI job routes:
+   server/routes.ts
+
+7. Durable Postgres ai_jobs table already implemented.
+
+Goal:
+Make the Python worker consume jobs from the TypeScript API, route them to the correct Python handler, and post results back to the TypeScript API.
+
+Do not rewrite the app.
+Do not expose Python directly to the frontend.
+Do not start Python automatically from the TypeScript app.
+Do not remove TypeScript auth, billing, approval, or permission gates.
+Do not introduce Redis or a separate queue system yet.
+Use the existing persisted ai_jobs table and API routes.
+
+Required flow:
+
+Python worker
+↓
+GET /api/admin/ai-jobs/pending?limit=N
+↓
+Receive pending jobs
+↓
+Claim/mark job as running through the existing TypeScript API or existing service route
+↓
+Route job through python-workers/jobs/job_router.py
+↓
+Execute the correct Python handler
+↓
+POST /api/admin/ai-jobs/result
+↓
+TypeScript records succeeded/failed result in Postgres
+
+Implementation requirements:
+
+1. Update python-workers/shared/config.py
+   Add environment config for:
+   - MOUGLE_API_BASE_URL
+   - MOUGLE_WORKER_TOKEN
+   - WORKER_ID
+   - WORKER_POLL_INTERVAL_SECONDS
+   - WORKER_BATCH_LIMIT
+
+2. Update python-workers/jobs/job_consumer.py
+   Implement:
+   - fetch_pending_jobs()
+   - claim_job_or_mark_running()
+   - process_job()
+   - submit_job_result()
+   - run_consumer_loop()
+
+3. Use HTTP requests from Python to the TypeScript API.
+   Use `requests` or `httpx`, whichever is already in requirements.txt.
+   Do not add unnecessary dependencies.
+
+4. Add worker authentication.
+   Use an HTTP header such as:
+   Authorization: Bearer ${MOUGLE_WORKER_TOKEN}
+
+5. Update the TypeScript API routes if needed so Python workers can safely:
+   - list pending jobs
+   - mark a job running / locked
+   - submit job results
+
+6. Do not use root-admin session auth for the Python worker long term.
+   Add a dedicated worker-token guard if it does not already exist.
+
+7. The worker-token guard should:
+   - read a server-side env var such as MOUGLE_WORKER_TOKEN
+   - reject missing or invalid tokens with 401/403
+   - only allow worker-specific endpoints
+   - not grant general admin access
+
+8. Preserve existing admin endpoints if they are useful, but worker polling/result submission should use the dedicated worker-token guard.
+
+9. Add or update these worker-safe API endpoints if needed:
+   - GET /api/worker/ai-jobs/pending?limit=N
+   - POST /api/worker/ai-jobs/:jobId/running
+   - POST /api/worker/ai-jobs/result
+
+10. Pending job fetch should:
+    - return oldest-first pending jobs
+    - respect limit
+    - only return jobs eligible to run
+    - avoid leaking unrelated user data beyond what is inside the job envelope
+
+11. Mark-running endpoint should:
+    - lock the job
+    - set status to running
+    - set locked_at
+    - set locked_by to WORKER_ID
+    - avoid double-claiming already-running jobs
+
+12. Result endpoint should:
+    - accept JobResult-compatible payload
+    - validate shape
+    - update status to succeeded or failed
+    - write result or error JSON
+    - set completed_at or failed_at
+
+13. Python worker should handle failures safely:
+    - if a handler raises, submit a failed JobResult
+    - include a safe error message
+    - do not leak secrets
+    - continue processing other jobs
+
+14. Python worker should support graceful shutdown on Ctrl+C.
+
+15. Add clear README instructions in python-workers/README.md:
+    - required env vars
+    - how to run the worker
+    - how the worker talks to TypeScript
+    - how to test with a pending job
+
+16. Do not break npm run dev.
+17. Do not break npm run check.
+18. Python worker should remain optional.
+
+Initial job types that must work through the router:
+
+- user.claim_extraction
+- vector.clustering
+- inhouse.newsroom
+
+Validation:
+- Run existing TypeScript checks/tests.
+- Run basic Python syntax/import validation.
+- Confirm TypeScript app starts normally.
+- Create a test AI job.
+- Run Python worker manually.
+- Confirm the job moves:
+  pending → running → succeeded or failed
+- Confirm result is written to Postgres through the TypeScript API.
+- Confirm invalid worker token is rejected.
+- Confirm Python is not exposed to the frontend.
+
+After changes, summarize:
+- files created
+- files modified
+- endpoints added
+- env vars added
+- how worker authentication works
+- how the Python worker polls jobs
+- how jobs are claimed
+- how results are submitted
+- exact manual commands to run the worker
+- validation results
+- what remains for the next step

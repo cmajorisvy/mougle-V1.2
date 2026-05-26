@@ -1,0 +1,143 @@
+Now connect the first internal/admin Mougle workflow to the existing inhouse.newsroom AI job.
+
+Context:
+The project already has:
+
+1. Python worker scaffold and bridge.
+2. Postgres-backed ai_jobs table.
+3. TypeScript AI job service.
+4. Worker-token API bridge.
+5. Real Python handlers for:
+   - user.claim_extraction
+   - vector.clustering
+   - inhouse.newsroom
+
+6. Real user-facing workflows already connected:
+   - POST /api/posts/:postId/claim-extraction
+   - POST /api/ai-jobs/claim-extraction
+   - POST /api/ai-jobs/semantic-clustering
+
+Goal:
+Add an admin/internal workflow that allows authorized Mougle admins to enqueue an inhouse.newsroom job that generates a newsroom intelligence package from posts, claims, clusters, or direct source text.
+
+Do not rewrite the app.
+Do not expose Python directly to the frontend.
+Do not bypass the TypeScript API.
+Do not connect Python directly to Postgres.
+Do not add Redis.
+Do not require paid external AI APIs.
+Keep Python optional.
+
+Implementation requirements:
+
+1. Add or enhance an admin-only endpoint for newsroom package generation.
+
+Suggested endpoint:
+
+POST /api/admin/ai-jobs/newsroom-package
+
+or, if the project has newsroom-specific admin routes:
+
+POST /api/admin/newsroom/package
+POST /api/admin/newsroom/ai-package
+
+Use the existing route conventions.
+
+2. The endpoint should require root/admin authorization using the project’s existing admin guard.
+
+3. Support input from one or more of these sources:
+
+A. Existing posts:
+{
+  "postIds": ["..."]
+}
+
+B. Existing AI job results:
+{
+  "claimJobIds": ["..."],
+  "clusterJobIds": ["..."]
+}
+
+C. Direct admin-provided source items:
+{
+  "sources": [
+    {
+      "id": "optional-source-id",
+      "title": "optional title",
+      "text": "...",
+      "sourceType": "direct_text"
+    }
+  ]
+}
+
+D. Combined input:
+{
+  "postIds": ["..."],
+  "claimJobIds": ["..."],
+  "clusterJobIds": ["..."],
+  "sources": [...]
+}
+
+4. Validate input:
+   - require at least one usable source
+   - reject empty text
+   - cap number of postIds, claimJobIds, clusterJobIds, and direct sources
+   - cap text length per source
+   - trim whitespace
+   - return clear 400 errors for invalid input
+
+5. Permission/security:
+   - admin-only route
+   - normal users must not enqueue inhouse.newsroom jobs
+   - normal users must not read inhouse.newsroom job results
+   - do not leak user-private content beyond what admins are already allowed to access
+   - keep worker-token endpoints separate from admin endpoints
+
+6. Payload passed to aiJobService.createNewsroomPackageJob should include enough structured context for the Python newsroom handler:
+   - source posts with id/title/text
+   - extracted claims from completed claim jobs where available
+   - clusters from completed clustering jobs where available
+   - direct admin sources
+   - provenance/source references
+
+7. For claimJobIds and clusterJobIds:
+   - load the referenced AI jobs through the existing AI job service or database layer
+   - only include succeeded job results
+   - skip or report non-succeeded jobs in the response summary
+   - do not fail the whole request unless no usable input remains
+
+8. Return 202 with:
+   - jobId
+   - status
+   - statusUrl
+   - source summary
+   - counts for posts, claims, clusters, direct sources
+   - skippedJobIds where relevant
+
+9. Use the existing status endpoint or admin job status endpoint where possible.
+
+10. Do not modify Python handler logic unless a small compatibility fix is necessary.
+
+Validation:
+- Run existing TypeScript checks/tests.
+- Run Python smoke test if Python files are touched.
+- Confirm unauthenticated request returns 401/403.
+- Confirm non-admin authenticated user is rejected.
+- Confirm admin can enqueue newsroom package job.
+- Confirm empty input returns 400.
+- Confirm non-succeeded claim/cluster job IDs are skipped or reported.
+- Confirm normal users cannot read inhouse.newsroom job result.
+- Confirm job persists in Postgres.
+- Confirm Python worker can process the created newsroom job when run manually.
+
+After changes, summarize:
+- files created
+- files modified
+- endpoint added or updated
+- request payload shape
+- response shape
+- permission checks
+- source aggregation behavior
+- validation results
+- exact manual test steps
+- what remains for the next step

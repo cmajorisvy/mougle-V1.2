@@ -1,0 +1,235 @@
+Implement a comprehensive **Content Safety, Anti-Spam, and Compliance System** across the entire platform.
+
+---
+
+## OBJECTIVE
+
+Strictly prevent:
+
+* adult or sexually explicit content
+* pornographic language
+* gambling promotion
+* narcotics or drug promotion
+* spam messages and bot activity
+* unrelated promotional comments
+
+Apply moderation globally to:
+posts, comments, replies, debates, news submissions, usernames, and links.
+
+---
+
+## CONTENT MODERATION PIPELINE
+
+Create middleware:
+
+contentModerationMiddleware()
+
+All user-generated content must pass through it BEFORE saving.
+
+Flow:
+
+input → normalization → keyword scan → AI moderation → decision
+
+---
+
+## BLOCKED CONTENT CATEGORIES
+
+Create block lists:
+
+1. sexual_explicit_terms
+2. adult_services_terms
+3. gambling_terms
+4. narcotics_terms
+5. spam_phrases
+
+Store in:
+
+/config/blocked_terms.json
+
+Examples to include:
+
+* pornographic keywords
+* escort terminology
+* casino/betting promotions
+* drug sales language
+* viagra-style spam phrases
+* crypto scam phrases
+
+Reject content containing these.
+
+---
+
+## AI CONTENT CLASSIFICATION
+
+Add AI moderation check:
+
+classifyContent(text):
+
+Return categories:
+SAFE
+ADULT
+SEXUAL
+GAMBLING
+DRUGS
+SPAM
+SCAM
+
+If category != SAFE:
+Reject submission.
+
+---
+
+## SPAM DETECTION SYSTEM
+
+Create spam scoring:
+
+spam_score based on:
+
+* repeated links
+* duplicate messages
+* excessive hashtags
+* rapid posting frequency
+* unrelated keywords
+* external promotion patterns
+
+If spam_score > threshold:
+
+* block content
+* flag user
+
+---
+
+## USER SPAM FLAGGING
+
+Add fields to users table:
+
+spam_score
+is_spammer
+is_shadow_banned
+
+Rules:
+
+3 violations → warning
+5 violations → temporary restriction
+8 violations → mark as spammer
+
+Spammers:
+
+* cannot post links
+* comments hidden automatically
+
+---
+
+## ANTI-BOT PROTECTION
+
+Add:
+
+* rate limiting middleware
+* CAPTCHA for suspicious users
+* posting cooldown (e.g. 1 comment / 10 sec)
+
+Detect bots by:
+
+* abnormal posting speed
+* repeated content
+* identical patterns
+
+---
+
+## COMMENT RELEVANCE CHECK
+
+Before saving comment:
+
+Use AI to verify relevance to topic.
+
+If unrelated promotion detected:
+Reject comment.
+
+Example prompt:
+
+"Is this comment relevant to the discussion topic?"
+
+If NO → block.
+
+---
+
+## NOFOLLOW OUTGOING LINKS
+
+Automatically modify all outbound links:
+
+<a href="external_url"
+rel="nofollow noopener noreferrer"
+target="_blank">
+
+Apply sitewide including:
+posts, comments, news, debates.
+
+---
+
+## LINK SAFETY RULES
+
+Block links from:
+
+* adult domains
+* gambling domains
+* drug marketplaces
+* URL shortener abuse
+
+Maintain blocked_domains list.
+
+---
+
+## SANITIZATION
+
+Sanitize all user input:
+
+* remove scripts
+* prevent XSS
+* escape HTML
+
+Use sanitizeHTML middleware.
+
+---
+
+## MODERATION LOGGING
+
+Create moderation_logs table:
+
+user_id
+content_id
+reason
+action_taken
+timestamp
+
+---
+
+## ADMIN MODERATION PANEL
+
+Add dashboard page:
+
+Admin → Moderation Center
+
+Show:
+
+* flagged users
+* blocked content
+* spam scores
+* manual override buttons
+
+---
+
+## ERROR RESPONSE
+
+When blocked:
+
+Return message:
+
+"Content violates platform safety guidelines."
+
+Do NOT expose filtering logic.
+
+---
+
+## GOAL
+
+Create a safe, compliant, spam-free platform suitable for payments, AI providers, and public distribution.

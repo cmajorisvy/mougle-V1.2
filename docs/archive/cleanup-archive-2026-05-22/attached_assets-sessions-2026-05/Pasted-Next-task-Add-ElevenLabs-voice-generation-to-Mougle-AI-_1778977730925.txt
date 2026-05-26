@@ -1,0 +1,120 @@
+Next task: Add ElevenLabs voice generation to Mougle AI Production House, behind safe root-admin controls.
+
+Goal:
+Allow root-admin users to generate AI voice drafts for Production House scripts using ElevenLabs, while preserving all current safety gates.
+
+Important:
+Mock mode must remain default.
+Do not enable real Unreal sends.
+Do not enable real 4D hardware sends.
+Do not enable publishing.
+Do not expose secrets.
+Do not auto-approve any production.
+
+Scope:
+
+1. Add ElevenLabs availability endpoint:
+   GET /api/admin/production-house/voice/availability
+
+It should return booleans only:
+- available
+- hasCredential
+- mockMode
+- realSendAllowed:false
+
+Never return ELEVENLABS_API_KEY or any secret value.
+
+2. Add voice generation route:
+   POST /api/admin/production-house/voice/generate-elevenlabs
+
+Requirements:
+- root-admin only
+- requires ELEVENLABS_API_KEY
+- requires explicit confirm:true
+- validates productionId or script input
+- validates selected voiceId
+- audit-logs every attempt
+- saves output as a draft voice asset only
+- does not approve the production
+- does not send anything to Unreal
+- does not send anything to 4D hardware
+
+3. Add mock voice generation mode:
+   POST /api/admin/production-house/voice/generate-mock
+
+Mock mode should:
+- not call external APIs
+- generate stable deterministic mock voice asset metadata
+- work without ELEVENLABS_API_KEY
+- remain available for tests and local development
+
+4. Add voice asset model/storage through the existing ProductionHouseStorage adapter.
+
+Voice asset fields:
+- id
+- productionId
+- provider: mock | elevenlabs
+- voiceId
+- voiceName
+- scriptHash
+- scriptPreview
+- audioFilePath or audioUrl
+- durationSeconds if available
+- status: draft | generated | failed
+- approvalStatus: draft
+- createdAt
+- metadata
+- safetyEnvelope
+
+If storing real generated audio, store it in a safe internal directory only, for example:
+data/production-house/assets/voice/
+
+No publicUrl.
+No signedUrl.
+No public exposure.
+
+5. Add UI section in Production House:
+Voice Studio
+
+Features:
+- select production
+- view script
+- select provider: Mock / ElevenLabs
+- select voiceId
+- generate draft voice
+- show generated voice asset metadata
+- show audio preview only if safely available internally
+- show badges: Draft, Internal Only, No Public URL, No Unreal Send, No 4D Send
+
+6. Add export support:
+- include voiceAssets in full production package export
+- do not expose secrets
+- do not create public URLs
+
+7. Add audit log events:
+- voice.generate.mock.attempted
+- voice.generate.mock.succeeded
+- voice.generate.elevenlabs.attempted
+- voice.generate.elevenlabs.succeeded
+- voice.generate.elevenlabs.failed
+- voice.generate.rejected
+
+8. Add regression tests:
+- ElevenLabs availability requires root-admin
+- availability returns booleans only
+- secret canary never appears in any voice response
+- mock voice generation works without API key
+- ElevenLabs route returns 412 without API key
+- ElevenLabs route requires confirm:true
+- ElevenLabs route requires root-admin
+- generated voice asset is draft only
+- generated voice asset has no publicUrl or signedUrl
+- voice asset persists through storage adapter
+- full export includes voice asset metadata but no secrets
+- no Unreal command is sent
+- no 4D command is sent
+- SAFETY_ENVELOPE remains unchanged
+
+9. Do not add Meshy, Runway, Convai, NVIDIA ACE, real Unreal sends, or real 4D sends in this task.
+
+10. Preserve all existing tests.

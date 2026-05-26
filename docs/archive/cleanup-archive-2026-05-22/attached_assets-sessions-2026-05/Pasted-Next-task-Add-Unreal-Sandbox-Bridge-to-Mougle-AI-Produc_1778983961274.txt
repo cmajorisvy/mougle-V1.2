@@ -1,0 +1,121 @@
+Next task: Add Unreal Sandbox Bridge to Mougle AI Production House.
+
+Goal:
+Create a sandbox-only Unreal Bridge that accepts approved internal production packages and returns mock Unreal status responses. This prepares the system for future real Unreal integration without enabling real Unreal rendering, real Unreal import, or 4D hardware control.
+
+Important:
+Do not enable real Unreal sends.
+Do not connect to a real Unreal Engine instance.
+Do not trigger Movie Render Queue.
+Do not import Meshy assets into Unreal.
+Do not send 4D hardware commands.
+Do not publish anything.
+Do not expose secrets.
+Keep realSendAllowed:false.
+
+Scope:
+
+1. Add Unreal Sandbox Bridge section in /admin/production-house.
+
+Features:
+- select production
+- view package readiness checklist
+- validate package for sandbox
+- generate Unreal sandbox command
+- send to sandbox bridge
+- view sandbox response
+- view sandbox command history
+- show badges:
+  Sandbox Only
+  Mock Unreal
+  No Real Send
+  No Render
+  No Asset Import
+  No 4D Send
+
+2. Add backend endpoints:
+GET /api/admin/production-house/unreal/sandbox/status
+POST /api/admin/production-house/unreal/sandbox/validate-package
+POST /api/admin/production-house/unreal/sandbox/send
+GET /api/admin/production-house/unreal/sandbox/history
+
+All routes must be root-admin gated.
+
+3. Sandbox validation should check:
+- production exists
+- production has approvalStatus approved OR explicit sandboxOverride:true
+- production manifest exists
+- Unreal scene manifest exists
+- avatar manifest exists or placeholder avatar is allowed
+- 4D cue manifest exists or empty cue manifest is allowed
+- publicUrl values are null
+- signedUrl values are null
+- visibility is admin_only_internal
+- safetyEnvelope is present
+- no realSendAllowed flag is true
+
+4. Sandbox send should:
+- never call real Unreal
+- generate deterministic mock Unreal command ID using SHA-256
+- save command to Unreal command history
+- return mock status only
+
+Example response:
+{
+  "ok": true,
+  "mode": "sandbox",
+  "realSendAllowed": false,
+  "commandId": "unreal_sandbox_...",
+  "status": "mock_accepted",
+  "message": "Sandbox command accepted. No real Unreal command was sent."
+}
+
+5. Add Unreal sandbox command model/storage:
+- id
+- productionId
+- mode: sandbox
+- commandType: validate_package | send_scene_manifest | load_level | set_camera | set_lighting | start_sequence | render_preview
+- status: mock_accepted | mock_rejected | failed
+- realSendAllowed:false
+- payload
+- response
+- createdAt
+- safetyEnvelope
+
+6. Add audit events:
+- unreal.sandbox.status.viewed
+- unreal.sandbox.package.validated
+- unreal.sandbox.command.attempted
+- unreal.sandbox.command.accepted
+- unreal.sandbox.command.rejected
+- unreal.sandbox.history.viewed
+
+7. Add export support:
+- include unrealSandboxCommands in full production package export
+- do not expose secrets
+- do not create public URLs
+
+8. Add UI safety copy:
+“Unreal Sandbox Bridge validates and records production commands only. It does not connect to Unreal Engine, import assets, render video, or control hardware.”
+
+9. Add regression tests:
+- sandbox status requires root-admin
+- validate-package requires root-admin
+- sandbox send requires root-admin
+- sandbox history requires root-admin
+- sandbox status returns realSendAllowed:false
+- sandbox send never calls real Unreal
+- sandbox command is deterministic
+- sandbox command persists through storage adapter
+- approved production can be sandbox-sent
+- unapproved production is rejected unless sandboxOverride:true
+- exports contain sandbox command history but no secrets
+- publicUrl and signedUrl remain null
+- no real Unreal command is sent
+- no 4D command is sent
+- SAFETY_ENVELOPE remains unchanged
+
+10. Preserve all existing tests.
+
+Do not add real Unreal Remote Control API calls in this task.
+Do not add Convai, NVIDIA ACE, MetaHuman automation, or real 4D hardware integration in this task.

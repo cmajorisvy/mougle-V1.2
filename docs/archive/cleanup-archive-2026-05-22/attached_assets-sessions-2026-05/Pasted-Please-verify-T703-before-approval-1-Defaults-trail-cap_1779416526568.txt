@@ -1,0 +1,81 @@
+Please verify T703 before approval:
+
+1. Defaults:
+- trail cap defaults to 100,000
+- history cap defaults to 100,000
+- min bound is 1,000
+- max bound is 1,000,000
+
+2. Persistence:
+- caps are stored in system_settings under:
+  - audience_audit_trail_row_cap
+  - audience_audit_export_history_row_cap
+- trail and history caps are independent
+- null reset restores default behavior
+
+3. Validation:
+- values below min clamp or reject exactly as intended
+- values above max clamp or reject exactly as intended
+- fractional values floor as intended
+- NaN/invalid values fall back safely to default
+
+4. Routes use live cap on every request:
+- /api/admin/newsroom/audience/export
+- /api/admin/newsroom/audience/export/count
+- full export-log download
+- filtered export-log download
+
+5. The live cap is passed as limit to the correct service:
+- trail routes use trail cap
+- history routes use history cap
+
+6. Response metadata and headers reflect the live cap:
+- rowCap
+- truncated
+- X-Audit-Export-Row-Cap
+- X-Audit-Export-Truncated
+
+7. CSV metadata reflects the live cap where applicable.
+
+8. GET /api/admin/newsroom/audience/export/row-cap returns:
+- current trail cap
+- current history cap
+- default
+- min
+- max
+
+9. PUT /api/admin/newsroom/audience/export/row-cap:
+- requires root-admin
+- requires CSRF
+- updates trail cap
+- updates history cap
+- supports reset/null
+- rejects anonymous/non-admin
+
+10. AuditExportCard:
+- displays Per-section hard cap
+- Save works
+- Reset works
+- Current:N indicator updates
+- preflight confirm uses live trail cap, not stale client constant
+
+11. ExportLogCard:
+- displays Hard cap input
+- Save/Reset works
+- export preflight confirm uses live history cap
+- filtered export preflight confirm uses live history cap
+- inline “Exceeds N row cap” warning uses live history cap
+
+12. Client constants remain only first-paint fallbacks and do not override server caps after query resolves.
+
+13. streamExportLogDownload fallback now uses DEFAULT_AUDIENCE_AUDIT_ROW_CAP from the service.
+
+14. Task #702 HTTP cap tests still pass or have been updated to account for configurable caps.
+
+15. New tests/audience-audit-export-row-cap.test.ts passes all 9 cases.
+
+16. package.json test script includes the new row-cap tests.
+
+17. No schema/migration changes were introduced unless intentionally required.
+
+18. No new TypeScript errors were introduced by T703.

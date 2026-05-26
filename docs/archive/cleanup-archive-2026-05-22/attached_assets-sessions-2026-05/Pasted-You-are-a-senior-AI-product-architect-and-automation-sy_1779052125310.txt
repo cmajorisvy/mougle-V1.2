@@ -1,0 +1,318 @@
+You are a senior AI product architect and automation systems designer.
+
+I am building Mougle, an AI collaboration platform where users can create AI agents, communicate with them, and allow agents to collaborate with each other. I want to upgrade the platform by combining Discord-like communication, Zapier-like automation, and multi-agent AI workflows.
+
+Design a complete feature system for both:
+
+1. User-owned AI agents
+2. In-house Mougle AI agents
+
+The goal is to allow AI agents to communicate, collaborate, automate tasks, and act intelligently while staying controlled, permissioned, and useful.
+
+Design the system with the following capabilities:
+
+A. User AI Agent Functions
+
+Users should be able to create their own AI agents with roles such as:
+
+- Sales Agent
+- Marketing Agent
+- Research Agent
+- Support Agent
+- Finance Agent
+- Product Agent
+- Community Agent
+- Personal Assistant Agent
+- Automation Agent
+
+Each user AI agent should support:
+
+- Role definition
+- Memory and context
+- Skills and tools
+- Communication with the user
+- Communication with other user agents
+- Trigger-based actions
+- Goal-based collaboration
+- Automation workflows
+- Approval before risky actions
+- Logs and history
+- Performance tracking
+
+The agents should support both direct user-intended communication and autonomous agent-to-agent communication.
+
+Examples:
+
+- User asks Marketing Agent to talk to Research Agent
+- Support Agent informs Product Agent about repeated customer issues
+- Research Agent discovers a trend and alerts Marketing Agent
+- Sales Agent identifies a hot lead and triggers CRM automation
+- Automation Agent sends notifications, creates tasks, and updates records
+
+B. In-House Mougle AI Agent Functions
+
+Design internal Mougle agents that help operate and improve the platform.
+
+Include in-house agents such as:
+
+- Onboarding Agent
+- User Success Agent
+- Support Agent
+- Moderation Agent
+- Growth Agent
+- Analytics Agent
+- Billing Agent
+- Product Feedback Agent
+- Security Agent
+- System Health Agent
+- Community Agent
+
+These in-house agents should help Mougle with:
+
+- User onboarding
+- User education
+- Customer support
+- Community engagement
+- Feature recommendations
+- Usage analysis
+- Churn prediction
+- Billing reminders
+- Abuse detection
+- Feedback collection
+- Bug reporting
+- Product improvement
+- Internal team notifications
+
+C. Agent Communication System
+
+Design a communication layer similar to Discord, but for AI agents.
+
+Include:
+
+- Agent channels
+- Direct agent messages
+- Shared workspaces
+- Project threads
+- User-visible conversations
+- Private internal agent conversations
+- Summary views
+- Notifications
+- Conversation logs
+- Permission-based visibility
+
+Communication types should include:
+
+1. User-to-agent communication
+2. Agent-to-user communication
+3. Agent-to-agent communication
+4. Agent-to-team communication
+5. In-house agent-to-user communication
+6. In-house agent-to-internal-team communication
+
+D. Automation System
+
+Design a Zapier-like automation engine for Mougle.
+
+Use this structure:
+
+WHEN something happens
+IF conditions are true
+THEN perform actions
+
+Include:
+
+- Triggers
+- Conditions
+- Actions
+- Filters
+- Paths
+- Delays
+- Schedules
+- Approval gates
+- Retry logic
+- Error handling
+- Automation history
+
+Example triggers:
+
+- New user signup
+- User creates an agent
+- Agent completes a task
+- Agent finds an insight
+- User receives a lead
+- Support request is created
+- New community message appears
+- User becomes inactive
+- Payment succeeds
+- Payment fails
+- Project status changes
+
+Example actions:
+
+- Send notification
+- Message another agent
+- Create task
+- Send email draft
+- Post to Discord
+- Update CRM
+- Add row to Google Sheets
+- Save to Notion
+- Create support ticket
+- Notify internal Mougle team
+- Request user approval
+
+E. Permission and Safety System
+
+Design a permission system that controls what agents can do.
+
+Classify actions by risk:
+
+Low-risk actions:
+- Drafting messages
+- Creating internal notes
+- Summarizing conversations
+- Suggesting tasks
+- Messaging another agent
+
+Medium-risk actions:
+- Creating tasks
+- Updating CRM records
+- Sending internal notifications
+- Posting in private channels
+
+High-risk actions:
+- Sending external emails
+- Posting publicly
+- Deleting data
+- Changing billing
+- Contacting customers
+- Making purchases
+- Modifying permissions
+
+For each risk level, define:
+
+- Whether the agent can act automatically
+- Whether the user must approve first
+- Whether the action should be logged
+- Whether the action should notify the user
+
+F. Memory and Context
+
+Design how agents should remember useful information.
+
+Include:
+
+- User preferences
+- Business goals
+- Past tasks
+- Previous conversations
+- Important files
+- Project history
+- Agent collaboration history
+- Automation history
+- User-approved decisions
+
+Also define privacy rules:
+
+- What agents can remember
+- What they should forget
+- What users can edit
+- What users can delete
+- What in-house Mougle agents can and cannot access
+
+G. User Experience
+
+Design the user experience for this system.
+
+Include screens or modules such as:
+
+- Agent dashboard
+- Create agent screen
+- Agent role settings
+- Agent communication inbox
+- Agent channels
+- Automation builder
+- Approval center
+- Activity logs
+- Agent performance dashboard
+- Integration settings
+- In-house assistant panel
+
+The system should be simple enough for non-technical users.
+
+H. MVP Version
+
+Create a practical MVP plan.
+
+The MVP should include:
+
+- 3 to 5 user agent types
+- Basic agent-to-agent messaging
+- Basic automation rules
+- User approval system
+- Activity logs
+- Simple integrations
+- In-house onboarding and support agents
+
+Prioritize features by:
+
+1. Must-have
+2. Should-have
+3. Later version
+
+I. Technical Architecture
+
+Suggest a technical architecture.
+
+Include:
+
+- Frontend modules
+- Backend services
+- Agent orchestration layer
+- Communication bus
+- Automation engine
+- Event system
+- Memory store
+- Permission system
+- Integration layer
+- Notification service
+- Logging system
+- Analytics system
+
+Also include recommended data models for:
+
+- User
+- Agent
+- Agent role
+- Message
+- Channel
+- Automation
+- Trigger
+- Action
+- Approval request
+- Event log
+- Integration account
+
+J. Output Format
+
+Return the answer in this format:
+
+1. Executive summary
+2. Product vision
+3. User AI agent features
+4. In-house Mougle AI agent features
+5. Agent communication system
+6. Automation system
+7. Permission and safety model
+8. Memory and context model
+9. User experience design
+10. MVP roadmap
+11. Technical architecture
+12. Database/data model suggestions
+13. Example workflows
+14. Monetization opportunities
+15. Risks and mitigations
+16. Final recommended build plan
+
+Make the answer practical, startup-friendly, and suitable for a product and engineering team.
+Focus on what can be built first, what creates user value, and how Mougle can become a platform where AI agents communicate, collaborate, and automate work intelligently.

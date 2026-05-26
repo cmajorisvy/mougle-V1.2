@@ -1,0 +1,132 @@
+Run a FULL end-to-end validation pass for Mougle after recent architectural and billing changes.
+
+DO NOT modify any code yet.
+Audit and test only.
+
+--------------------------------------------------
+PHASE 1 — Environment Verification
+--------------------------------------------------
+Verify runtime prerequisites before testing:
+
+1. Node.js available and compatible version.
+2. npm available.
+3. .env exists and required variables detected:
+   - DATABASE_URL
+   - OPENAI_API_KEY
+   - SESSION_SECRET
+   - AGENT_EXPORT_SECRET
+   - any billing/payment keys
+4. Playwright browsers installed.
+
+If missing, report exact commands required.
+
+--------------------------------------------------
+PHASE 2 — Server Boot Validation
+--------------------------------------------------
+1. Start application in dev mode.
+2. Confirm:
+   - server boots without runtime errors
+   - DB connection succeeds
+   - sessions initialize
+   - CSRF middleware active
+   - API routes reachable.
+
+Report boot warnings or unstable services.
+
+--------------------------------------------------
+PHASE 3 — FULL PLAYWRIGHT E2E EXECUTION
+--------------------------------------------------
+Execute ALL Playwright suites:
+
+A. Authentication Flow
+   - signup
+   - login
+   - session persistence
+   - logout
+   - session expiration behavior
+
+B. Personal Agent Flow
+   - create agent
+   - run agent
+   - training
+   - credit deduction validation
+
+C. Billing & Credits
+   - credit deduction before AI usage
+   - insufficient credits handling
+   - Pro gating enforcement
+   - wallet balance integrity
+
+D. AI Usage Protection
+   Verify NO AI route bypasses:
+   - requireAuth
+   - billing/credits check
+   - unified AI gateway
+
+Test endpoints including:
+   /api/ai/generate
+   /api/support/chat
+   debate AI
+   agent orchestrator
+   project validation
+
+E. Marketplace
+   - purchase listing
+   - credit deduction atomicity
+   - seller/platform split
+   - unauthorized purchase prevention
+
+F. Project Packages
+   - paid download unlock only after payment
+   - purchase verification
+
+G. Agent Passport
+   - export passport
+   - verify passport
+   - revoke passport
+   - revoked passport validation fails
+
+H. CSRF Protection
+   - mutating requests without token → rejected
+   - valid token → accepted
+
+I. Dashboard
+   - intelligence dashboard loads
+   - data fetch stability
+   - no unauthorized calls
+
+--------------------------------------------------
+PHASE 4 — SECURITY & PROFIT RISK ANALYSIS
+--------------------------------------------------
+Detect and report:
+
+- routes accepting userId/buyerId from client
+- AI calls without billing enforcement
+- credit deduction race conditions
+- negative wallet possibilities
+- unauthorized paid access
+- API endpoints missing requireAuth
+
+--------------------------------------------------
+PHASE 5 — OUTPUT REPORT
+--------------------------------------------------
+Provide structured report:
+
+1. Passed tests
+2. Failed tests
+3. Flaky behavior
+4. Console errors
+5. Network failures
+6. Auth/session inconsistencies
+7. Billing leaks (CRITICAL)
+8. Security risks ranked:
+   CRITICAL / HIGH / MEDIUM / LOW
+
+Also include:
+
+✔ Stability score (0–100)
+✔ Launch readiness assessment
+✔ Top 5 fixes required before public launch
+
+Do NOT auto-fix yet.
+Only audit and report.

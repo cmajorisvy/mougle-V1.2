@@ -1,0 +1,159 @@
+Now harden AI worker identity across the Mougle worker bridge.
+
+Context:
+The project already has:
+
+1. Postgres-backed ai_jobs table.
+2. ai_job_events audit table.
+3. ai_workers table.
+4. TypeScript AI job service.
+5. TypeScript AI worker service.
+6. Worker-token secured endpoints.
+7. Python worker heartbeat loop.
+8. Admin AI Workers page:
+   - /admin/ai-workers
+9. Admin AI Job Monitor:
+   - /admin/ai-jobs
+10. Audit events for AI job lifecycle.
+11. Retention and cleanup page:
+   - /admin/ai-retention
+
+Goal:
+Ensure worker identity is consistent and trusted across:
+
+- heartbeat
+- pending job polling
+- job claim / mark-running
+- result submission
+- worker counters
+- ai_job_events.actor_worker_id
+- ai_jobs.locked_by
+- ai_workers.worker_id
+
+Do not rewrite the app.
+Do not expose Python directly to the frontend.
+Do not bypass the TypeScript API.
+Do not add Redis.
+Do not require external AI APIs.
+Keep Python worker optional.
+
+Part A — Worker identity contract
+
+Define a single worker identity convention.
+
+Preferred:
+
+- Python sends:
+  - Authorization: Bearer ${MOUGLE_WORKER_TOKEN}
+  - X-Worker-Id: ${WORKER_ID}
+
+Rules:
+
+1. X-Worker-Id is required on all worker endpoints.
+2. X-Worker-Id must match the workerId in heartbeat request body.
+3. X-Worker-Id is used as the canonical worker id for:
+   - ai_jobs.locked_by
+   - ai_workers.worker_id
+   - ai_job_events.actor_worker_id
+4. Reject mismatches with 400 or 403.
+5. Reject missing worker id with 400.
+6. Validate worker id length and allowed characters.
+   Suggested:
+   - 3–128 chars
+   - letters, numbers, underscore, hyphen, dot, colon
+7. Never trust worker id from body alone when header exists.
+
+Part B — TypeScript worker auth/middleware
+
+Update the worker-token guard or add a helper so worker routes receive a validated worker context:
+
+{
+  workerId: string
+}
+
+Apply to all worker endpoints:
+
+- POST /api/worker/heartbeat
+- GET /api/worker/ai-jobs/pending
+- POST /api/worker/ai-jobs/:jobId/running
+- POST /api/worker/ai-jobs/result
+
+Behavior:
+
+- Missing token → 401/403 as currently implemented.
+- Invalid token → 401/403.
+- Missing X-Worker-Id → 400.
+- Invalid X-Worker-Id → 400.
+- Heartbeat body workerId mismatch → 400/403.
+- Successful worker routes use only the validated context workerId.
+
+Part C — Job claim/result consistency
+
+Update job claim/result paths so:
+
+1. markRunning uses workerId from validated worker context, not arbitrary body.
+2. recordResult uses workerId from validated worker context.
+3. stale result rejection audit logs actor_worker_id from validated worker context.
+4. ai_workers counters update for the same validated worker id.
+5. Any body workerId field, if present, must either match or be ignored safely.
+
+Part D — Python worker updates
+
+Update:
+
+- python-workers/shared/config.py
+- python-workers/jobs/job_consumer.py
+- any HTTP helper used by worker
+
+Python should:
+
+1. Always send X-Worker-Id on:
+   - heartbeat
+   - pending polling
+   - mark-running
+   - result submission
+
+2. Keep workerId in heartbeat JSON body matching X-Worker-Id.
+
+3. Use one generated/read WORKER_ID for the process lifetime.
+
+4. Log startup worker id clearly.
+
+5. Do not send secrets in headers or metadata except the bearer worker token.
+
+Part E — Admin UI / display
+
+No major UI change required.
+
+If easy, make sure:
+
+- /admin/ai-workers links to jobs locked by that worker.
+- /admin/ai-jobs displays lockedBy and audit actor_worker_id consistently.
+
+Part F — Validation
+
+Run existing checks/tests.
+
+Confirm:
+
+- worker heartbeat without X-Worker-Id returns 400.
+- worker heartbeat with mismatched body workerId returns 400/403.
+- worker heartbeat with valid X-Worker-Id succeeds.
+- pending polling without X-Worker-Id returns 400.
+- mark-running uses X-Worker-Id as lockedBy.
+- result submission updates counters for the same worker id.
+- audit events use the same actor_worker_id.
+- Python worker starts and sends X-Worker-Id on all worker API calls.
+- unauthenticated or invalid-token worker requests are still rejected.
+- admin pages still load.
+- no normal user access to worker endpoints.
+
+After changes, summarize:
+- files created
+- files modified
+- worker identity convention
+- middleware changes
+- endpoint changes
+- Python changes
+- validation results
+- what remains for the next step

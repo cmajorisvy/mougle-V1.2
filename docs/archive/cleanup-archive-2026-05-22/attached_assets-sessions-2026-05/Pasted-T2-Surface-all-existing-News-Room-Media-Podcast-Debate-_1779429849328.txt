@@ -1,0 +1,211 @@
+T2 — Surface all existing News Room / Media / Podcast / Debate / Production links in the admin dashboard
+
+Use:
+docs/reports/NEWS_PODCAST_VIDEO_ADMIN_CONSOLIDATION_AUDIT.md
+
+Goal:
+Before consolidation, wiring checks, cleanup, or deletion, make sure every existing admin link related to News Room, Media, Podcast, Debate, Video, Production House, Preview Studio, Avatar, 3D/4D, YouTube, Social, Publishing, Shorts, Approval, and Live Studio is visible from the main admin dashboard under clear categories.
+
+Important:
+This is NOT a cleanup task.
+This is NOT a deletion task.
+This is NOT a route rewrite task.
+Do not remove, rename, move, delete, or refactor existing components/routes/files.
+Only add or surface dashboard links/cards/aliases so admins can find all related tools from the right categories.
+
+Reason:
+I saw multiple /admin/... links related to newsroom, media, podcast, video, and production that are not visible under the current Media & Content Pipeline category or main dashboard. They must be surfaced before we decide what to consolidate, wire-check, deprecate, or remove.
+
+Rules:
+- Preserve the existing Media & Content Pipeline section.
+- Keep all existing links working.
+- Add new grouped links/cards as aliases/cross-links only.
+- Do not delete old links.
+- Do not remove old labels.
+- Do not remove compatibility paths.
+- Do not change backend routes.
+- Do not change API behavior.
+- Do not change safe-mode flags.
+- Do not enable real publishing, real rendering, real Unreal execution, real 4D hardware, or autonomous live running.
+- All current Manual / Dry-run / Internal-only / Approval-only modes must remain unchanged.
+
+Dashboard groups to add or update:
+
+1. News Room Studio
+Show links for:
+- News ingestion / news articles
+- Verified newsroom data packages
+- Broadcast Briefs
+- Legal Event Visual Resolver
+- Newsroom Screen Data Builder
+- Neural Newsroom Automation
+- Virtual Screen Director
+- Newsroom Preview
+- News Video Package Builder
+- Newsroom Playout Queue
+- Newsroom Shorts Cutter
+- News Publishing Approval Queue
+- Any existing /admin/... route connected to newsroom or news video
+
+2. Podcast Room Studio
+Show links for:
+- Podcast dashboard
+- Podcast Scripts
+- Podcast script packages
+- Voice Jobs
+- Podcast audio jobs
+- Podcast room creator
+- Podcast host/guest avatars
+- Podcast media packages
+- Podcast video packages
+- Podcast clips
+- Podcast publishing approval queue
+- Verified data reference selector
+- Debate/discussion reference selector
+- Any existing /admin/... route connected to podcast/audio/podcast video
+
+3. Debate Studio
+Show links for:
+- News to Debate
+- Debate packages
+- Debate room creator
+- Moderator/guest avatars
+- Debate script/discussion builder
+- Debate video packages
+- Debate-to-podcast reference export
+- Debate clips
+- Live Studio if currently debate-focused
+- Any existing /admin/... route connected to debate/live debate
+
+4. Production House
+Show links for:
+- Production Preview Studio
+- Preview Studio
+- Cinema 4D Studio
+- Avatar Studio
+- Asset Studio
+- Video Studio
+- Video Render
+- Media Package Studio
+- Package Viewer
+- Asset Library
+- Readiness Center
+- Approval Board
+- Any existing /admin/... route connected to production-house, preview, render planning, packages, avatars, or assets
+
+5. 3D / 4D / Unreal
+Show links for:
+- Human-made 3D/4D newsroom imports
+- Human-made podcast room imports
+- Cinema 4D Studio
+- 3D/4D package builder
+- Unreal dry-run validation
+- Virtual Screen Director simulation
+- 4D cue sandbox
+- Hardware gateway planning only
+- Any existing /admin/... route connected to Unreal, Cinema 4D, 4D sandbox, dry run, or screen simulation
+
+6. Distribution
+Show links for:
+- Shorts Approval Queue
+- YouTube Publishing
+- Social Distribution
+- Publishing approval queues
+- YouTube approval packages
+- Social export-first packages
+- Shorts/Reels/TikTok packages
+- Publishing audit logs
+- Any existing /admin/... route connected to distribution, social, publishing, YouTube, shorts
+
+7. Media & Content Pipeline Compatibility
+Keep the existing section visible with current labels:
+- News to Debate
+- Podcast Scripts
+- Voice Jobs
+- Video Render
+- Shorts Approval Queue
+- YouTube Publishing
+- Social Distribution
+- Live Studio
+
+This compatibility section should remain until after wiring checks and E2E tests prove the new grouped links cover everything.
+
+Discovery requirement:
+Search all admin route/link definitions and page files for hidden or ungrouped related links.
+
+Search terms:
+news
+newsroom
+broadcast
+brief
+screen
+legal event
+visual
+virtual screen
+podcast
+voice
+audio
+debate
+live studio
+video
+render
+avatar
+media package
+package viewer
+production-house
+preview-studio
+cinema4d
+4d
+unreal
+shorts
+youtube
+social
+publishing
+distribution
+approval
+readiness
+
+For every discovered related route, either:
+- add it to one of the above dashboard groups, or
+- document why it should remain hidden/internal.
+
+Add a report:
+docs/reports/NEWS_PODCAST_VIDEO_ADMIN_LINK_SURFACING_T2_REPORT.md
+
+The report must include:
+
+1. Dashboard groups added/updated
+2. All links surfaced
+3. Existing Media & Content Pipeline links preserved
+4. Related /admin/... routes found but not surfaced, with reason
+5. Files changed
+6. Safety mode unchanged proof
+7. Confirmation no files/components/routes were deleted
+8. Confirmation no backend/API behavior changed
+9. Confirmation no safe-mode flag changed
+10. Confirmation no publishing/rendering/live execution was enabled
+11. Open questions for T3 wiring check
+
+Testing / verification:
+- npm run check, or targeted TypeScript check if full check has pre-existing errors
+- verify /admin dashboard renders
+- verify each new dashboard link points to an existing route or intentional compatibility route
+- verify no broken new links
+- verify old Media & Content Pipeline links still appear
+- verify existing old links still work
+
+Final response must include:
+- report path
+- list of new groups
+- list of links added/surfaced
+- list of old links preserved
+- list of hidden/internal links not surfaced
+- files changed
+- tests/checks run
+- any remaining issues
+
+Again:
+Do not consolidate yet.
+Do not remove anything.
+Do not rename anything.
+This task is only to surface all existing related admin links visibly in the dashboard.

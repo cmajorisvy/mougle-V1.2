@@ -1,0 +1,104 @@
+Proceed with Newsroom T3 — Broadcast Brief Builder service.
+
+Build only the Broadcast Brief Builder. Do not expand into T5, T8, T9, T10, or publishing.
+
+T3 requirements:
+
+1. Input
+Use existing processed/verified newsroom data where available:
+- articleId
+- dataPackageId if available
+- headline
+- summary
+- canonical title
+- claims
+- sources
+- timeline
+- media references
+- confidence score
+- impactScore
+- location if available
+- event type if available
+
+2. Output
+Create a draft/internal BroadcastBrief with:
+- briefId
+- storyId/articleId/dataPackageId
+- headline
+- summary
+- region
+- country
+- locationName
+- latitude/longitude nullable
+- eventType
+- entities
+- mood/tone
+- impactScore
+- breakingNews boolean
+- scriptBeats[]
+- visualNeeds[]
+- bRollNeeds[]
+- mapNeeds[]
+- anchorMode recommendation
+- sensitivityFlags[]
+- rightsFlags[]
+- approvalStatus:"draft"
+- visibility:"admin_only_internal"
+- publicUrl:null
+- signedUrl:null
+- realSendAllowed:false
+- executionEnabled:false
+- safetyEnvelope
+
+3. Safety
+Use the T1 safety harness where applicable.
+
+Hard prohibitions:
+- no copyrighted footage fetch
+- no logo/watermark removal
+- no unauthorized rebroadcast
+- no auto-publishing
+- no YouTube/social posting
+- no live Unreal execution
+- no real 4D hardware
+- no Movie Render Queue
+- no Sequencer
+- no real render
+
+4. Routes
+Add only if scoped in T3:
+- POST /api/admin/newsroom/broadcast-brief/:dataPackageId/generate
+- GET /api/admin/newsroom/broadcast-brief/:briefId
+- GET /api/admin/newsroom/broadcast-brief/history
+
+All admin POST routes must require auth and CSRF.
+
+5. Tests
+Add regression tests for:
+- route requires admin
+- POST requires CSRF
+- generated brief is draft/internal-only
+- publicUrl remains null
+- signedUrl remains null
+- realSendAllowed remains false
+- executionEnabled remains false
+- impactScore maps correctly
+- location/event/entities are derived safely
+- rightsFlags are present
+- no publishing call
+- no Unreal call
+- no 4D hardware call
+- T1 safety harness still passes
+
+6. Completion proof
+Run:
+- npm run check
+- relevant Broadcast Brief tests
+- T1 safety tests/lint
+
+Do not start or modify:
+- T5 3D/4D Newsroom Package Builder
+- T8 Playout Queue
+- T9 Shorts Cutter
+- T10 Cost Control
+- T11 E2E Safety Suite

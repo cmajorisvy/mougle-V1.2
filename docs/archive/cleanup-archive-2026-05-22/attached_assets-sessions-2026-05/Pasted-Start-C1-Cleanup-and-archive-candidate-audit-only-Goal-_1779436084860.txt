@@ -1,0 +1,95 @@
+Start C1 — Cleanup and archive candidate audit only.
+
+Goal:
+Identify needless, duplicate, unused, broken, obsolete, or superseded backend/admin-dashboard components after the completed News / Podcast / Debate / Production dashboard work.
+
+Do not delete anything yet.
+Do not move anything yet.
+Do not archive anything yet.
+Do not change code behavior.
+Do not change routes.
+Do not change schemas.
+Do not run migrations.
+
+Use as source inputs:
+- docs/reports/NEWS_PODCAST_VIDEO_ADMIN_CONSOLIDATION_AUDIT.md
+- docs/reports/NEWS_PODCAST_VIDEO_ADMIN_LINK_SURFACING_T2_REPORT.md
+- docs/reports/NEWS_PODCAST_VIDEO_ADMIN_WIRING_T3_REPORT.md
+- docs/reports/MOUGLE_NEWS_PODCAST_PRODUCTION_SYSTEM_FLOWCHARTS.md
+- docs/reports/NEWS_PODCAST_VIDEO_ADMIN_T4_UX_POLISH_REPORT.md
+- docs/reports/NEWS_PODCAST_VIDEO_ADMIN_T5_SMOKE_E2E_REPORT.md
+- docs/archive/REPLIT_TASK_HISTORY_ARCHIVE_2026-05-22.md
+
+Create:
+docs/reports/CLEANUP_ARCHIVE_CANDIDATE_AUDIT_C1.md
+
+Audit areas:
+1. Admin dashboard components
+2. News Room pages/components
+3. Podcast Room pages/components
+4. Debate Studio pages/components
+5. Production House pages/components
+6. 3D / 4D / Unreal pages/components
+7. Distribution / YouTube / Social / Shorts pages
+8. Backend services
+9. API routes
+10. Shared schemas/types
+11. Old docs/reports
+12. Generated/transient artifacts
+13. Duplicate compatibility wrappers
+14. Broken or unused route aliases
+15. Deprecated tests
+
+For every candidate, classify:
+
+- KEEP_ACTIVE
+- KEEP_COMPATIBILITY
+- KEEP_SHARED_INFRASTRUCTURE
+- KEEP_SAFETY_CRITICAL
+- ARCHIVE_CANDIDATE
+- DEPRECATE_BUT_KEEP
+- REMOVE_CANDIDATE
+- NEEDS_MANUAL_REVIEW
+- DO_NOT_TOUCH
+
+For every ARCHIVE_CANDIDATE or REMOVE_CANDIDATE, provide proof:
+
+- file path
+- route/component/service name
+- grep import references
+- grep route references
+- tests referencing it
+- database/table dependency risk
+- whether dashboard links use it
+- whether backend routes use it
+- replacement file/component/service if any
+- risk level: LOW / MEDIUM / HIGH / BLOCKED
+- rollback plan
+- recommended action
+
+Hard safety rules:
+Never mark for removal:
+- auth middleware
+- CSRF middleware
+- root-admin gates
+- safe-mode service
+- approval gates
+- dry-run guards
+- publishing approval code
+- copyright/legal resolver code
+- audit logs
+- retention/snooze/notifier history
+- verified newsroom data storage
+- podcast/debate reference storage
+- production package storage
+- migration scripts unless clearly superseded and still archived
+
+Final response must include:
+- report path
+- number of candidates reviewed
+- number KEEP
+- number ARCHIVE_CANDIDATE
+- number REMOVE_CANDIDATE
+- number NEEDS_MANUAL_REVIEW
+- high-risk items
+- confirmation no files were changed except the report

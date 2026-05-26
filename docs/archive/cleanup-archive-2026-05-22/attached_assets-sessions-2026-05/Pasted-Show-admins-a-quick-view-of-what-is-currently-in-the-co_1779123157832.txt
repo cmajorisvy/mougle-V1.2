@@ -1,0 +1,107 @@
+Show admins a quick view of what is currently in the cover-sweep audit log.
+
+Goal:
+Add a simple admin-only “Cover Sweep Audit Quick View” so founders/admins can quickly see the latest cover sweep events without digging through raw platform_alerts or rotated logs.
+
+Scope:
+- Read-only visibility only.
+- Do not add purge/delete behavior.
+- Do not change cover sweep behavior.
+- Do not change alert creation behavior.
+- Do not change newsroom, publishing, Unreal, 4D, Production House, or Mac app behavior.
+
+Reference files:
+- server/services/cover-orphan-alert-service.ts
+- platform_alerts service/schema
+- Founder Debug Console / alerts UI
+- client/src/pages/admin/FounderDebugConsole.tsx
+
+Backend:
+
+Add or reuse a service helper:
+
+getCoverSweepAuditQuickView(options)
+
+It should return the latest cover sweep related rows from current platform_alerts/audit logs.
+
+Include event types related to:
+- cover orphan sweep
+- cover orphan alert created
+- cover orphan alert auto-resolved
+- broadcast cover orphan flapping
+- cover trash / cover sweep events if present
+
+Returned fields:
+- id
+- eventType
+- severity
+- message
+- createdAt
+- acknowledged
+- acknowledgedBy nullable
+- autoResolved boolean
+- autoResolvedAt nullable
+- autoResolvedCount nullable
+- autoResolvedThreshold nullable
+- scannedCount nullable
+- orphanCount nullable
+- movedToTrashCount nullable
+- details sanitized
+
+Route:
+
+GET /api/admin/cover-sweep/audit-quick-view
+
+Query params:
+- limit default 20, max 100
+- autoResolved optional boolean
+- severity optional
+- eventType optional
+
+Requirements:
+- root-admin gated
+- JSON only
+- sanitize details
+- no secrets
+- no raw sensitive filesystem paths
+- missing fields should be null, not crash
+
+Frontend:
+
+In Founder Debug Console, add a compact section:
+
+Cover Sweep Audit Quick View
+
+Show:
+- latest 20 cover sweep events
+- severity badge
+- event type
+- createdAt
+- acknowledged status
+- “Auto-cleared by sweep” badge if autoResolved === true
+- summary counts if present
+- expandable sanitized details
+- refresh button
+
+Do not add:
+- delete button
+- purge button
+- clear-all button
+- destructive action
+
+Tests:
+
+Add tests proving:
+- endpoint requires root-admin
+- returns only cover-sweep related events
+- excludes unrelated platform_alerts
+- limit max is enforced
+- autoResolved rows include autoResolved fields
+- details are sanitized
+- malformed details do not crash
+- UI renders Auto-cleared by sweep badge for autoResolved rows if frontend tests exist
+
+Run:
+- npm run check
+- relevant Founder Debug Console / platform alerts tests
+- new cover sweep audit quick view tests

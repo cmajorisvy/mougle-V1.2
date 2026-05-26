@@ -1,0 +1,159 @@
+Now add AI operations summary cards to the Mougle admin/founder dashboard.
+
+Context:
+The project already has:
+
+1. ai_jobs table.
+2. ai_job_events table.
+3. ai_workers table.
+4. ai_retention_runs table.
+5. Admin AI Job Monitor:
+   - /admin/ai-jobs
+6. Admin AI Workers:
+   - /admin/ai-workers
+7. Admin AI Retention:
+   - /admin/ai-retention
+8. Retry/cancel controls.
+9. Retention run history.
+10. Worker health monitoring.
+
+Goal:
+Add compact AI operations summary metrics to the admin/founder dashboard so admins can quickly see AI system health.
+
+Do not rewrite the app.
+Do not expose Python directly to the frontend.
+Do not bypass the TypeScript API.
+Do not add Redis.
+Do not add cron.
+Do not require external AI APIs.
+Keep Python worker optional.
+
+Part A — Backend summary endpoint
+
+Add an admin-only endpoint:
+
+GET /api/admin/ai-ops/summary
+
+Return compact metrics such as:
+
+Job metrics:
+- pendingJobs
+- runningJobs
+- succeededJobsLast24h
+- failedJobsLast24h
+- rejectedJobsLast24h
+- staleRunningJobs
+- retryableFailedJobs
+- totalJobsLast24h
+
+Worker metrics:
+- totalWorkers
+- onlineWorkers
+- staleWorkers
+- offlineWorkers
+- unhealthyWorkers
+- busyWorkers
+- idleWorkers
+
+Audit / retention metrics:
+- auditEventsLast24h
+- lastCleanupAt
+- lastCleanupStatus
+- rowsDeletedLastCleanup
+- rowsDeletedLast7d
+- cleanupEligibleCounts:
+  - completedJobs
+  - failedJobs
+  - auditEvents
+  - staleWorkers
+
+Health rollup:
+- healthStatus: "healthy" | "degraded" | "attention_needed"
+- healthReasons: string[]
+
+Suggested health logic:
+- attention_needed if failedJobsLast24h is high, staleRunningJobs > 0, or all workers are offline while pendingJobs > 0
+- degraded if any workers are stale/offline or cleanupEligibleCounts are high
+- healthy otherwise
+
+Security:
+- requireRootAdmin
+- normal users cannot access
+- unauthenticated users cannot access
+- do not expose secrets or raw payloads
+
+Implementation notes:
+- Use existing services where practical.
+- Add a focused service method if needed, for example:
+  server/services/aiOpsSummaryService.ts
+- Keep queries efficient.
+- Avoid loading raw payloads/results.
+- Use counts/aggregates.
+
+Part B — Admin dashboard UI
+
+Find the existing admin/founder dashboard page.
+
+Add a compact “AI Operations” section with cards:
+
+1. Jobs
+   - pending
+   - running
+   - failed last 24h
+
+2. Workers
+   - online
+   - stale/offline
+   - busy
+
+3. Retention
+   - last cleanup
+   - rows deleted last cleanup
+   - cleanup eligible counts
+
+4. Health
+   - healthy/degraded/attention needed badge
+   - reasons if not healthy
+
+Include quick links:
+- View AI Jobs → /admin/ai-jobs
+- View Workers → /admin/ai-workers
+- Retention → /admin/ai-retention
+
+UI behavior:
+- admin-only page/section
+- loading/error states
+- manual refresh button if consistent
+- no destructive actions here
+- compact and readable
+
+Part C — Optional route
+
+If there is no clear admin/founder dashboard to modify, add a lightweight page:
+
+/admin/ai-ops
+
+That shows the same summary cards and links.
+
+Part D — Validation
+
+Run existing checks/tests.
+
+Confirm:
+- unauthenticated users cannot access /api/admin/ai-ops/summary.
+- non-admin users cannot access it.
+- admin can fetch summary.
+- dashboard/page loads.
+- summary cards render.
+- health rollup works for empty/no-worker state.
+- no Python changes are required.
+
+After changes, summarize:
+- files created
+- files modified
+- endpoint added
+- metrics returned
+- dashboard/page updated
+- health rollup logic
+- validation results
+- what remains for the next step

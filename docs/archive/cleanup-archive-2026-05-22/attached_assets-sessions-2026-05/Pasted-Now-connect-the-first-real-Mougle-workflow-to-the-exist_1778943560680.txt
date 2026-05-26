@@ -1,0 +1,122 @@
+Now connect the first real Mougle workflow to the existing user.claim_extraction AI job.
+
+Context:
+The project already has:
+
+1. Python worker scaffold and bridge.
+2. Postgres-backed ai_jobs table.
+3. TypeScript AI job service.
+4. Worker-token API bridge.
+5. Real Python handler for:
+   - user.claim_extraction
+6. Smoke tests already confirm claim extraction works.
+
+Goal:
+Add a real TypeScript/API workflow that allows authorized Mougle users to enqueue claim extraction on real content and later retrieve the persisted result.
+
+Do not rewrite the app.
+Do not expose Python directly to the frontend.
+Do not bypass the TypeScript API.
+Do not connect Python directly to Postgres.
+Do not add Redis.
+Do not require paid external AI APIs.
+Keep Python optional.
+
+Implementation requirements:
+
+1. Find the best existing Mougle content object to attach claim extraction to.
+   Prefer an existing entity such as:
+   - article
+   - draft
+   - newsroom item
+   - document
+   - render input
+   - text/content submission
+
+2. Add or extend a TypeScript route that lets an authenticated user request claim extraction for that content.
+
+Suggested endpoint shape:
+
+POST /api/ai-jobs/claim-extraction
+
+or, if content-specific routes exist:
+
+POST /api/articles/:articleId/claim-extraction
+POST /api/drafts/:draftId/claim-extraction
+POST /api/newsroom/:itemId/claim-extraction
+
+Use the project’s existing route conventions.
+
+3. The route should:
+   - require authentication
+   - verify the user owns or is allowed to access the content
+   - load the content text from the existing data layer
+   - validate that text is non-empty
+   - create a user.claim_extraction job using aiJobService
+   - store provenance linking the job back to the source content when possible
+   - return 202 with:
+     - jobId
+     - status
+     - source content reference
+     - polling URL or status endpoint
+
+4. Add a status/result endpoint if the existing one is not enough.
+   It should let the same authorized user retrieve:
+   - pending/running status
+   - succeeded result
+   - failed result
+   - created/updated timestamps
+
+5. Do not allow users to read other users’ claim extraction jobs.
+
+6. Keep admin/internal access separate from user access.
+
+7. If the app does not yet have a suitable content entity, add a minimal safe text-based endpoint:
+
+POST /api/ai-jobs/claim-extraction
+
+Body:
+{
+  "text": "...",
+  "title": "...optional..."
+}
+
+This fallback endpoint should:
+   - require authentication
+   - limit input size
+   - validate non-empty text
+   - enqueue user.claim_extraction
+   - return 202
+
+8. Add clear input limits to avoid abuse.
+   For example:
+   - reject empty text
+   - reject extremely large text
+   - trim whitespace
+   - return a clear 400 error for invalid input
+
+9. Preserve existing ai_jobs persistence.
+10. Preserve worker-token bridge.
+11. Do not modify Python handler logic unless the existing payload shape requires a small compatibility fix.
+
+Validation:
+- Run existing TypeScript checks/tests.
+- Run Python smoke test if Python files are touched.
+- Confirm authenticated claim extraction job creation works.
+- Confirm unauthenticated request returns 401/403.
+- Confirm empty text returns 400.
+- Confirm user cannot read another user’s job result.
+- Confirm job persists in Postgres.
+- Confirm the Python worker can process the created job when run manually.
+
+After changes, summarize:
+- files created
+- files modified
+- endpoint added or updated
+- content object used
+- request payload shape
+- response shape
+- permission checks
+- validation results
+- exact manual test steps
+- what remains for the next step

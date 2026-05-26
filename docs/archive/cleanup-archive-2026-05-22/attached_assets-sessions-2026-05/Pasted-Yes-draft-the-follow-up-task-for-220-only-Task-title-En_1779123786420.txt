@@ -1,0 +1,83 @@
+Yes, draft the follow-up task for #220 only.
+
+Task title:
+Enforce feed test pass before saving or enabling news source feeds
+
+Goal:
+Close the backend enforcement gaps from Task #220. Admins must not be able to save or enable a feed URL unless the feed test fully passes.
+
+Required fixes:
+
+1. Backend create/update enforcement
+For create and update operations in the Global Source Registry / news sources routes:
+- Run the full feed test before saving an enabled feed.
+- The full feed test must verify:
+  - valid HTTP/HTTPS URL
+  - public/non-private address
+  - reachable response
+  - RSS/Atom parse succeeds
+  - at least one feed item exists
+- If the feed test fails, reject enabled save/update with:
+  HTTP 422
+  {
+    ok:false,
+    error:"feed_test_failed",
+    reason,
+    statusCode,
+    testedAt,
+    itemCount
+  }
+
+2. Enabling enforcement
+When PATCH enables a disabled feed:
+- Run the full feed test immediately.
+- If the test fails, do not enable the feed.
+- Return the same feed_test_failed response shape.
+- Do not rely on old lastTestOk if the URL changed or last test is stale.
+
+3. Draft behavior
+Allow failed feeds to be saved only if:
+- enabled:false
+- status:"draft" or equivalent
+- lastTestOk:false
+- lastTestError safely stored
+- not scheduled for ingestion
+
+4. UI hardening
+In the source/feed form:
+- Disable “Save Enabled Feed” until a full feed test passes.
+- Remove or restrict “Save anyway” so it can only save disabled/draft feeds.
+- Add badge:
+  “Draft — failed feed test”
+- Show:
+  lastTestOk
+  lastTestedAt
+  lastTestError
+  itemCount
+
+5. Tests
+Add regression tests proving:
+- enabled save with invalid URL is rejected
+- enabled save with unsupported protocol is rejected
+- enabled save with localhost/private network is rejected
+- enabled save with unreachable URL is rejected
+- enabled save with parse failure is rejected
+- enabled save with empty feed is rejected
+- failed feed can be saved only disabled/draft
+- existing valid feed cannot be updated to failed URL while enabled
+- enabling a disabled feed requires fresh successful test
+- stale lastTestOk cannot bypass validation
+- success path saves/enables valid feed
+- response shape is exactly error:"feed_test_failed"
+- no secrets/internal network errors leak
+
+6. Preserve safety
+Do not change publishing behavior.
+Do not trigger ingestion automatically.
+Do not weaken source reliability scoring.
+Do not weaken newsroom safety harness.
+Do not touch 4D, Unreal, Production House, Mac app, or cover sweep behavior.
+
+Run:
+- npm run check
+- relevant news source / Global Source Registry tests

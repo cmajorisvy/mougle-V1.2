@@ -1,0 +1,74 @@
+Proceed with T5 — dashboard smoke/E2E verification only.
+
+Do not trim replit.md in this task.
+Do not touch client/public/opengraph.jpg in this task.
+Do not delete, move, rename, consolidate, or remove anything.
+
+Use as source inputs:
+- docs/reports/NEWS_PODCAST_VIDEO_ADMIN_CONSOLIDATION_AUDIT.md
+- docs/reports/NEWS_PODCAST_VIDEO_ADMIN_LINK_SURFACING_T2_REPORT.md
+- docs/reports/NEWS_PODCAST_VIDEO_ADMIN_WIRING_T3_REPORT.md
+- docs/reports/MOUGLE_NEWS_PODCAST_PRODUCTION_SYSTEM_FLOWCHARTS.md
+- docs/reports/NEWS_PODCAST_VIDEO_ADMIN_T4_UX_POLISH_REPORT.md
+
+Goal:
+Run smoke/E2E-style verification that the admin dashboard zones and links still work after T1–T4.
+
+Scope:
+- Verify /admin dashboard renders.
+- Verify all new zones appear:
+  - News Room
+  - Podcast Room
+  - Debate Studio
+  - Production House
+  - 3D/4D/Unreal
+  - Distribution
+  - Media & Content Pipeline compatibility
+- Verify all surfaced links are present.
+- Verify every /admin/* link points to an existing route.
+- Verify preserved Media & Content Pipeline links still appear.
+- Verify cross-zone aliases still point to the same route.
+- Verify /admin/shorts cross-links still show approval/manual wording.
+- Verify Newsroom Package Viewer / Editor labels appear correctly.
+- Verify /admin/4d-cinema-control and /admin/cinema-control alias wording appears.
+- Verify no new broken links.
+- Verify no route requires unsafe missing params from the dashboard base link.
+
+Safety checks:
+- No auto-publishing enabled.
+- No YouTube upload enabled without manual approval.
+- No social publishing enabled without manual approval.
+- No real video rendering enabled.
+- No Unreal execution enabled.
+- No real 4D hardware enabled.
+- No autonomous live runner enabled.
+- Safe-mode flags remain untouched.
+- Approval gates remain intact.
+
+Create:
+docs/reports/NEWS_PODCAST_VIDEO_ADMIN_T5_SMOKE_E2E_REPORT.md
+
+Report must include:
+- routes/links checked
+- pass/fail table
+- zones verified
+- old compatibility links verified
+- cross-zone aliases verified
+- safety checks verified
+- any broken links or warnings
+- tests/checks run
+- screenshots if the project already has a safe screenshot/smoke pattern
+- confirmation no code behavior changed
+
+Allowed changes:
+- Create the T5 report only.
+- Run existing tests/checks.
+- No source code changes unless explicitly approved.
+
+Final response must include:
+- report path
+- number of links checked
+- number passing
+- number failing
+- safety check summary
+- recommended follow-ups

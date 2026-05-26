@@ -1,0 +1,106 @@
+Continue from the completed Phase 1B clustering + claim extraction PR.
+
+Goal:
+Add a pure NewsroomDataPackage builder that converts verified-newsroom preview data into a deterministic NewsroomDataPackagePayload using the contracts in shared/newsroom-types.ts.
+
+Context:
+- shared/newsroom-types.ts already contains VerifiedKnowledge, claims, media, timeline, source references, safety notes, and NewsroomDataPackagePayload contracts.
+- server/services/newsroom/clusteringService.ts exists.
+- server/services/newsroom/claimExtractionService.ts exists.
+- server/routes/newsroom-preview-routes.ts already exposes root-admin dry-run preview endpoints.
+- No DB schema has been applied.
+- shared/newsroom-schema.ts remains migration-gated and must not be imported into shared/schema.ts.
+
+Hard constraints:
+- Do not modify shared/schema.ts.
+- Do not import shared/newsroom-schema.ts into production schema.
+- Do not run db:push.
+- Do not add migrations.
+- Do not call external providers.
+- Do not add autonomous publishing.
+- Do not modify existing render behavior.
+- Do not execute avatar/video/render jobs.
+- Do not add public routes.
+- Do not add new dependencies.
+- Keep all new behavior deterministic and testable.
+
+Create:
+server/services/newsroom/newsroomDataPackageBuilder.ts
+
+The module should export pure functions such as:
+- buildNewsroomDataPackage(input)
+- validateNewsroomDataPackage(payload)
+- deriveNewsroomSafetyNotes(input)
+- summarizePackageVerification(payload)
+
+The builder should:
+1. Accept verified or preview-verified newsroom input using the existing shared/newsroom-types.ts contracts.
+2. Produce a valid NewsroomDataPackagePayload.
+3. Preserve:
+   - verified source references
+   - extracted claims
+   - claim verdicts
+   - timeline events
+   - media references
+   - rights statuses
+   - confidence fields
+4. Derive conservative safety notes.
+5. Force all publish/social/live/autonomous flags to false.
+6. Reject rejected or unapproved data unless explicitly passed in preview mode.
+7. Mark disputed/developing data as non-publishable.
+8. Never read from the database.
+9. Never write to the database.
+10. Never call OpenAI, TTS, avatar, video, render, social, or external providers.
+
+Optional route addition:
+If clean and low-risk, add a third root-admin dry-run endpoint:
+
+POST /api/admin/newsroom/package-preview
+
+Requirements for this endpoint:
+- requireRootAdmin
+- inherits global CSRF
+- requires dryRun: true
+- returns promoted: false
+- returns renderStarted: false
+- returns publishQueued: false
+- uses only the pure package builder
+- no DB writes
+- no provider calls
+
+Tests:
+Add tests covering:
+- valid verified input builds a valid NewsroomDataPackagePayload
+- extracted claims are preserved
+- source references are preserved
+- disputed/developing status is non-publishable
+- rejected status is rejected unless preview mode explicitly allows inspection
+- safety notes force publish/social/live flags false
+- media rights statuses are preserved
+- output is deterministic
+- validation errors are clear
+- optional package-preview route requires dryRun: true
+- optional package-preview route returns promoted: false
+
+Report:
+Create:
+
+docs/reports/CODEX_PHASE_1B_NEWSROOM_PACKAGE_BUILDER_REPORT.md
+
+Include:
+- files changed
+- contracts used
+- no DB impact confirmation
+- no provider calls confirmation
+- no render execution confirmation
+- endpoint behavior if added
+- test results
+- rollback notes
+- remaining work before production integration
+
+Validation:
+- Run npm run check.
+- Confirm all tests pass.
+- Confirm shared/schema.ts is untouched.
+- Confirm shared/newsroom-schema.ts is not imported into shared/schema.ts.
+- Confirm no db:push was run.

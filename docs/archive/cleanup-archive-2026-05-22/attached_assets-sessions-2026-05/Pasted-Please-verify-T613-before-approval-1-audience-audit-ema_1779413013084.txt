@@ -1,0 +1,66 @@
+Please verify T613 before approval:
+
+1. audience_audit_email_failure_alert_snoozes table exists in shared schema and migration DDL with:
+   - alertKey
+   - action set|cleared|expired
+   - snoozeUntil
+   - updatedBy
+   - occurredAt
+   - dedup_key unique
+
+2. Migration script is idempotent and includes the unique dedup_key constraint/index.
+
+3. Direct Supabase psql DDL exactly matches the migration/schema definition.
+
+4. setAuditEmailFailureAlertSnooze appends a set row on every set.
+
+5. Clearing appends cleared only when there was a previously active snooze, avoiding no-op noise.
+
+6. Replacing an active snooze produces the expected history behavior.
+
+7. isAuditEmailFailureAlertSnoozed lazily records expired the first time it observes an elapsed window.
+
+8. Repeated expired checks are idempotent because dedup_key prevents duplicate expired rows.
+
+9. History writes are best-effort and never block alert dispatch or snooze checks.
+
+10. listAuditEmailFailureAlertSnoozeHistory:
+   - bounds limit 1..50
+   - returns newest first
+   - isolates by alertKey
+
+11. pruneAuditEmailFailureAlertSnoozeHistoryOlderThan removes rows older than cutoff and preserves newer rows.
+
+12. Audience-retention sweep calls the new pruner and failures do not break the retention sweep.
+
+13. Both services expose getSnoozeHistory(limit):
+   - email schedule failure alert
+   - email schedule history failure alert
+
+14. Admin routes exist and are read-only/root-admin gated:
+GET /api/admin/newsroom/audience/email-schedule/failure-alert/snooze-history
+GET /api/admin/newsroom/audience/email-schedule-history/failure-alert/snooze-history
+
+15. Anonymous/non-admin access is blocked.
+
+16. FailureAlertSnoozeControls renders Past snooze actions only when historyEndpoint is provided.
+
+17. UI shows:
+   - action badge
+   - occurredAt
+   - snoozeUntil
+   - updatedBy
+
+18. Existing snooze set/clear UI still works.
+
+19. Existing alert dispatch behavior remains unchanged.
+
+20. All 11 cases in tests/audience-audit-email-failure-alert-snooze.ts pass.
+
+21. No new TypeScript errors were introduced by T613.
+
+22. No secrets/raw email body content/private recipient data is stored in the snooze history rows.
+
+23. Document the deviation:
+   - DDL was applied directly via psql due to EMAXCONNSESSION
+   - migration file remains the source of truth for future environments
