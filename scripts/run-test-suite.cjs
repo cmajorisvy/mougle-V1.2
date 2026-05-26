@@ -16,6 +16,7 @@ const suites = {
     "tests/broadcast-preview-auto-revert.test.ts",
     "tests/admin-reserved-subroutes.test.ts",
     "tests/admin-dashboard-route-links.test.ts",
+    "tests/no-unrelated-external-redirects.test.ts",
     "tests/audit-export-outlier-form.test.ts",
     "tests/audit-export-trend-window-stats-toggle.test.ts",
     "tests/audience-history-export-filters.test.ts",
