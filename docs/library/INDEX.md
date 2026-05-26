@@ -228,3 +228,18 @@ Because the initial sweep is **index-first**, these are the recommended logical 
 ## J. How to update this index
 
 When you add a new document, update §B–§G with a row matching the columns above, and bump the §A summary count. Keep `Move Now?` set to `no_index_only` or `keep_original_location` unless you also perform (and verify) the move and link-update in the same task.
+
+---
+
+## K. V1.2 Stabilization Additions (2026-05-26)
+
+| File Path | File Type | Category | Topic | Status | Recommended | Move Now? | Notes |
+|---|---|---|---|---|---|---|---|
+| `docs/reports/V1_2_CLEANUP_BASELINE_REPORT.md` | md | report | V1.2 cleanup baseline install/check/build snapshot | active | `library/reports/` | `keep_original_location` | Baseline report for cleanup branch. |
+| `docs/reports/V1_2_ARCHIVE_REVIEW_QUEUE.md` | md | report | Archive candidate queue with risk labels | active | `library/reports/` | `keep_original_location` | No files moved in this pass. |
+| `docs/reports/V1_2_ROUTE_MODULARIZATION_PLAN.md` | md | design/report | Route domain map + phased extraction plan | active | `library/designs/` + `library/reports/` | `keep_original_location` | Includes completed minimal registry extraction note. |
+| `docs/reports/V1_2_SCHEMA_MODULARIZATION_PLAN.md` | md | design/report | Schema domain map + legacy table handling plan | active | `library/designs/` + `library/reports/` | `keep_original_location` | Non-destructive plan only. |
+| `docs/reports/V1_2_PROVIDER_CREDENTIALS_AUDIT.md` | md | report | Provider credential safety audit and remediation notes | active | `library/reports/` | `keep_original_location` | Includes BYOAI hardening summary. |
+| `docs/reports/V1_2_CLEANUP_VALIDATION_REPORT.md` | md | report | Post-cleanup validation outcomes | active | `library/reports/` | `keep_original_location` | Added in this stabilization cycle. |
+| `docs/architecture/V1_2_CANONICAL_CONTROL_PLANE.md` | md | architecture | Canonical V1.2 control-plane flow + target module boundaries | active | `library/designs/` | `keep_original_location` | Architecture target; implementation remains phased. |
+| `docs/archive/cleanup-notes/README.md` | md | archive note | Cleanup-note retention policy for archive candidates | active | `library/archives/` | `keep_original_location` | Supports archive-first cleanup workflow. |
