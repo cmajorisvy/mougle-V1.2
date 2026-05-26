@@ -24,6 +24,7 @@ import { InstallPrompt, useInstallPrompt } from "@/components/pwa/InstallPrompt"
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { explainerPages, legalPages } from "@/components/layout/DocsLayout";
+import { isFeatureEnabled } from "@/config/featureFlags";
 
 const NAV_GROUP_COLORS: Record<string, string> = {
   "Create": "bg-purple-500",
@@ -33,24 +34,31 @@ const NAV_GROUP_COLORS: Record<string, string> = {
   "System": "bg-zinc-400",
 };
 
-const mainNav = [
-  { icon: Home, label: "Home", href: "/", group: "" },
-  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", group: "" },
-  { icon: Bot, label: "Personal Agent", href: "/my-agent", group: "Create" },
-  { icon: Wrench, label: "Agent Builder", href: "/agent-builder", group: "Create" },
-  { icon: Beaker, label: "Labs", href: "/labs", group: "Create" },
-  { icon: Globe, label: "My Agents", href: "/my-agents", group: "Create" },
-  { icon: MessageSquare, label: "Discussions", href: "/discussions", group: "Discover" },
-  { icon: Newspaper, label: "AI News", href: "/ai-news-updates", group: "Discover" },
-  { icon: Brain, label: "Debates", href: "/ai-debates", group: "Discover" },
+type MainNavItem = {
+  icon: typeof Home;
+  label: string;
+  href: string;
+  group: string;
+  featureKey?: string;
+};
+
+const mainNav: MainNavItem[] = [
+  { icon: Home, label: "Home", href: "/", group: "", featureKey: "home" },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", group: "", featureKey: "dashboard" },
+  { icon: Bot, label: "Personal Agent", href: "/my-agent", group: "Create", featureKey: "agentBuilderShell" },
+  { icon: Wrench, label: "Agent Builder", href: "/agent-builder", group: "Create", featureKey: "agentBuilderShell" },
+  { icon: Globe, label: "My Agents", href: "/my-agents", group: "Create", featureKey: "myAgentsShell" },
+  { icon: MessageSquare, label: "Discussions", href: "/discussions", group: "Discover", featureKey: "discussions" },
+  { icon: Newspaper, label: "AI News", href: "/ai-news-updates", group: "Discover", featureKey: "aiNews" },
+  { icon: Brain, label: "Debates", href: "/ai-debates", group: "Discover", featureKey: "debatesPreview" },
   { icon: Network, label: "Network", href: "/network", group: "Discover" },
   { icon: Sparkles, label: "Intelligence Path", href: "/intelligence", group: "Grow" },
   { icon: Trophy, label: "Rankings", href: "/ranking", group: "Grow" },
   { icon: TrendingUp, label: "Growth Insights", href: "/psychology", group: "Grow" },
-  { icon: Store, label: "Safe Clone Sandbox", href: "/agent-marketplace", group: "Sandbox" },
-  { icon: Crown, label: "Creator Readiness", href: "/creator-earnings", group: "Sandbox" },
-  { icon: ShoppingBag, label: "Agent Store Preview", href: "/agent-store", group: "Sandbox" },
-  { icon: Shield, label: "Trust Center", href: "/trust-moat", group: "System" },
+  { icon: Store, label: "Safe Clone Studio", href: "/agent-marketplace", group: "Sandbox", featureKey: "safeCloneStudio" },
+  { icon: Crown, label: "Creator Readiness", href: "/creator-verification", group: "Sandbox", featureKey: "creatorReadiness" },
+  { icon: ShoppingBag, label: "Store Preview", href: "/agent-store", group: "Sandbox", featureKey: "storePreview" },
+  { icon: Shield, label: "Trust Center", href: "/trust-moat", group: "System", featureKey: "trustCenter" },
   { icon: CreditCard, label: "Credits & Billing", href: "/billing", group: "System" },
   { icon: Settings, label: "Settings", href: "/settings", group: "System" },
 ];
@@ -98,6 +106,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   };
 
   const sidebarWidth = sidebarCollapsed ? "w-[68px]" : "w-[240px]";
+  const visibleMainNav = mainNav.filter((item) => !item.featureKey || isFeatureEnabled(item.featureKey));
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col ambient-bg">
@@ -210,8 +219,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
           sidebarWidth
         )}>
           <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
-              {mainNav.map((item, idx) => {
-                const prevGroup = idx > 0 ? mainNav[idx - 1].group : "";
+              {visibleMainNav.map((item, idx) => {
+                const prevGroup = idx > 0 ? visibleMainNav[idx - 1].group : "";
                 const showGroupHeader = item.group && item.group !== prevGroup;
                 const active = isActive(item.href);
                 const groupColor = item.group ? NAV_GROUP_COLORS[item.group] : "";
