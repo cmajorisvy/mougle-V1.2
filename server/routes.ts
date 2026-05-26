@@ -42,6 +42,7 @@ import {
   civilizationMetrics,
   labsApps,
 } from "@shared/schema";
+import { isFeatureEnabled } from "@shared/config/feature-flags";
 import { eq, desc, asc, sql, and, gte } from "drizzle-orm";
 import * as debateOrchestrator from "./services/debate-orchestrator";
 import * as contentFlywheel from "./services/content-flywheel-service";
@@ -133,27 +134,7 @@ const isRootAdmin = isRootAdminShared;
 export const requireRootAdmin = requireRootAdminShared;
 const requireAdminPermission = requireAdminPermissionShared;
 const requireAnyAdminPermission = requireAnyAdminPermissionShared;
-import { registerNewsroomPreviewRoutes } from "./routes/newsroom-preview-routes";
-import { registerNeuralNewsroomRoutes } from "./routes/neural-newsroom-routes";
-import { registerOmniChannelAudienceRoutes } from "./routes/omni-channel-audience-routes";
-import { registerFounderPtoModeRoutes } from "./routes/founder-pto-mode-routes";
-import { registerBroadcastBriefRoutes } from "./routes/broadcast-briefs";
-import { registerNewsroomPackageRoutes } from "./routes/newsroom-packages";
-import { registerCinemaControlRoutes } from "./routes/cinema-control-routes";
-import { registerAutopilotNewsroomRoutes } from "./routes/autopilot-newsroom-routes";
-import { registerProductionHouseRoutes } from "./routes/production-house-routes";
-import { registerPreviewStudioRoutes } from "./routes/preview-studio-routes";
-import { registerNewsSourceRoutes } from "./routes/news-sources";
-import { registerBroadcastRoutes } from "./routes/broadcasts";
-import { registerBRollRoutes } from "./routes/broll";
-import { registerShortsRoutes } from "./routes/shorts";
-import { registerCostRoutes } from "./routes/cost";
-import { registerAnchorRoutes } from "./routes/anchor";
-import { registerPlayoutQueueRoutes } from "./routes/playout";
-import { registerSafetyReportRoutes } from "./routes/safety-report";
-import { registerProductionAssetRoutes } from "./routes/admin/production-assets";
-import { registerProductionRigRoutes } from "./routes/admin/production-rigs";
-import { registerPermanentAvatarRoutes } from "./routes/admin/permanent-avatars";
+import { registerModularRouteGroups } from "./routes/registry";
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
@@ -6196,11 +6177,17 @@ By exporting this application from Mougle, I ("Creator") acknowledge and agree:
 
   // ---- BYOAI (Bring Your Own AI) ----
 
-  app.post("/api/byoai/set", async (req, res) => {
+  app.post("/api/byoai/set", requireAuth, async (req, res) => {
     try {
       const { userId, provider, apiKey } = req.body;
-      if (!userId || !provider || !apiKey) return res.status(400).json({ error: "userId, provider, and apiKey required" });
-      const result = await agentRunnerService.setByoaiKey(userId, provider, apiKey);
+      const sessionUserId = req.session.userId;
+      if (!sessionUserId) return res.status(401).json({ error: "Unauthorized" });
+      if (userId && userId !== sessionUserId) return res.status(403).json({ error: "Forbidden" });
+      if (!provider || !apiKey) return res.status(400).json({ error: "provider and apiKey required" });
+      if (!isFeatureEnabled("browserRealProviderCalls")) {
+        return res.status(403).json({ error: "BYOAI provider validation is disabled in this environment." });
+      }
+      const result = await agentRunnerService.setByoaiKey(sessionUserId, provider, apiKey);
       res.json(result);
     } catch (err: any) {
       if (err.message?.includes("validation failed")) {
@@ -6210,16 +6197,21 @@ By exporting this application from Mougle, I ("Creator") acknowledge and agree:
     }
   });
 
-  app.post("/api/byoai/remove", async (req, res) => {
+  app.post("/api/byoai/remove", requireAuth, async (req, res) => {
     try {
       const { userId } = req.body;
-      if (!userId) return res.status(400).json({ error: "userId required" });
-      res.json(await agentRunnerService.removeByoaiKey(userId));
+      const sessionUserId = req.session.userId;
+      if (!sessionUserId) return res.status(401).json({ error: "Unauthorized" });
+      if (userId && userId !== sessionUserId) return res.status(403).json({ error: "Forbidden" });
+      res.json(await agentRunnerService.removeByoaiKey(sessionUserId));
     } catch (err) { handleServiceError(res, err); }
   });
 
-  app.get("/api/byoai/status/:userId", async (req, res) => {
+  app.get("/api/byoai/status/:userId", requireAuth, async (req, res) => {
     try {
+      const sessionUserId = req.session.userId;
+      if (!sessionUserId) return res.status(401).json({ error: "Unauthorized" });
+      if (req.params.userId !== sessionUserId) return res.status(403).json({ error: "Forbidden" });
       const user = await storage.getUser(req.params.userId);
       if (!user) return res.status(404).json({ error: "User not found" });
       res.json({
@@ -10686,40 +10678,7 @@ By exporting this application from Mougle, I ("Creator") acknowledge and agree:
     }
   });
 
-  // Phase 1B Verified Newsroom — admin dry-run preview routes (no DB writes).
-  registerNewsroomPreviewRoutes(app, requireRootAdmin);
-  registerBroadcastBriefRoutes(app, requireRootAdmin);
-  registerNeuralNewsroomRoutes(app, requireRootAdmin);
-  registerOmniChannelAudienceRoutes(app, requireRootAdmin);
-  registerFounderPtoModeRoutes(app, requireRootAdmin);
-  registerNewsroomPackageRoutes(app, requireRootAdmin);
-
-  // Mougle 4D Cinema Control MVP — admin preview-only routes (no DB writes,
-  // no real provider calls, no Unreal/4D network delivery).
-  registerCinemaControlRoutes(app, requireRootAdmin);
-  registerAutopilotNewsroomRoutes(app, requireRootAdmin);
-  registerProductionHouseRoutes(app, requireRootAdmin);
-  registerPreviewStudioRoutes(app, requireRootAdmin);
-  registerBroadcastRoutes(app, requireRootAdmin);
-  registerBRollRoutes(app, requireRootAdmin);
-  registerShortsRoutes(app, requireRootAdmin);
-  registerCostRoutes(app, requireRootAdmin);
-  registerAnchorRoutes(app, requireRootAdmin);
-
-  // Newsroom T8 — 24/7 Playout Queue + breaking + kill switch (in-process channel state).
-  registerPlayoutQueueRoutes(app, requireRootAdmin);
-
-  // Pipeline safety — exposes generated docs/SAFETY_E2E_REPORT.md to the admin dashboard.
-  registerSafetyReportRoutes(app, requireRootAdmin);
-
-  // Newsroom T2 — Global Source Registry (admin CRUD + public-safe projection).
-  registerNewsSourceRoutes(app, requireRootAdmin);
-
-  // R5H — Admin 3D Asset Library (production_assets). Admin-only; no
-  // route writes publicUrl; signed preview URLs are ephemeral (≤900s).
-  registerProductionAssetRoutes(app, requireRootAdmin);
-  registerProductionRigRoutes(app, requireRootAdmin);
-  registerPermanentAvatarRoutes(app, requireRootAdmin);
+  registerModularRouteGroups(app, requireRootAdmin);
 
   return httpServer;
 }
