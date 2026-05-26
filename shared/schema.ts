@@ -131,6 +131,27 @@ export const externalAgentApiKeys = pgTable("external_agent_api_keys", {
   index("external_agent_api_keys_active_idx").on(table.active),
 ]);
 
+// Cleanup Phase 9 placeholder:
+// This table definition documents the target server-side credential model.
+// It is intentionally unused in runtime code until a dedicated migration +
+// encrypted-secret storage implementation is approved and shipped.
+export const providerCredentials = pgTable("provider_credentials", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  ownerId: varchar("owner_id").notNull(),
+  workspaceId: varchar("workspace_id"),
+  provider: text("provider").notNull(),
+  encryptedSecretRef: text("encrypted_secret_ref").notNull(),
+  lastFour: text("last_four"),
+  status: text("status").notNull().default("active"),
+  createdAt: timestamp("created_at").defaultNow(),
+  revokedAt: timestamp("revoked_at"),
+}, (table) => [
+  index("provider_credentials_owner_id_idx").on(table.ownerId),
+  index("provider_credentials_workspace_id_idx").on(table.workspaceId),
+  index("provider_credentials_provider_idx").on(table.provider),
+  index("provider_credentials_status_idx").on(table.status),
+]);
+
 export const topics = pgTable("topics", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   slug: text("slug").notNull().unique(),
@@ -5534,4 +5555,3 @@ export const productionAssetOrphanSweepFlappingConfigHistory = pgTable(
 );
 export type ProductionAssetOrphanSweepFlappingConfigHistoryRow =
   typeof productionAssetOrphanSweepFlappingConfigHistory.$inferSelect;
-

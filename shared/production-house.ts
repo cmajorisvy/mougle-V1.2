@@ -1640,6 +1640,252 @@ export const GeneratedAvatarRecordSchema = z.object({
 });
 export type GeneratedAvatarRecord = z.infer<typeof GeneratedAvatarRecordSchema>;
 
+/* ------------------------------------------------------------------ */
+/* Cinema 4D Studio — placeholder character/anchor manifests only.     */
+/* No Cinema 4D render, Unreal execution, 4D hardware, or publishing.  */
+/* ------------------------------------------------------------------ */
+
+export const CINEMA4D_CHARACTER_ROLES = [
+  "news_anchor",
+  "podcast_host",
+  "debate_moderator",
+  "guest",
+  "analyst",
+  "reporter",
+  "custom",
+] as const;
+export const Cinema4DCharacterRoleSchema = z.enum(CINEMA4D_CHARACTER_ROLES);
+export type Cinema4DCharacterRole = z.infer<typeof Cinema4DCharacterRoleSchema>;
+
+export const CINEMA4D_CHARACTER_STYLES = [
+  "premium_news_anchor",
+  "futuristic_anchor",
+  "executive_host",
+  "podcast_host",
+  "debate_moderator",
+  "field_reporter",
+  "custom",
+] as const;
+export const Cinema4DCharacterStyleSchema = z.enum(CINEMA4D_CHARACTER_STYLES);
+export type Cinema4DCharacterStyle = z.infer<typeof Cinema4DCharacterStyleSchema>;
+
+export const CINEMA4D_WARDROBE_STYLES = [
+  "dark_suit",
+  "navy_suit",
+  "black_blazer",
+  "futuristic_jacket",
+  "podcast_casual",
+  "custom",
+] as const;
+export const Cinema4DWardrobeStyleSchema = z.enum(CINEMA4D_WARDROBE_STYLES);
+export type Cinema4DWardrobeStyle = z.infer<typeof Cinema4DWardrobeStyleSchema>;
+
+export const CINEMA4D_POSE_PRESETS = [
+  "seated_desk_hands_folded",
+  "seated_desk_tablet",
+  "standing_presenter",
+  "podcast_table_microphone",
+  "debate_moderator_table",
+  "analyst_pointing_to_screen",
+] as const;
+export const Cinema4DPosePresetSchema = z.enum(CINEMA4D_POSE_PRESETS);
+export type Cinema4DPosePreset = z.infer<typeof Cinema4DPosePresetSchema>;
+
+export const CINEMA4D_FACIAL_EXPRESSIONS = [
+  "neutral_professional",
+  "serious_breaking_news",
+  "warm_podcast",
+  "analytical",
+  "custom",
+] as const;
+export const Cinema4DFacialExpressionSchema = z.enum(CINEMA4D_FACIAL_EXPRESSIONS);
+export type Cinema4DFacialExpression = z.infer<typeof Cinema4DFacialExpressionSchema>;
+
+export const CINEMA4D_LIP_SYNC_READINESS = [
+  "not_ready",
+  "draft_ready",
+  "future_provider_required",
+] as const;
+export const Cinema4DLipSyncReadinessSchema = z.enum(CINEMA4D_LIP_SYNC_READINESS);
+export type Cinema4DLipSyncReadiness = z.infer<typeof Cinema4DLipSyncReadinessSchema>;
+
+export const CINEMA4D_QUALITY_TIERS = [
+  "placeholder",
+  "premium_draft",
+  "expert_polish_required",
+] as const;
+export const Cinema4DQualityTierSchema = z.enum(CINEMA4D_QUALITY_TIERS);
+export type Cinema4DQualityTier = z.infer<typeof Cinema4DQualityTierSchema>;
+
+export const CINEMA4D_CHARACTER_COMPATIBILITY = [
+  "cinema4d_placeholder",
+  "metahuman_candidate",
+  "character_creator_candidate",
+  "unreal_blueprint_candidate",
+] as const;
+export const Cinema4DCharacterCompatibilitySchema = z.enum(CINEMA4D_CHARACTER_COMPATIBILITY);
+export type Cinema4DCharacterCompatibility =
+  z.infer<typeof Cinema4DCharacterCompatibilitySchema>;
+
+export const CINEMA4D_CHARACTER_ACCESSORY_TYPES = [
+  "microphone",
+  "lavalier_mic",
+  "earpiece",
+  "headset",
+  "tablet",
+  "laptop",
+  "desk_nameplate",
+  "cue_card",
+  "watch",
+  "glasses",
+  "studio_badge",
+  "custom",
+] as const;
+export const Cinema4DCharacterAccessoryTypeSchema =
+  z.enum(CINEMA4D_CHARACTER_ACCESSORY_TYPES);
+export type Cinema4DCharacterAccessoryType =
+  z.infer<typeof Cinema4DCharacterAccessoryTypeSchema>;
+
+export const CINEMA4D_ACCESSORY_ATTACH_TARGETS = [
+  "desk",
+  "left_hand",
+  "right_hand",
+  "ear",
+  "head",
+  "lapel",
+  "table",
+  "floor",
+  "custom",
+] as const;
+export const Cinema4DAccessoryAttachTargetSchema =
+  z.enum(CINEMA4D_ACCESSORY_ATTACH_TARGETS);
+export type Cinema4DAccessoryAttachTarget =
+  z.infer<typeof Cinema4DAccessoryAttachTargetSchema>;
+
+const Cinema4DVec3Schema = z.object({
+  x: z.number(),
+  y: z.number(),
+  z: z.number(),
+});
+
+export const Cinema4DAnchorCameraPresetSchema = z.enum([
+  "anchor_closeup",
+  "anchor_medium",
+  "anchor_over_shoulder",
+  "wide_newsroom",
+  "breaking_news_push_in",
+  "podcast_two_shot",
+  "host_closeup",
+  "guest_closeup",
+  "table_wide",
+  "overhead_table",
+]);
+export type Cinema4DAnchorCameraPreset =
+  z.infer<typeof Cinema4DAnchorCameraPresetSchema>;
+
+export const Cinema4DAnchorCharacterManifestSchema = z.object({
+  characterId: z.string().min(1).max(120),
+  productionId: z.string().nullable().default(null),
+  roomId: z.string().nullable().default(null),
+  characterName: z.string().min(1).max(160),
+  characterRole: Cinema4DCharacterRoleSchema,
+  characterStyle: Cinema4DCharacterStyleSchema,
+  genderPresentation: z.string().max(80).optional(),
+  wardrobeStyle: Cinema4DWardrobeStyleSchema,
+  posePreset: Cinema4DPosePresetSchema,
+  facialExpression: Cinema4DFacialExpressionSchema,
+  voiceAssetId: z.string().nullable().default(null),
+  lipSyncReadiness: Cinema4DLipSyncReadinessSchema,
+  bodyMarkerName: z.string().min(1).max(160),
+  headMarkerName: z.string().min(1).max(160),
+  faceTargetName: z.string().max(160).nullable().default(null),
+  leftHandMarkerName: z.string().max(160).nullable().default(null),
+  rightHandMarkerName: z.string().max(160).nullable().default(null),
+  accessoryIds: z.array(z.string().min(1).max(120)).default([]),
+  defaultCameraPreset: Cinema4DAnchorCameraPresetSchema,
+  compatibleWith: z.array(Cinema4DCharacterCompatibilitySchema)
+    .default(["cinema4d_placeholder"]),
+  status: z.literal("draft").default("draft"),
+  approvalStatus: z.literal("draft").default("draft"),
+  visibility: z.literal("admin_only_internal").default("admin_only_internal"),
+  publicUrl: z.literal(null).default(null),
+  signedUrl: z.literal(null).default(null),
+  realSendAllowed: z.literal(false).default(false),
+  executionEnabled: z.literal(false).default(false),
+  safetyEnvelope: SafetyEnvelopeSchema,
+  createdAt: z.string(),
+});
+export type Cinema4DAnchorCharacterManifest =
+  z.infer<typeof Cinema4DAnchorCharacterManifestSchema>;
+
+export const Cinema4DCharacterAccessoryManifestSchema = z.object({
+  accessoryId: z.string().min(1).max(120),
+  characterId: z.string().nullable().default(null),
+  roomId: z.string().nullable().default(null),
+  accessoryType: Cinema4DCharacterAccessoryTypeSchema,
+  accessoryName: z.string().min(1).max(160),
+  attachTo: Cinema4DAccessoryAttachTargetSchema,
+  objectName: z.string().min(1).max(160),
+  position: Cinema4DVec3Schema,
+  rotation: Cinema4DVec3Schema,
+  scale: Cinema4DVec3Schema,
+  materialPreset: z.string().min(1).max(160),
+  status: z.literal("draft").default("draft"),
+  approvalStatus: z.literal("draft").default("draft"),
+  visibility: z.literal("admin_only_internal").default("admin_only_internal"),
+  publicUrl: z.literal(null).default(null),
+  signedUrl: z.literal(null).default(null),
+  realSendAllowed: z.literal(false).default(false),
+  executionEnabled: z.literal(false).default(false),
+  safetyEnvelope: SafetyEnvelopeSchema,
+  createdAt: z.string(),
+});
+export type Cinema4DCharacterAccessoryManifest =
+  z.infer<typeof Cinema4DCharacterAccessoryManifestSchema>;
+
+export const Cinema4DRoomCharacterScriptManifestSchema = z.object({
+  scriptId: z.string().min(1).max(120),
+  roomId: z.string().nullable().default(null),
+  productionId: z.string().nullable().default(null),
+  template: z.enum(["mougle_verified_newsroom", "mougle_podcast_studio"]),
+  characterIds: z.array(z.string()).default([]),
+  accessoryIds: z.array(z.string()).default([]),
+  cameraPresets: z.array(Cinema4DAnchorCameraPresetSchema).default([]),
+  qualityTier: Cinema4DQualityTierSchema.default("premium_draft"),
+  qualityNotes: z.array(z.string().max(240)).default([]),
+  script: z.string().min(1),
+  label: z.literal(
+    "Cinema 4D placeholder anchor — replace later with MetaHuman, Character Creator, or final rig.",
+  ),
+  status: z.literal("draft").default("draft"),
+  approvalStatus: z.literal("draft").default("draft"),
+  visibility: z.literal("admin_only_internal").default("admin_only_internal"),
+  publicUrl: z.literal(null).default(null),
+  signedUrl: z.literal(null).default(null),
+  realSendAllowed: z.literal(false).default(false),
+  executionEnabled: z.literal(false).default(false),
+  realRenderCalled: z.literal(false).default(false),
+  unrealCommandSent: z.literal(false).default(false),
+  fourDCommandSent: z.literal(false).default(false),
+  published: z.literal(false).default(false),
+  safetyEnvelope: SafetyEnvelopeSchema,
+  createdAt: z.string(),
+});
+export type Cinema4DRoomCharacterScriptManifest =
+  z.infer<typeof Cinema4DRoomCharacterScriptManifestSchema>;
+
+export const Cinema4DCharacterBindingsSchema = z.object({
+  characterId: z.string().min(1).max(120),
+  teleprompterText: z.string(),
+  lowerThirdName: z.string(),
+  voiceAssetId: z.string().nullable().default(null),
+  panelFocus: z.string(),
+  cameraPreset: Cinema4DAnchorCameraPresetSchema,
+  cueMarkers: z.array(z.string()).default([]),
+});
+export type Cinema4DCharacterBindings =
+  z.infer<typeof Cinema4DCharacterBindingsSchema>;
+
 export const PRODUCTION_UNIT_TYPES = [
   "news_unit","debate_unit","podcast_unit","youtube_unit","social_clip_unit",
   "documentary_unit","education_unit","event_unit","four_d_cinema_unit",
@@ -1698,8 +1944,6 @@ export const MediaPackageRecordSchema = z.object({
   avatarRecommendation: z.array(z.string()).default([]),
   assetRequirements: z.array(z.string()).default([]),
   fourDCueSuggestions: z.array(z.string()).default([]),
-  setManifestId: z.string().max(120).nullable().default(null),
-  rigAssetId: z.string().max(120).nullable().default(null),
   status: z.literal("draft").default("draft"),
   approvalStatus: z.literal("draft").default("draft"),
   visibility: z.literal("admin_only_internal").default("admin_only_internal"),
@@ -1934,7 +2178,16 @@ export type PreviewStudioAvatarMarker = z.infer<typeof PreviewStudioAvatarMarker
 export const PreviewStudioPanelSchema = z.object({
   id: z.string(),
   label: z.string(),
-  kind: z.enum(["panel", "ledwall", "ticker", "lower_third", "callout", "monitor"]),
+  kind: z.enum([
+    "panel",
+    "ledwall",
+    "ticker",
+    "lower_third",
+    "callout",
+    "monitor",
+    "character",
+    "teleprompter",
+  ]),
   x: z.number().min(0).max(1),
   y: z.number().min(0).max(1),
   w: z.number().min(0.02).max(1),
@@ -1964,6 +2217,31 @@ export const PreviewStudioControlsSchema = z.object({
   lowerThirdText: z.string().max(140).default(""),
 });
 export type PreviewStudioControls = z.infer<typeof PreviewStudioControlsSchema>;
+
+export const PreviewStudioWorkflowLinksSchema = z.object({
+  productionId: idStr.nullable().default(null),
+  roomId: idStr.nullable().default(null),
+  avatarIds: z.array(idStr).max(50).default([]),
+  characterIds: z.array(idStr).max(50).default([]),
+  mediaPackageIds: z.array(idStr).max(50).default([]),
+  wizardId: idStr.nullable().default(null),
+  previewSnapshotId: idStr.nullable().default(null),
+  readinessReportId: idStr.nullable().default(null),
+  approvalState: ApprovalStageSchema.nullable().default(null),
+  characterRole: z.string().max(80).nullable().default(null),
+  wardrobeStyle: z.string().max(80).nullable().default(null),
+  posePreset: z.string().max(120).nullable().default(null),
+  accessoryIds: z.array(idStr).max(50).default([]),
+  teleprompterText: z.string().max(2000).nullable().default(null),
+  lowerThirdName: z.string().max(160).nullable().default(null),
+  panelFocus: z.string().max(500).nullable().default(null),
+  cameraPreset: z.string().max(120).nullable().default(null),
+  roomLabel: z.string().max(160).nullable().default(null),
+  avatarLabels: z.array(z.string().max(160)).max(50).default([]),
+  mediaPackageLabels: z.array(z.string().max(200)).max(50).default([]),
+});
+export type PreviewStudioWorkflowLinks =
+  z.infer<typeof PreviewStudioWorkflowLinksSchema>;
 
 export const PreviewStudioSceneSchema = z.object({
   controls: PreviewStudioControlsSchema,
@@ -2001,6 +2279,7 @@ export const PreviewStudioStateSchema = z.object({
   id: z.string(),
   createdAt: z.string(),
   generatedBy: z.string().default("root_admin"),
+  ...PreviewStudioWorkflowLinksSchema.shape,
   scene: PreviewStudioSceneSchema,
   ...PREVIEW_STUDIO_SAFETY_FIELDS,
   safetyEnvelope: SafetyEnvelopeSchema,
@@ -2011,11 +2290,13 @@ export const PreviewStudioGenerateInputSchema = z.object({
   controls: PreviewStudioControlsSchema.partial().extend({
     mode: PreviewStudioModeSchema,
   }),
+  links: PreviewStudioWorkflowLinksSchema.partial().default({}),
 });
 export type PreviewStudioGenerateInput = z.infer<typeof PreviewStudioGenerateInputSchema>;
 
 export const PreviewStudioUpdateControlsInputSchema = z.object({
   controls: PreviewStudioControlsSchema.partial(),
+  links: PreviewStudioWorkflowLinksSchema.partial().optional(),
 });
 export type PreviewStudioUpdateControlsInput = z.infer<typeof PreviewStudioUpdateControlsInputSchema>;
 

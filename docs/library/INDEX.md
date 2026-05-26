@@ -1,6 +1,6 @@
 # Mougle Documentation Library — INDEX
 
-**Last updated:** 2026-05-24
+**Last updated:** 2026-05-26
 **Sweep status:** initial index-first sweep. **No files moved.** All documents remain at their canonical locations.
 **Re-index trigger:** every new task doc per [`../DEVELOPMENT_DOCUMENTATION_POLICY.md`](../DEVELOPMENT_DOCUMENTATION_POLICY.md) §6.
 
@@ -10,7 +10,7 @@
 
 | File type | Count | Notes |
 |---|---|---|
-| `.md` (active docs under `docs/`) | **112** | Current filesystem count after the Prompt-to-Production Creator Console design: 17 top-level `docs/*.md` + 12 `architecture/` + 2 `design/` + 62 `reports/` + 3 top-level `archive/*.md` + 5 `archive/codex-phase-1-2026-05/*.md` + 1 `archive/cleanup-archive-2026-05-22/README.md` + 4 `runbooks/` + 1 `learning/` + 1 `product/` + 1 `prompts/README.md` + 3 `library/*.md` (incl. this file) |
+| `.md` (active docs under `docs/`) | **113** | Current filesystem count from the local sweep in this task (`find docs -type f -name '*.md'`). |
 | `.md` (repo root) | 3 | `AGENTS.md`, `replit.md`, `RESUME_REPORT.md` |
 | `.md` (attached_assets) | 2 | `content-*.md` (× 2) |
 | `.txt` (archived task briefs) | **126** | Set A in `docs/archive/cleanup-archive-2026-05-22/attached_assets-sessions-2026-05/` |
@@ -174,6 +174,7 @@ Move-Now legend (column 7 of every table):
 | `docs/learning/PHASE_36C_NEWS_DEBATE_EXPLAINER_SCRIPT.md` | md | learning | Phase 36C explainer script | active | `library/markdown/` | `keep_original_location` | |
 | `docs/product/GLUON_EXPLAINER_VIDEO_SCRIPT.md` | md | product | Gluon explainer | active | `library/markdown/` | `keep_original_location` | |
 | `docs/prompts/README.md` | md | prompts-policy | Prompts library policy | active | `library/prompts/` | `keep_original_location` | New in this task. |
+| `docs/runbooks/GITHUB_REPLIT_PR_SYNC_RUNBOOK.md` | md | runbook | Local-first PR sync workflow for Replit + GitHub branch hygiene, including clean-branch prep, `main` sync rules, conflict-recovery steps, and safety guardrails against mixed or conflicting PR history | active | `library/runbooks/` | `keep_original_location` | New in cleanup/v1-2-stabilization task. Companion helper script: `scripts/prepare-pr-branch.sh`. |
 | `docs/library/README.md` | md | library-policy | Library README | active | `library/` | `keep_original_location` | This task. |
 | `docs/library/INDEX.md` | md | index | Library index (this file) | active | `library/` | `keep_original_location` | This task. |
 | `downloads/MOUGLE_NEWSROOM_ARCHITECTURE.pdf` | pdf | export | Newsroom architecture export | active | `library/pdf/` | `safe_to_copy` | Operational download dir; copy preferred over move. |
@@ -195,7 +196,7 @@ Because the initial sweep is **index-first**, these are the recommended logical 
 - **`library/reports/`** → all rows in §E + §C report rows
 - **`library/designs/`** → all `*_DESIGN.md`, `MOUGLE_UNIFIED_MASTER_BLUEPRINT.md`, all `architecture/` rows, `R3F_WEBGL_UNITY_PRODUCTION_HOUSE_INTEGRATION_R1_DESIGN.md`, `DEBATE_TO_PODCAST_VIDEO_EXPORT_DESIGN.md`, `SAFETY_HARNESS.md`
 - **`library/prompts/`** → `docs/prompts/*`, `PHASE_36C_REMAINING_ROADMAP_PROMPTS.md`, and the 126 archived Pasted-*.txt task briefs (catalogued in `ARCHIVE_LIBRARY_INDEX.md` §4)
-- **`library/runbooks/`** → `AGENTS.md`, `replit-runtime-setup.md`, `audience-secrets-key-rotation.md`, `audience-orphaned-attribution.md`, `migration-recommendation.md`, `docs/runbooks/r10-safety-gates.md`, `docs/runbooks/PERMANENT_3D_AVATAR_CREATION_RUNBOOK.md` (operator workflow for the first permanent Mougle 3D avatar — Blender/C4D/Character Creator/RPM/Meshy → GLB → `/admin/3d-assets` upload + validate + 3-gate approval → `/admin/3d-rigs` registration → `/admin/r3f-preview-sandbox` preview; documents the no-public-URL / no-provider-call / no-render-exec / no-live-runner / no-Unreal-exec / no-4D-hw / no-publish guardrails)
+- **`library/runbooks/`** → `AGENTS.md`, `replit-runtime-setup.md`, `audience-secrets-key-rotation.md`, `audience-orphaned-attribution.md`, `migration-recommendation.md`, `docs/runbooks/r10-safety-gates.md`, `docs/runbooks/PERMANENT_3D_AVATAR_CREATION_RUNBOOK.md`, `docs/runbooks/GITHUB_REPLIT_PR_SYNC_RUNBOOK.md` (operator workflow for the first permanent Mougle 3D avatar — Blender/C4D/Character Creator/RPM/Meshy → GLB → `/admin/3d-assets` upload + validate + 3-gate approval → `/admin/3d-rigs` registration → `/admin/r3f-preview-sandbox` preview; plus local-first GitHub/Replit PR sync rules to avoid conflicting branch history and mixed-source edits)
 - **`library/testing/`** → `docs/e2e.md`, `SAFETY_E2E_REPORT.md`, `NEWS_PODCAST_VIDEO_ADMIN_T5_SMOKE_E2E_REPORT.md`
 - **`library/archives/`** → `docs/archive/**` (pointers only — never move archives)
 - **`library/pdf/`** → 4 PDFs under `downloads/` and `exports/` (`safe_to_copy` only)
@@ -227,3 +228,21 @@ Because the initial sweep is **index-first**, these are the recommended logical 
 ## J. How to update this index
 
 When you add a new document, update §B–§G with a row matching the columns above, and bump the §A summary count. Keep `Move Now?` set to `no_index_only` or `keep_original_location` unless you also perform (and verify) the move and link-update in the same task.
+
+---
+
+## K. V1.2 Stabilization Additions (2026-05-26)
+
+| File Path | File Type | Category | Topic | Status | Recommended | Move Now? | Notes |
+|---|---|---|---|---|---|---|---|
+| `docs/reports/V1_2_CLEANUP_BASELINE_REPORT.md` | md | report | V1.2 cleanup baseline install/check/build snapshot | active | `library/reports/` | `keep_original_location` | Baseline report for cleanup branch. |
+| `docs/reports/V1_2_ARCHIVE_REVIEW_QUEUE.md` | md | report | Archive candidate queue with risk labels | active | `library/reports/` | `keep_original_location` | No files moved in this pass. |
+| `docs/reports/V1_2_ROUTE_MODULARIZATION_PLAN.md` | md | design/report | Route domain map + phased extraction plan | active | `library/designs/` + `library/reports/` | `keep_original_location` | Includes completed minimal registry extraction note. |
+| `docs/reports/V1_2_SCHEMA_MODULARIZATION_PLAN.md` | md | design/report | Schema domain map + legacy table handling plan | active | `library/designs/` + `library/reports/` | `keep_original_location` | Non-destructive plan only. |
+| `docs/reports/V1_2_PROVIDER_CREDENTIALS_AUDIT.md` | md | report | Provider credential safety audit and remediation notes | active | `library/reports/` | `keep_original_location` | Includes BYOAI hardening summary. |
+| `docs/reports/V1_2_CLEANUP_VALIDATION_REPORT.md` | md | report | Post-cleanup validation outcomes | active | `library/reports/` | `keep_original_location` | Added in this stabilization cycle. |
+| `docs/reports/V1_2_ZIP_SYNC_REPORT.md` | md | report | Supplemental zip-sync intake and missing-file import record | active | `library/reports/` | `keep_original_location` | Captures archive-to-repo sync rules and outcomes. |
+| `docs/architecture/V1_2_CANONICAL_CONTROL_PLANE.md` | md | architecture | Canonical V1.2 control-plane flow + target module boundaries | active | `library/designs/` | `keep_original_location` | Architecture target; implementation remains phased. |
+| `docs/archive/cleanup-notes/README.md` | md | archive note | Cleanup-note retention policy for archive candidates | active | `library/archives/` | `keep_original_location` | Supports archive-first cleanup workflow. |
+| `PRODUCTION_HOUSE_FILE_MANIFEST.md` | md | report/reference | Isolated Production House unit file manifest snapshot | active | `library/reports/` | `keep_original_location` | Synced from uploaded archive bundle. |
+| `PRODUCTION_HOUSE_TEST_PLAN.md` | md | testing plan | Production House and Preview Studio focused test plan | active | `library/testing/` | `keep_original_location` | Synced from uploaded archive bundle. |

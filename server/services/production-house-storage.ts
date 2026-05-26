@@ -50,11 +50,14 @@ import type {
   ProductionUnitRecord,
   MediaPackageRecord,
   PreviewSnapshotRecord,
+  Cinema4DAnchorCharacterManifest,
+  Cinema4DCharacterAccessoryManifest,
+  Cinema4DRoomCharacterScriptManifest,
+  PreviewStudioState,
+  PreviewStudioEditArtifact,
   VoiceAsset,
   AssetJob,
   VideoJob,
-  PreviewStudioState,
-  PreviewStudioEditArtifact,
 } from "../../shared/production-house";
 
 export type CollectionName =
@@ -93,6 +96,9 @@ export type CollectionName =
   | "productionUnits"
   | "mediaPackages"
   | "previewSnapshots"
+  | "cinema4DAnchorCharacters"
+  | "cinema4DCharacterAccessories"
+  | "cinema4DRoomCharacterScripts"
   | "productionWizardSessions"
   | "wizardReviewLinks"
   | "previewStudioStates"
@@ -145,6 +151,9 @@ export interface PersistedState {
   productionUnits: ProductionUnitRecord[];
   mediaPackages: MediaPackageRecord[];
   previewSnapshots: PreviewSnapshotRecord[];
+  cinema4DAnchorCharacters: Cinema4DAnchorCharacterManifest[];
+  cinema4DCharacterAccessories: Cinema4DCharacterAccessoryManifest[];
+  cinema4DRoomCharacterScripts: Cinema4DRoomCharacterScriptManifest[];
   productionWizardSessions: any[];
   wizardReviewLinks: any[];
   previewStudioStates: PreviewStudioState[];
@@ -228,6 +237,9 @@ export class MemoryProductionHouseStorage implements ProductionHouseStorage {
       productionUnits: [],
       mediaPackages: [],
       previewSnapshots: [],
+      cinema4DAnchorCharacters: [],
+      cinema4DCharacterAccessories: [],
+      cinema4DRoomCharacterScripts: [],
       productionWizardSessions: [],
       wizardReviewLinks: [],
       realUnrealHealthCheckHistory: [],
@@ -410,6 +422,12 @@ export class FileProductionHouseStorage implements ProductionHouseStorage {
         this.readJson<MediaPackageRecord[]>("mediaPackages", []),
       previewSnapshots:
         this.readJson<PreviewSnapshotRecord[]>("previewSnapshots", []),
+      cinema4DAnchorCharacters:
+        this.readJson<Cinema4DAnchorCharacterManifest[]>("cinema4DAnchorCharacters", []),
+      cinema4DCharacterAccessories:
+        this.readJson<Cinema4DCharacterAccessoryManifest[]>("cinema4DCharacterAccessories", []),
+      cinema4DRoomCharacterScripts:
+        this.readJson<Cinema4DRoomCharacterScriptManifest[]>("cinema4DRoomCharacterScripts", []),
       productionWizardSessions:
         this.readJson<any[]>("productionWizardSessions", []),
       wizardReviewLinks:

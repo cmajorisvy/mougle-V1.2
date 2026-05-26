@@ -16,6 +16,10 @@ import {
   integrationsStatus,
   runPromptStudio,
 } from "../server/services/production-house-service";
+import {
+  _resetPreviewStudioForTests,
+  generatePreviewStudioState,
+} from "../server/services/preview-studio-service";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as nodePath from "node:path";
@@ -50,6 +54,7 @@ after(async () => {
 
 beforeEach(() => {
   _resetForTests();
+  _resetPreviewStudioForTests();
   allowAdmin = true;
   // Ensure env doesn't leak between tests.
   for (const k of [
@@ -7742,6 +7747,19 @@ describe("Production House — 3D/4D modules and exports", () => {
       prompt: "podcast to clips", productionId: id,
     });
     await post(`/api/admin/production-house/preview/${id}/generate`, {});
+    generatePreviewStudioState(
+      { mode: "newsroom" },
+      {
+        productionId: id,
+        roomId: "room_export_preview",
+        avatarIds: ["avatar_export_preview"],
+        mediaPackageIds: ["media_export_preview"],
+        wizardId: "wizard_export_preview",
+        previewSnapshotId: "preview_export_preview",
+        readinessReportId: "readiness_export_preview",
+        approvalState: "draft",
+      },
+    );
     const e = await (await get(`/api/admin/production-house/productions/${id}/export/full`)).json();
     const body = JSON.stringify(e);
     assert.ok(!/api[_-]?key|provider_key/i.test(body), "no secrets leak");
@@ -7750,9 +7768,18 @@ describe("Production House — 3D/4D modules and exports", () => {
     assert.ok(Array.isArray(e.avatarAccessories));
     assert.ok(Array.isArray(e.productionUnits));
     assert.ok(Array.isArray(e.mediaPackages));
+    assert.ok(Array.isArray(e.previewStudioStates));
     assert.ok(Array.isArray(e.previewSnapshots));
+    const linkedPreview = e.previewStudioStates.find((s: any) => s.productionId === id);
+    assert.ok(linkedPreview, "linked preview studio state included in export");
+    assert.equal(linkedPreview.publicUrl, null);
+    assert.equal(linkedPreview.signedUrl, null);
+    assert.equal(linkedPreview.realSendAllowed, false);
+    assert.equal(linkedPreview.executionEnabled, false);
+    assert.equal(linkedPreview.noUnrealExecution, true);
+    assert.equal(linkedPreview.noFourDHardware, true);
     for (const arr of [e.generatedRooms, e.generatedAvatars, e.avatarAccessories,
-                       e.productionUnits, e.mediaPackages, e.previewSnapshots]) {
+                       e.productionUnits, e.mediaPackages, e.previewStudioStates, e.previewSnapshots]) {
       for (const item of arr) {
         if ("publicUrl" in item) assert.equal(item.publicUrl, null);
         if ("signedUrl" in item) assert.equal(item.signedUrl, null);

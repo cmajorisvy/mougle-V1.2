@@ -36,6 +36,7 @@ import {
   type PreviewStudioMode,
   type PreviewStudioScene,
   type PreviewStudioState,
+  type PreviewStudioWorkflowLinks,
 } from "../../shared/production-house";
 import {
   createDefaultStorage,
@@ -344,11 +345,81 @@ const SAFETY_LOCKED = {
   noFourDHardware: true as const,
 };
 
-function sealState(scene: PreviewStudioScene): PreviewStudioState {
+const EMPTY_WORKFLOW_LINKS: PreviewStudioWorkflowLinks = {
+  productionId: null,
+  roomId: null,
+  avatarIds: [],
+  characterIds: [],
+  mediaPackageIds: [],
+  wizardId: null,
+  previewSnapshotId: null,
+  readinessReportId: null,
+  approvalState: null,
+  characterRole: null,
+  wardrobeStyle: null,
+  posePreset: null,
+  accessoryIds: [],
+  teleprompterText: null,
+  lowerThirdName: null,
+  panelFocus: null,
+  cameraPreset: null,
+  roomLabel: null,
+  avatarLabels: [],
+  mediaPackageLabels: [],
+};
+
+function normalizeWorkflowLinks(
+  links?: Partial<PreviewStudioWorkflowLinks>,
+): PreviewStudioWorkflowLinks {
+  return {
+    ...EMPTY_WORKFLOW_LINKS,
+    ...links,
+    avatarIds: [...(links?.avatarIds ?? EMPTY_WORKFLOW_LINKS.avatarIds)],
+    characterIds: [...(links?.characterIds ?? EMPTY_WORKFLOW_LINKS.characterIds)],
+    mediaPackageIds: [...(links?.mediaPackageIds ?? EMPTY_WORKFLOW_LINKS.mediaPackageIds)],
+    accessoryIds: [...(links?.accessoryIds ?? EMPTY_WORKFLOW_LINKS.accessoryIds)],
+    avatarLabels: [...(links?.avatarLabels ?? EMPTY_WORKFLOW_LINKS.avatarLabels)],
+    mediaPackageLabels: [
+      ...(links?.mediaPackageLabels ?? EMPTY_WORKFLOW_LINKS.mediaPackageLabels),
+    ],
+  };
+}
+
+function currentWorkflowLinks(state: PreviewStudioState): Partial<PreviewStudioWorkflowLinks> {
+  return {
+    productionId: state.productionId,
+    roomId: state.roomId,
+    avatarIds: state.avatarIds,
+    characterIds: state.characterIds,
+    mediaPackageIds: state.mediaPackageIds,
+    wizardId: state.wizardId,
+    previewSnapshotId: state.previewSnapshotId,
+    readinessReportId: state.readinessReportId,
+    approvalState: state.approvalState,
+    characterRole: state.characterRole,
+    wardrobeStyle: state.wardrobeStyle,
+    posePreset: state.posePreset,
+    accessoryIds: state.accessoryIds,
+    teleprompterText: state.teleprompterText,
+    lowerThirdName: state.lowerThirdName,
+    panelFocus: state.panelFocus,
+    cameraPreset: state.cameraPreset,
+    roomLabel: state.roomLabel,
+    avatarLabels: state.avatarLabels,
+    mediaPackageLabels: state.mediaPackageLabels,
+  };
+}
+
+function sealState(
+  scene: PreviewStudioScene,
+  links?: Partial<PreviewStudioWorkflowLinks>,
+): PreviewStudioState {
+  const linked = normalizeWorkflowLinks(links);
   return {
     id: `psv_${randomUUID()}`,
     createdAt: new Date().toISOString(),
     generatedBy: "root_admin",
+    ...linked,
     scene,
     ...SAFETY_LOCKED,
     safetyEnvelope: SAFETY_ENVELOPE,
@@ -1398,12 +1469,13 @@ export function getLatestPreviewStudioState(): PreviewStudioState {
 
 export function generatePreviewStudioState(
   partial: Partial<PreviewStudioControls> & { mode: PreviewStudioMode },
+  links?: Partial<PreviewStudioWorkflowLinks>,
 ): PreviewStudioState {
   hydrate();
   const base = defaultControlsFor(partial.mode);
   const controls: PreviewStudioControls = { ...base, ...partial, mode: partial.mode };
   const scene = buildScene(controls);
-  const sealed = sealState(scene);
+  const sealed = sealState(scene, links);
   states.push(sealed);
   latest = sealed;
   persistStates();
@@ -1412,6 +1484,7 @@ export function generatePreviewStudioState(
 
 export function updatePreviewStudioControls(
   partial: Partial<PreviewStudioControls>,
+  links?: Partial<PreviewStudioWorkflowLinks>,
 ): PreviewStudioState {
   const current = getLatestPreviewStudioState();
   const merged: PreviewStudioControls = {
@@ -1420,7 +1493,10 @@ export function updatePreviewStudioControls(
     mode: partial.mode ?? current.scene.controls.mode,
   };
   const scene = buildScene(merged);
-  const sealed = sealState(scene);
+  const sealed = sealState(scene, {
+    ...currentWorkflowLinks(current),
+    ...(links ?? {}),
+  });
   states.push(sealed);
   latest = sealed;
   persistStates();

@@ -507,7 +507,11 @@ export default function Home() {
         )}
 
         <div className="pt-4 border-t border-white/[0.04]">
-          <a href="https://www.rainbowriches.org.uk/" className="text-xs text-muted-foreground hover:text-foreground transition-colors" data-testid="link-rainbow-riches">Rainbow Riches Slots</a>
+          <Link href="/docs/privacy-safety">
+            <span className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer" data-testid="link-home-safety-docs">
+              Read privacy & safety commitments
+            </span>
+          </Link>
         </div>
       </div>
     </Layout>

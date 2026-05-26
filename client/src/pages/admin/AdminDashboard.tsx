@@ -63,7 +63,16 @@ import { Kbd } from "@/components/ui/kbd";
 import { cn } from "@/lib/utils";
 import { AiOpsHeroCard } from "@/components/admin/AiOpsHeroCard";
 
-type BadgeTone = "live" | "dryRun" | "manual" | "disabled" | "attention" | "admin" | "root";
+type BadgeTone =
+  | "live"
+  | "preview"
+  | "dryRun"
+  | "manual"
+  | "disabled"
+  | "future"
+  | "attention"
+  | "admin"
+  | "root";
 type ZoneId =
   | "all"
   | "command"
@@ -124,32 +133,38 @@ const SHORTS_DRAFT_QUEUE_THRESHOLD_DEFAULT = 5;
 
 const badgeStyles: Record<BadgeTone, string> = {
   live: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+  preview: "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300",
   dryRun: "border-cyan-500/30 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300",
   manual: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
   disabled: "border-zinc-400/40 bg-zinc-500/10 text-zinc-700 dark:text-zinc-300",
+  future: "border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300",
   attention: "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300",
   admin: "border-violet-500/30 bg-violet-500/10 text-violet-700 dark:text-violet-300",
   root: "border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-300",
 };
 
 const badgeLabels: Record<BadgeTone, string> = {
-  live: "Live",
-  dryRun: "Dry run",
-  manual: "Manual",
-  disabled: "Disabled",
+  live: "Active (active)",
+  preview: "Preview (preview)",
+  dryRun: "Dry run (dry_run)",
+  manual: "Manual approval required (approval_required)",
+  disabled: "Disabled (disabled)",
+  future: "Future (future)",
   attention: "Attention",
-  admin: "Admin only",
-  root: "Root only",
+  admin: "Admin only (admin_only)",
+  root: "Admin only (admin_only)",
 };
 
 const badgeMeanings: Record<BadgeTone, string> = {
-  live: "Actively running in production. Changes can affect users, agents, jobs, or money flow.",
-  dryRun: "Simulating behavior without committing production changes. Safe to validate.",
-  manual: "Requires a human to approve or execute the next step. Check ownership before acting.",
-  disabled: "Intentionally turned off. Hover the badge to see why if available.",
+  live: "Actively running in production. Canonical status: active.",
+  preview: "Visible as a preview-only surface. Canonical status: preview.",
+  dryRun: "Simulating behavior without committing production changes. Canonical status: dry_run.",
+  manual: "Requires a human to approve or execute the next step. Canonical status: approval_required.",
+  disabled: "Intentionally turned off. Canonical status: disabled.",
+  future: "Reserved for future phases. Canonical status: future.",
   attention: "Operator should review soon. Sort these first in each zone.",
-  admin: "Requires elevated staff permissions. Action will create an audit log entry.",
-  root: "Founder-level / infrastructure-level access. Treat changes as high-impact.",
+  admin: "Requires elevated staff permissions. Canonical status family: admin_only.",
+  root: "Founder-level / infrastructure-level access. Canonical status family: admin_only.",
 };
 
 const zones: AdminZone[] = [
@@ -162,7 +177,7 @@ const zones: AdminZone[] = [
     accent: "emerald",
     links: [
       { label: "Safe Mode", href: "/admin/safe-mode", status: "root", icon: Shield, description: "Manual pause controls for high-risk flows.", tooltip: "Safe mode is root-admin controlled and does not activate autonomously." },
-      { label: "Council Governance", href: "/admin/council-governance", status: "dryRun", icon: Gavel, description: "Read-only council registry, package previews, Redaction Wall checks.", tooltip: "Council governance is static/read-only in this phase; no provider calls or publishing." },
+      { label: "Council Governance", href: "/admin/council-governance", status: "preview", icon: Gavel, description: "Read-only council registry, package previews, Redaction Wall checks.", tooltip: "Council governance is static/read-only in this phase; no provider calls or publishing." },
       { label: "Risk Center", href: "/admin/risk-center", status: "admin", icon: AlertTriangle, description: "Operational risk, policy health, and attention signals." },
       { label: "Policy Governance", href: "/admin/policy-governance", status: "admin", icon: Settings, description: "Policy review surfaces and governance status." },
       { label: "Compliance", href: "/admin/compliance", status: "admin", icon: FileText, description: "Global compliance and legal safety review." },
@@ -211,9 +226,9 @@ const zones: AdminZone[] = [
       { label: "Voice Jobs", href: "/admin/voice-jobs", status: "manual", icon: MessageSquare, description: "Manual audio generation jobs and mock fallback review." },
       { label: "Video Render", href: "/admin/video-render", status: "dryRun", icon: Film, description: "Avatar/video render planning only; no live provider calls." },
       { label: "Shorts Approval Queue", href: "/admin/shorts", status: "manual", icon: Film, description: "Review, edit, and approve auto-cut social shorts from broadcasts before publishing.", tooltip: "Draft shorts wait here until a root admin approves them. Count badge shows pending drafts." },
-      { label: "YouTube Publishing", href: "/admin/youtube-publishing", status: "manual", icon: Globe, description: "Manual approval packages; no autonomous upload." },
-      { label: "Social Distribution", href: "/admin/social-distribution", status: "manual", icon: Share2, description: "Manual/export-first distribution packages." },
-      { label: "Live Studio", href: "/admin/live-studio", status: "manual", icon: Radio, description: "Admin-controlled debate studio; no autonomous live runner." },
+      { label: "YouTube Publishing", href: "/admin/youtube-publishing", status: "future", icon: Globe, description: "Manual approval packages; no autonomous upload." },
+      { label: "Social Distribution", href: "/admin/social-distribution", status: "future", icon: Share2, description: "Manual/export-first distribution packages." },
+      { label: "Live Studio", href: "/admin/live-studio", status: "future", icon: Radio, description: "Admin-controlled debate studio; no autonomous live runner." },
     ],
   },
   // ────────────────────────────────────────────────────────────────────────────
@@ -273,7 +288,7 @@ const zones: AdminZone[] = [
     links: [
       { label: "News to Debate", href: "/admin/news-to-debate", status: "manual", icon: Radio, description: "Draft/internal topic packages for root-admin review.", tooltip: "Cross-link — primary home is Media & Content Pipeline." },
       { label: "Live Studio", href: "/admin/live-studio", status: "manual", icon: Radio, description: "Admin-controlled debate studio; no autonomous live runner.", tooltip: "Cross-link — primary home is Media & Content Pipeline. Public companion route /live-studio/:id is unchanged." },
-      { label: "Council Governance", href: "/admin/council-governance", status: "dryRun", icon: Gavel, description: "Read-only council registry, package previews, Redaction Wall checks.", tooltip: "Cross-link — primary home is Safety & Governance." },
+      { label: "Council Governance", href: "/admin/council-governance", status: "preview", icon: Gavel, description: "Read-only council registry, package previews, Redaction Wall checks.", tooltip: "Cross-link — primary home is Safety & Governance." },
       { label: "Debate Shorts (Approval Queue)", href: "/admin/shorts", status: "manual", icon: Film, description: "Approve auto-cut debate clips before publishing.", tooltip: "Cross-link — primary home is Media & Content Pipeline. Same manual approval queue; root admin must approve each draft before publishing." },
       { label: "Video Render (debate video)", href: "/admin/video-render", status: "dryRun", icon: Film, description: "Avatar/video render planning only; no live provider calls.", tooltip: "Cross-link — shared with Production House and 3D/4D/Unreal." },
     ],
@@ -326,8 +341,8 @@ const zones: AdminZone[] = [
     accent: "orange",
     links: [
       { label: "Shorts Approval Queue", href: "/admin/shorts", status: "manual", icon: Film, description: "Review, edit, and approve auto-cut social shorts from broadcasts before publishing.", tooltip: "Cross-link — primary home is Media & Content Pipeline. Same manual approval queue; root admin must approve each draft before publishing." },
-      { label: "YouTube Publishing", href: "/admin/youtube-publishing", status: "manual", icon: Globe, description: "Manual approval packages; no autonomous upload.", tooltip: "Cross-link — primary home is Media & Content Pipeline. Gated by pauseYouTubeUploads safe-mode flag." },
-      { label: "Social Distribution", href: "/admin/social-distribution", status: "manual", icon: Share2, description: "Manual/export-first distribution packages.", tooltip: "Cross-link — primary home is Media & Content Pipeline. Gated by pauseSocialDistributionAutomation safe-mode flag." },
+      { label: "YouTube Publishing", href: "/admin/youtube-publishing", status: "future", icon: Globe, description: "Manual approval packages; no autonomous upload.", tooltip: "Cross-link — primary home is Media & Content Pipeline. Gated by pauseYouTubeUploads safe-mode flag." },
+      { label: "Social Distribution", href: "/admin/social-distribution", status: "future", icon: Share2, description: "Manual/export-first distribution packages.", tooltip: "Cross-link — primary home is Media & Content Pipeline. Gated by pauseSocialDistributionAutomation safe-mode flag." },
       { label: "Social Distribution Hub", href: "/admin/social-hub", status: "admin", icon: Share2, description: "Social distribution hub configuration, channel registry, and analytics." },
       { label: "Marketing", href: "/admin/marketing", status: "admin", icon: FileText, description: "Marketing operations and content surfaces.", tooltip: "Cross-link — primary home is Operations." },
       { label: "SEO", href: "/admin/seo", status: "admin", icon: Globe, description: "SEO health and knowledge visibility surfaces.", tooltip: "Cross-link — primary home is Operations." },

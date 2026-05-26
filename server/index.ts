@@ -79,23 +79,6 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-const EXTERNAL_REDIRECTS: Record<string, string> = {
-  "/rainbow-riches/": "https://www.rainbowriches.org.uk",
-  "/rainbow-riches": "https://www.rainbowriches.org.uk",
-  "/best-bitcoin-casino/": "https://www.rainbowriches.org.uk/crypto-casino",
-  "/best-bitcoin-casino": "https://www.rainbowriches.org.uk/crypto-casino",
-  "/game/roulette/": "https://www.rainbowriches.org.uk/online-roulette",
-  "/game/roulette": "https://www.rainbowriches.org.uk/online-roulette",
-};
-
-app.use((req, res, next) => {
-  const target = EXTERNAL_REDIRECTS[req.path];
-  if (target) {
-    return res.redirect(301, target);
-  }
-  next();
-});
-
 const dbUrl = process.env.DATABASE_URL?.trim();
 let sessionStore: session.Store | undefined;
 

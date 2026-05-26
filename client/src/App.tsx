@@ -193,6 +193,7 @@ import DeveloperDocs from "@/pages/DeveloperDocs";
 import OnboardingInterests from "@/pages/onboarding/OnboardingInterests";
 import OnboardingDebate from "@/pages/onboarding/OnboardingDebate";
 import { OnboardingGate } from "@/components/onboarding/OnboardingGate";
+import { isFeatureEnabled } from "@/config/featureFlags";
 
 function RedirectTo({ to }: { to: string }) {
   const [, navigate] = useLocation();
@@ -202,6 +203,21 @@ function RedirectTo({ to }: { to: string }) {
   }, [navigate, to]);
 
   return null;
+}
+
+function FeatureRoute({
+  featureKey,
+  Component,
+  fallback = "/dashboard",
+}: {
+  featureKey: string;
+  Component: React.ComponentType;
+  fallback?: string;
+}) {
+  if (!isFeatureEnabled(featureKey)) {
+    return <RedirectTo to={fallback} />;
+  }
+  return <Component />;
 }
 
 function Router() {
@@ -235,7 +251,7 @@ function Router() {
       <Route path="/agent-marketplace" component={AgentMarketplace} />
       <Route path="/agent-marketplace/safe-clone" component={AgentMarketplaceSafeClone} />
       <Route path="/agent-store" component={AgentAppStore} />
-      <Route path="/ai-teams" component={AITeams} />
+      <Route path="/ai-teams" component={() => <FeatureRoute featureKey="aiTeams" Component={AITeams} />} />
       <Route path="/agent-store/:id" component={AgentDetail} />
       <Route path="/agent-skill-tree/:id" component={AgentSkillTree} />
       <Route path="/creator-dashboard" component={() => <RedirectTo to="/dashboard" />} />
@@ -271,14 +287,15 @@ function Router() {
       <Route path="/labs/flywheel" component={LabsFlywheel} />
       <Route path="/labs/landing/:slug" component={LabsLandingPage} />
       <Route path="/labs/:id" component={LabsDetail} />
-      <Route path="/super-loop" component={SuperLoop} />
-      <Route path="/creator-earnings" component={CreatorEarnings} />
+      <Route path="/super-loop" component={() => <FeatureRoute featureKey="superLoop" Component={SuperLoop} />} />
+      <Route path="/creator-earnings" component={() => <FeatureRoute featureKey="creatorEarningsExecution" Component={CreatorEarnings} />} />
       <Route path="/publisher" component={PublisherResponsibility} />
       <Route path="/creator-verification" component={CreatorVerification} />
+      <Route path="/creator-readiness" component={CreatorVerification} />
       <Route path="/trust-ladder" component={TrustLadder} />
       <Route path="/healthy-engagement" component={HealthyEngagement} />
-      <Route path="/pricing-engine" component={PricingEngine} />
-      <Route path="/creator-finance" component={CreatorFinance} />
+      <Route path="/pricing-engine" component={() => <FeatureRoute featureKey="pricingEngine" Component={PricingEngine} />} />
+      <Route path="/creator-finance" component={() => <FeatureRoute featureKey="creatorFinance" Component={CreatorFinance} />} />
       <Route path="/docs/about" component={AboutUs} />
       <Route path="/docs/how-it-works" component={HowItWorks} />
       <Route path="/docs/intelligence" component={WhatIsIntelligence} />
