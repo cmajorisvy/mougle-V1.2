@@ -39,6 +39,15 @@ import {
   MeshyMockInputSchema,
   RunwayGenerateInputSchema,
   RunwayMockInputSchema,
+  Cinema4DCharacterRoleSchema,
+  Cinema4DCharacterStyleSchema,
+  Cinema4DWardrobeStyleSchema,
+  Cinema4DPosePresetSchema,
+  Cinema4DFacialExpressionSchema,
+  Cinema4DCharacterAccessoryTypeSchema,
+  Cinema4DAccessoryAttachTargetSchema,
+  Cinema4DAnchorCameraPresetSchema,
+  Cinema4DQualityTierSchema,
 } from "../../shared/production-house";
 import {
   buildAvatarManifest,
@@ -161,18 +170,28 @@ import {
   getGeneratedAvatar,
   generateAvatarAccessory,
   listAvatarAccessories,
+  generateCinema4DAnchorCharacterManifest,
+  listCinema4DAnchorCharacters,
+  generateCinema4DCharacterAccessoryManifest,
+  listCinema4DCharacterAccessories,
+  generateCinema4DRoomCharacterScript,
+  listCinema4DRoomCharacterScripts,
+  buildCinema4DCharacterBindings,
+  getCinema4DAnchorCharacter,
+  openCinema4DPreviewWithCharacter,
+  getCinema4DNewsroomDownloadScript,
+  buildCinema4DNewsroomDownloadPackage,
   createProductionUnit,
   listProductionUnits,
   getProductionUnit,
   generateMediaPackage,
   listMediaPackages,
-  getMediaPackage,
-  updateMediaPackage3DSelection,
   generateNewsToDebatePackage,
   generatePreviewSnapshot,
   getLatestPreviewSnapshot,
   listPreviewSnapshots,
   getPreviewSnapshotById,
+  listPreviewStudioStatesForExport,
   generateCinematicPreview,
   duplicatePreviewSnapshot,
   updatePreviewLayout,
@@ -219,16 +238,82 @@ const ApproveSchema = z.object({
     "generated",
     "needs_review",
     "approved",
-    "sent_to_unreal",
-    "rendering",
-    "rendered",
-    "published",
     "failed",
   ]),
 });
 
+const Cinema4DCharacterManifestInputSchema = z.object({
+  productionId: z.string().min(1).max(120).nullable().optional(),
+  roomId: z.string().min(1).max(120).nullable().optional(),
+  characterName: z.string().min(1).max(160).optional(),
+  characterRole: Cinema4DCharacterRoleSchema.default("news_anchor"),
+  characterStyle: Cinema4DCharacterStyleSchema.default("premium_news_anchor"),
+  genderPresentation: z.string().max(80).optional(),
+  wardrobeStyle: Cinema4DWardrobeStyleSchema.default("navy_suit"),
+  posePreset: Cinema4DPosePresetSchema.default("seated_desk_hands_folded"),
+  facialExpression: Cinema4DFacialExpressionSchema.default("neutral_professional"),
+  voiceAssetId: z.string().min(1).max(120).nullable().optional(),
+  accessoryIds: z.array(z.string().min(1).max(120)).max(50).optional(),
+  defaultCameraPreset: Cinema4DAnchorCameraPresetSchema.default("anchor_medium"),
+});
+
+const Cinema4DAccessoryManifestInputSchema = z.object({
+  characterId: z.string().min(1).max(120).nullable().optional(),
+  roomId: z.string().min(1).max(120).nullable().optional(),
+  accessoryType: Cinema4DCharacterAccessoryTypeSchema.default("lavalier_mic"),
+  accessoryName: z.string().min(1).max(160).optional(),
+  attachTo: Cinema4DAccessoryAttachTargetSchema.optional(),
+  materialPreset: z.string().max(120).optional(),
+});
+
+const Cinema4DRoomCharacterScriptInputSchema = z.object({
+  productionId: z.string().min(1).max(120).nullable().optional(),
+  roomId: z.string().min(1).max(120).nullable().optional(),
+  characterId: z.string().min(1).max(120).nullable().optional(),
+  accessoryIds: z.array(z.string().min(1).max(120)).max(50).optional(),
+  template: z.enum(["mougle_verified_newsroom", "mougle_podcast_studio"])
+    .default("mougle_verified_newsroom"),
+  qualityTier: Cinema4DQualityTierSchema.default("premium_draft"),
+  newsroomDataPackage: z.record(z.unknown()).optional(),
+});
+
+const Cinema4DOpenPreviewInputSchema = z.object({
+  productionId: z.string().min(1).max(120).nullable().optional(),
+  characterId: z.string().min(1).max(120).nullable().optional(),
+  accessoryIds: z.array(z.string().min(1).max(120)).max(50).optional(),
+  newsroomDataPackage: z.record(z.unknown()).optional(),
+  template: z.enum(["mougle_verified_newsroom", "mougle_podcast_studio"])
+    .default("mougle_verified_newsroom"),
+});
+
 function err(res: any, status: number, msg: string, extra?: any) {
   return res.status(status).json({ ok: false, error: msg, ...(extra || {}) });
+}
+
+function sanitizeExportPayload(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(sanitizeExportPayload);
+  if (!value || typeof value !== "object") return value;
+  const out: Record<string, unknown> = {};
+  for (const [key, raw] of Object.entries(value as Record<string, unknown>)) {
+    const lower = key.toLowerCase();
+    if (lower === "publicurl" || lower === "signedurl") {
+      out[key] = null;
+      continue;
+    }
+    if (
+      /secret|token|apikey|api_key|authorization|credential|password|privateurl|providerurl|downloadurl|modelurl|videourl|audiourl/i
+        .test(key)
+    ) {
+      out[key] = null;
+      continue;
+    }
+    if (lower.endsWith("url") && typeof raw === "string" && /^https?:\/\//i.test(raw)) {
+      out[key] = null;
+      continue;
+    }
+    out[key] = sanitizeExportPayload(raw);
+  }
+  return out;
 }
 
 export function registerProductionHouseRoutes(
@@ -1219,6 +1304,297 @@ export function registerProductionHouseRoutes(
     return res.json({ ok: true, avatar: r });
   });
 
+  /* ---- Cinema 4D Studio — placeholder character/anchor manifests ---- */
+  app.get(`${PREFIX}/cinema4d-studio/templates`, requireRootAdmin, (_req, res) => {
+    return res.json({
+      ok: true,
+      templates: [
+        {
+          id: "mougle_verified_newsroom",
+          label: "Mougle Verified Newsroom",
+          roomTypes: ["newsroom", "debate_studio", "hall_event"],
+          cameraPresets: [
+            "anchor_closeup",
+            "anchor_medium",
+            "anchor_over_shoulder",
+            "wide_newsroom",
+            "breaking_news_push_in",
+          ],
+          lightingPresets: ["premium_blue_gold", "warm_gold", "breaking_high_contrast"],
+          qualityTiers: ["placeholder", "premium_draft", "expert_polish_required"],
+          warning: "This generates a Cinema 4D scene script and production package. Final cinema-quality output still requires Cinema 4D rendering and human 3D expert review.",
+        },
+        {
+          id: "mougle_podcast_studio",
+          label: "Mougle Podcast Studio",
+          roomTypes: ["podcast_room"],
+          cameraPresets: [
+            "podcast_two_shot",
+            "host_closeup",
+            "guest_closeup",
+            "table_wide",
+            "overhead_table",
+          ],
+          lightingPresets: ["warm_gold", "podcast_intimate", "blue_neon"],
+          qualityTiers: ["placeholder", "premium_draft", "expert_polish_required"],
+          warning: "This generates a Cinema 4D scene script and production package. Final cinema-quality output still requires Cinema 4D rendering and human 3D expert review.",
+        },
+      ],
+      qualityTiers: ["placeholder", "premium_draft", "expert_polish_required"],
+      warning: "This generates a Cinema 4D scene script and production package. Final cinema-quality output still requires Cinema 4D rendering and human 3D expert review.",
+      adminPreviewOnly: true,
+      notRendered: true,
+      notPublished: true,
+      noUnrealExecution: true,
+      noFourDHardware: true,
+      realSendAllowed: false,
+      executionEnabled: false,
+      visibility: "admin_only_internal",
+    });
+  });
+
+  app.get(`${PREFIX}/cinema4d-studio/list`, requireRootAdmin, (_req, res) => {
+    return res.json({
+      ok: true,
+      characters: listCinema4DAnchorCharacters(),
+      accessories: listCinema4DCharacterAccessories(),
+      scripts: listCinema4DRoomCharacterScripts().slice(0, 25),
+      adminPreviewOnly: true,
+      notRendered: true,
+      notPublished: true,
+      noUnrealExecution: true,
+      noFourDHardware: true,
+      realSendAllowed: false,
+      executionEnabled: false,
+      visibility: "admin_only_internal",
+    });
+  });
+
+  app.get(
+    `${PREFIX}/cinema4d-studio/:roomId/download-script`,
+    requireRootAdmin,
+    (req, res) => {
+      const tier = Cinema4DQualityTierSchema.safeParse(req.query.qualityTier).success
+        ? Cinema4DQualityTierSchema.parse(req.query.qualityTier)
+        : "premium_draft";
+      const bundle = getCinema4DNewsroomDownloadScript(String(req.params.roomId), tier);
+      recordAudit("root_admin", "cinema4d.download_script", String(req.params.roomId));
+      res.setHeader("Content-Type", bundle.contentType);
+      res.setHeader("Content-Disposition", `attachment; filename="${bundle.filename}"`);
+      res.setHeader("X-Mougle-Real-Send-Allowed", "false");
+      res.setHeader("X-Mougle-Execution-Enabled", "false");
+      return res.send(bundle.script);
+    },
+  );
+
+  app.get(
+    `${PREFIX}/cinema4d-studio/:roomId/download-package`,
+    requireRootAdmin,
+    (req, res) => {
+      const tier = Cinema4DQualityTierSchema.safeParse(req.query.qualityTier).success
+        ? Cinema4DQualityTierSchema.parse(req.query.qualityTier)
+        : "premium_draft";
+      const pkg = buildCinema4DNewsroomDownloadPackage(String(req.params.roomId), tier);
+      recordAudit("root_admin", "cinema4d.download_package", String(req.params.roomId));
+      res.setHeader("Content-Type", pkg.contentType);
+      res.setHeader("Content-Disposition", `attachment; filename="${pkg.filename}"`);
+      res.setHeader("X-Mougle-Real-Send-Allowed", "false");
+      res.setHeader("X-Mougle-Execution-Enabled", "false");
+      return res.send(pkg.zip);
+    },
+  );
+
+  app.post(
+    `${PREFIX}/cinema4d-studio/generate-character-manifest`,
+    requireRootAdmin,
+    (req, res) => {
+      const parsed = Cinema4DCharacterManifestInputSchema.safeParse(req.body);
+      if (!parsed.success) return err(res, 400, "invalid_body", { issues: parsed.error.issues });
+      const r = generateCinema4DAnchorCharacterManifest(parsed.data);
+      return res.json({
+        ok: true,
+        character: r.manifest,
+        manifest: r.manifest,
+        adminPreviewOnly: true,
+        notRendered: true,
+        notPublished: true,
+        noUnrealExecution: true,
+        noFourDHardware: true,
+        realSendAllowed: false,
+        executionEnabled: false,
+        visibility: "admin_only_internal",
+      });
+    },
+  );
+
+  app.post(
+    `${PREFIX}/cinema4d-studio/generate-room-manifest`,
+    requireRootAdmin,
+    (req, res) => {
+      const body = (req.body ?? {}) as any;
+      const room = generateGeneratedRoom({
+        prompt: String(body.prompt ?? body.headline ?? "Mougle Cinema 4D verified newsroom").slice(0, 4000),
+        productionId: body.productionId ?? null,
+        roomName: body.roomName ?? "Mougle Cinema 4D Newsroom",
+        roomCategory: body.roomCategory ?? "newsroom",
+      }).record;
+      return res.json({
+        ok: true,
+        room,
+        manifest: room,
+        status: "draft",
+        approvalStatus: "draft",
+        adminPreviewOnly: true,
+        notRendered: true,
+        notPublished: true,
+        noUnrealExecution: true,
+        noFourDHardware: true,
+        realSendAllowed: false,
+        executionEnabled: false,
+        visibility: "admin_only_internal",
+        publicUrl: null,
+        signedUrl: null,
+      });
+    },
+  );
+
+  app.post(
+    `${PREFIX}/cinema4d-studio/generate-avatar-manifest`,
+    requireRootAdmin,
+    (req, res) => {
+      const body = (req.body ?? {}) as any;
+      const avatar = generateGeneratedAvatar({
+        prompt: String(body.prompt ?? body.characterName ?? "Mougle Cinema 4D anchor avatar").slice(0, 4000),
+        productionId: body.productionId ?? null,
+        avatarName: body.avatarName ?? body.characterName ?? "Mougle Cinema 4D Anchor",
+        avatarRole: body.avatarRole ?? "news_anchor",
+        accessoryList: body.accessoryList ?? ["microphone", "earpiece"],
+      }).record;
+      return res.json({
+        ok: true,
+        avatar,
+        manifest: avatar,
+        status: "draft",
+        approvalStatus: "draft",
+        adminPreviewOnly: true,
+        notRendered: true,
+        notPublished: true,
+        noUnrealExecution: true,
+        noFourDHardware: true,
+        realSendAllowed: false,
+        executionEnabled: false,
+        visibility: "admin_only_internal",
+        publicUrl: null,
+        signedUrl: null,
+      });
+    },
+  );
+
+  app.post(
+    `${PREFIX}/cinema4d-studio/generate-script`,
+    requireRootAdmin,
+    (req, res) => {
+      const parsed = Cinema4DRoomCharacterScriptInputSchema.safeParse(req.body);
+      if (!parsed.success) return err(res, 400, "invalid_body", { issues: parsed.error.issues });
+      const r = generateCinema4DRoomCharacterScript(parsed.data);
+      return res.json({
+        ok: true,
+        script: r.manifest,
+        manifest: r.manifest,
+        adminPreviewOnly: true,
+        notRendered: true,
+        notPublished: true,
+        noUnrealExecution: true,
+        noFourDHardware: true,
+        realRenderCalled: false,
+        unrealCommandSent: false,
+        fourDCommandSent: false,
+        published: false,
+        realSendAllowed: false,
+        executionEnabled: false,
+        visibility: "admin_only_internal",
+      });
+    },
+  );
+
+  app.post(
+    `${PREFIX}/cinema4d-studio/generate-accessory-manifest`,
+    requireRootAdmin,
+    (req, res) => {
+      const parsed = Cinema4DAccessoryManifestInputSchema.safeParse(req.body);
+      if (!parsed.success) return err(res, 400, "invalid_body", { issues: parsed.error.issues });
+      const r = generateCinema4DCharacterAccessoryManifest(parsed.data);
+      return res.json({
+        ok: true,
+        accessory: r.manifest,
+        manifest: r.manifest,
+        adminPreviewOnly: true,
+        notRendered: true,
+        notPublished: true,
+        noUnrealExecution: true,
+        noFourDHardware: true,
+        realSendAllowed: false,
+        executionEnabled: false,
+        visibility: "admin_only_internal",
+      });
+    },
+  );
+
+  app.post(
+    `${PREFIX}/cinema4d-studio/generate-room-character-script`,
+    requireRootAdmin,
+    (req, res) => {
+      const parsed = Cinema4DRoomCharacterScriptInputSchema.safeParse(req.body);
+      if (!parsed.success) return err(res, 400, "invalid_body", { issues: parsed.error.issues });
+      const r = generateCinema4DRoomCharacterScript(parsed.data);
+      const character = parsed.data.characterId
+        ? getCinema4DAnchorCharacter(parsed.data.characterId)
+        : null;
+      const bindings = character
+        ? buildCinema4DCharacterBindings(parsed.data.newsroomDataPackage ?? {}, character)
+        : null;
+      return res.json({
+        ok: true,
+        script: r.manifest,
+        manifest: r.manifest,
+        bindings,
+        adminPreviewOnly: true,
+        notRendered: true,
+        notPublished: true,
+        noUnrealExecution: true,
+        noFourDHardware: true,
+        realRenderCalled: false,
+        unrealCommandSent: false,
+        fourDCommandSent: false,
+        published: false,
+        realSendAllowed: false,
+        executionEnabled: false,
+        visibility: "admin_only_internal",
+      });
+    },
+  );
+
+  app.post(
+    `${PREFIX}/cinema4d-studio/:roomId/open-preview-with-character`,
+    requireRootAdmin,
+    (req, res) => {
+      const parsed = Cinema4DOpenPreviewInputSchema.safeParse(req.body);
+      if (!parsed.success) return err(res, 400, "invalid_body", { issues: parsed.error.issues });
+      const result = openCinema4DPreviewWithCharacter(String(req.params.roomId), parsed.data);
+      return res.json({
+        ...result,
+        adminPreviewOnly: true,
+        notRendered: true,
+        notPublished: true,
+        noUnrealExecution: true,
+        noFourDHardware: true,
+        realSendAllowed: false,
+        executionEnabled: false,
+        visibility: "admin_only_internal",
+      });
+    },
+  );
+
   /* ---- Production Units Builder (draft/internal-only) --------------- */
   app.get(`${PREFIX}/production-units/list`, requireRootAdmin, (_req, res) => {
     return res.json({ ok: true, units: listProductionUnits(),
@@ -1278,66 +1654,6 @@ export function registerProductionHouseRoutes(
       visibility: "admin_only_internal",
       realSendAllowed: false, executionEnabled: false });
   });
-  app.post(
-    `${PREFIX}/media-pipeline/packages/:packageId/3d-selection`,
-    requireRootAdmin,
-    (req, res) => {
-      const packageId = String(req.params.packageId);
-      const body = (req.body ?? {}) as any;
-      const parseRef = (v: unknown): string | null | undefined => {
-        if (v === undefined) return undefined;
-        if (v === null || v === "") return null;
-        if (typeof v !== "string") return undefined;
-        const s = v.trim();
-        if (s.length === 0) return null;
-        if (s.length > 120) return s.slice(0, 120);
-        return s;
-      };
-      const setManifestId = parseRef(body.setManifestId);
-      const rigAssetId = parseRef(body.rigAssetId);
-      if (setManifestId === undefined && rigAssetId === undefined) {
-        recordAudit(
-          "root_admin",
-          "media_pipeline.package.3d_selection.rejected",
-          `${packageId}:no_fields`,
-        );
-        return err(res, 400, "no_selection_fields");
-      }
-      const existing = getMediaPackage(packageId);
-      if (!existing) {
-        recordAudit(
-          "root_admin",
-          "media_pipeline.package.3d_selection.rejected",
-          `${packageId}:not_found`,
-        );
-        return err(res, 404, "package_not_found");
-      }
-      const r = updateMediaPackage3DSelection(packageId, {
-        ...(setManifestId !== undefined ? { setManifestId } : {}),
-        ...(rigAssetId !== undefined ? { rigAssetId } : {}),
-      });
-      if (!r.ok) {
-        recordAudit(
-          "root_admin",
-          "media_pipeline.package.3d_selection.rejected",
-          `${packageId}:${r.error}`,
-        );
-        return err(res, 404, r.error);
-      }
-      recordAudit(
-        "root_admin",
-        "media_pipeline.package.3d_selection.saved",
-        `${packageId}:set=${r.record.setManifestId ?? "null"}:rig=${r.record.rigAssetId ?? "null"}`,
-      );
-      return res.json({
-        ok: true,
-        package: r.record,
-        visibility: "admin_only_internal",
-        realSendAllowed: false,
-        executionEnabled: false,
-      });
-    },
-  );
   app.post(`${PREFIX}/media-pipeline/news-to-debate`, requireRootAdmin, (req, res) => {
     const body = (req.body ?? {}) as any;
     recordAudit("root_admin", "media_pipeline.news_to_debate_attempted",
@@ -2599,12 +2915,25 @@ export function registerProductionHouseRoutes(
           generatedRooms: listGeneratedRooms().slice(0, 50),
           generatedAvatars: listGeneratedAvatars().slice(0, 50),
           avatarAccessories: listAvatarAccessories().slice(0, 50),
+          cinema4DAnchorCharacters: listCinema4DAnchorCharacters()
+            .filter((c) => c.productionId === id || c.productionId === null)
+            .slice(0, 50),
+          cinema4DCharacterAccessories: listCinema4DCharacterAccessories()
+            .filter((a) => {
+              const character = a.characterId ? getCinema4DAnchorCharacter(a.characterId) : null;
+              return character?.productionId === id || (!a.characterId && !a.roomId);
+            })
+            .slice(0, 50),
+          cinema4DRoomCharacterScripts: listCinema4DRoomCharacterScripts()
+            .filter((s) => s.productionId === id || s.productionId === null)
+            .slice(0, 50),
           productionUnits: listProductionUnits()
             .filter((u) => u.productionId === id || u.productionId === null)
             .slice(0, 50),
           mediaPackages: listMediaPackages()
             .filter((p) => p.productionId === id || p.productionId === null)
             .slice(0, 50),
+          previewStudioStates: listPreviewStudioStatesForExport(id).slice(0, 50),
           previewSnapshots: listPreviewSnapshots(id).slice(0, 50),
           productionWizardSessions: listProductionWizardSessions()
             .filter((w) => w.productionId === id || w.productionId === null)
@@ -2739,7 +3068,7 @@ export function registerProductionHouseRoutes(
     recordAudit("root_admin", "manifest_exported", `${id}:${type}`);
     res.setHeader("Content-Type", "application/json");
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-    return res.send(JSON.stringify(payload, null, 2));
+    return res.send(JSON.stringify(sanitizeExportPayload(payload), null, 2));
   });
 
   app.get(`${PREFIX}/manifests/:productionId`, requireRootAdmin, (req, res) => {

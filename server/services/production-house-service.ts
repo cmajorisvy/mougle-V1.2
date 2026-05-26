@@ -99,6 +99,33 @@ import {
   ProductionUnitRecordSchema,
   MediaPackageRecordSchema,
   PreviewSnapshotRecordSchema,
+  type Cinema4DAnchorCharacterManifest,
+  Cinema4DAnchorCharacterManifestSchema,
+  type Cinema4DCharacterAccessoryManifest,
+  Cinema4DCharacterAccessoryManifestSchema,
+  type Cinema4DRoomCharacterScriptManifest,
+  Cinema4DRoomCharacterScriptManifestSchema,
+  type Cinema4DCharacterBindings,
+  Cinema4DCharacterBindingsSchema,
+  type Cinema4DCharacterRole,
+  type Cinema4DCharacterStyle,
+  type Cinema4DWardrobeStyle,
+  type Cinema4DPosePreset,
+  type Cinema4DFacialExpression,
+  type Cinema4DLipSyncReadiness,
+  type Cinema4DQualityTier,
+  type Cinema4DCharacterAccessoryType,
+  type Cinema4DAccessoryAttachTarget,
+  type Cinema4DAnchorCameraPreset,
+  CINEMA4D_CHARACTER_ROLES,
+  CINEMA4D_CHARACTER_STYLES,
+  CINEMA4D_WARDROBE_STYLES,
+  CINEMA4D_POSE_PRESETS,
+  CINEMA4D_FACIAL_EXPRESSIONS,
+  CINEMA4D_LIP_SYNC_READINESS,
+  CINEMA4D_QUALITY_TIERS,
+  CINEMA4D_CHARACTER_ACCESSORY_TYPES,
+  CINEMA4D_ACCESSORY_ATTACH_TARGETS,
   type DryRunLocalCheck,
   type RealUnrealHealthCheckRecord,
   type UnrealSceneManifest,
@@ -122,9 +149,11 @@ import {
   WizardReviewLinkRecord,
   WizardReviewLinkRecordSchema,
   WizardProductionType,
+  type PreviewStudioWorkflowLinks,
   SAFETY_ENVELOPE,
 } from "../../shared/production-house";
 import { AI_MODELS } from "../config/ai-models";
+import { generatePreviewStudioState, listPreviewStudioStates } from "./preview-studio-service";
 import {
   createDefaultStorage,
   FileProductionHouseStorage,
@@ -184,6 +213,9 @@ interface Store {
   productionUnits: ProductionUnitRecord[];
   mediaPackages: MediaPackageRecord[];
   previewSnapshots: PreviewSnapshotRecord[];
+  cinema4DAnchorCharacters: Cinema4DAnchorCharacterManifest[];
+  cinema4DCharacterAccessories: Cinema4DCharacterAccessoryManifest[];
+  cinema4DRoomCharacterScripts: Cinema4DRoomCharacterScriptManifest[];
   realUnrealHealthCheckHistory: RealUnrealHealthCheckRecord[];
   auditLogs: AuditLog[];
   voiceAssets: Map<string, VoiceAsset>;
@@ -226,6 +258,9 @@ const store: Store = {
   productionUnits: [],
   mediaPackages: [],
   previewSnapshots: [],
+  cinema4DAnchorCharacters: [],
+  cinema4DCharacterAccessories: [],
+  cinema4DRoomCharacterScripts: [],
   realUnrealHealthCheckHistory: [],
   auditLogs: [],
   voiceAssets: new Map(),
@@ -437,6 +472,18 @@ function loadFromStorage(): void {
       safetyEnvelope: SAFETY_ENVELOPE,
     })),
   );
+  store.cinema4DAnchorCharacters.length = 0;
+  store.cinema4DAnchorCharacters.push(
+    ...((s as any).cinema4DAnchorCharacters ?? []).map((r: any) => _lockCinema4DCharacter(r)),
+  );
+  store.cinema4DCharacterAccessories.length = 0;
+  store.cinema4DCharacterAccessories.push(
+    ...((s as any).cinema4DCharacterAccessories ?? []).map((r: any) => _lockCinema4DAccessory(r)),
+  );
+  store.cinema4DRoomCharacterScripts.length = 0;
+  store.cinema4DRoomCharacterScripts.push(
+    ...((s as any).cinema4DRoomCharacterScripts ?? []).map((r: any) => _lockCinema4DScript(r)),
+  );
   store.realUnrealHealthCheckHistory.length = 0;
   store.realUnrealHealthCheckHistory.push(...s.realUnrealHealthCheckHistory);
   store.productionWizardSessions.length = 0;
@@ -595,6 +642,15 @@ function persistMediaPackages(): void {
 function persistPreviewSnapshots(): void {
   storage.saveCollection("previewSnapshots", store.previewSnapshots);
 }
+function persistCinema4DAnchorCharacters(): void {
+  storage.saveCollection("cinema4DAnchorCharacters", store.cinema4DAnchorCharacters);
+}
+function persistCinema4DCharacterAccessories(): void {
+  storage.saveCollection("cinema4DCharacterAccessories", store.cinema4DCharacterAccessories);
+}
+function persistCinema4DRoomCharacterScripts(): void {
+  storage.saveCollection("cinema4DRoomCharacterScripts", store.cinema4DRoomCharacterScripts);
+}
 function persistProductionWizardSessions(): void {
   storage.saveCollection("productionWizardSessions", store.productionWizardSessions);
 }
@@ -657,6 +713,9 @@ export function _resetForTests(): void {
   store.productionUnits.length = 0;
   store.mediaPackages.length = 0;
   store.previewSnapshots.length = 0;
+  store.cinema4DAnchorCharacters.length = 0;
+  store.cinema4DCharacterAccessories.length = 0;
+  store.cinema4DRoomCharacterScripts.length = 0;
   store.realUnrealHealthCheckHistory.length = 0;
   store.productionWizardSessions.length = 0;
   store.wizardReviewLinks.length = 0;
@@ -693,6 +752,9 @@ export function _resetForTests(): void {
   persistProductionUnits();
   persistMediaPackages();
   persistPreviewSnapshots();
+  persistCinema4DAnchorCharacters();
+  persistCinema4DCharacterAccessories();
+  persistCinema4DRoomCharacterScripts();
   persistProductionWizardSessions();
   persistWizardReviewLinks();
 }
@@ -1405,6 +1467,9 @@ export interface AssetLibraryEntry {
     | "generatedRoom"
     | "generatedAvatar"
     | "avatarAccessory"
+    | "cinema4DAnchorCharacter"
+    | "cinema4DCharacterAccessory"
+    | "cinema4DRoomCharacterScript"
     | "mediaPackage"
     | "previewSnapshot"
     | "wizardSession";
@@ -1550,6 +1615,34 @@ export function getAssetLibrary(f: AssetLibraryFilters = {}): {
       visibility: "admin_only_internal", createdAt: a.createdAt, raw: a,
     });
   }
+  for (const c of store.cinema4DAnchorCharacters) {
+    entries.push({
+      id: c.characterId, kind: "cinema4DAnchorCharacter",
+      provider: null, type: c.characterRole ?? "character",
+      status: c.status, approvalStatus: c.approvalStatus,
+      productionId: c.productionId ?? null,
+      visibility: c.visibility, createdAt: c.createdAt, raw: _lockCinema4DCharacter(c),
+    });
+  }
+  for (const a of store.cinema4DCharacterAccessories) {
+    const character = a.characterId ? getCinema4DAnchorCharacter(a.characterId) : null;
+    entries.push({
+      id: a.accessoryId, kind: "cinema4DCharacterAccessory",
+      provider: null, type: a.accessoryType ?? "accessory",
+      status: a.status, approvalStatus: a.approvalStatus ?? "draft",
+      productionId: character?.productionId ?? null,
+      visibility: a.visibility, createdAt: a.createdAt, raw: _lockCinema4DAccessory(a),
+    });
+  }
+  for (const s of store.cinema4DRoomCharacterScripts) {
+    entries.push({
+      id: s.scriptId, kind: "cinema4DRoomCharacterScript",
+      provider: null, type: s.template,
+      status: s.status, approvalStatus: s.approvalStatus ?? "draft",
+      productionId: s.productionId ?? null,
+      visibility: s.visibility, createdAt: s.createdAt, raw: _lockCinema4DScript(s),
+    });
+  }
   for (const m of store.mediaPackages) {
     entries.push({
       id: m.packageId, kind: "mediaPackage",
@@ -1693,24 +1786,190 @@ export function getProductionPackage(id: string): any | null {
       .filter(Boolean),
     avatarAccessories: store.avatarAccessories.filter((a) =>
       (p.avatarIds ?? []).includes((a as any).avatarId ?? "")),
+    cinema4DAnchorCharacters: store.cinema4DAnchorCharacters
+      .filter((c) =>
+        c.productionId === id ||
+        (p.roomId ? c.roomId === p.roomId : false) ||
+        (p.avatarIds ?? []).includes(c.characterId))
+      .map(_lockCinema4DCharacter),
+    cinema4DCharacterAccessories: store.cinema4DCharacterAccessories
+      .filter((a) => {
+        const character = a.characterId ? getCinema4DAnchorCharacter(a.characterId) : null;
+        return character?.productionId === id || (p.roomId ? a.roomId === p.roomId : false);
+      })
+      .map(_lockCinema4DAccessory),
+    cinema4DRoomCharacterScripts: store.cinema4DRoomCharacterScripts
+      .filter((s) => s.productionId === id || (p.roomId ? s.roomId === p.roomId : false))
+      .map(_lockCinema4DScript),
     mediaPackages: listMediaPackages().filter((m) => m.productionId === id),
     previewSnapshots: listPreviewSnapshots(id).slice(0, 20),
-    ...(() => {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const psv = require("./preview-studio-service");
-        const pkg = psv.getPreviewStudioPackageExport?.();
-        if (!pkg) return { previewStudioStates: [], previewStudioEditArtifacts: [] };
-        return {
-          previewStudioStates: pkg.previewStudioStates,
-          previewStudioEditArtifacts: pkg.previewStudioEditArtifacts,
-        };
-      } catch {
-        return { previewStudioStates: [], previewStudioEditArtifacts: [] };
-      }
-    })(),
+    previewStudioStates: listPreviewStudioStatesForExport(id).slice(0, 20),
     safetyEnvelope: SAFETY_ENVELOPE,
   };
+}
+
+function _uniqueIds(ids: Array<string | null | undefined>): string[] {
+  return [...new Set(ids.filter((id): id is string => typeof id === "string" && id.length > 0))];
+}
+
+export function buildPreviewStudioWorkflowContext(
+  input: Partial<PreviewStudioWorkflowLinks> = {},
+): PreviewStudioWorkflowLinks & {
+  roomLabel: string | null;
+  avatarLabels: string[];
+  mediaPackageLabels: string[];
+  previewSnapshotLabel: string | null;
+  readinessSummary: string | null;
+} {
+  let productionId = input.productionId ?? null;
+  let roomId = input.roomId ?? null;
+  let avatarIds = _uniqueIds(input.avatarIds ?? []);
+  let characterIds = _uniqueIds((input as any).characterIds ?? []);
+  let mediaPackageIds = _uniqueIds(input.mediaPackageIds ?? []);
+  let wizardId = input.wizardId ?? null;
+  let previewSnapshotId = input.previewSnapshotId ?? null;
+  let readinessReportId = input.readinessReportId ?? null;
+  let approvalState = input.approvalState ?? null;
+  const characterRole = (input as any).characterRole ?? null;
+  const wardrobeStyle = (input as any).wardrobeStyle ?? null;
+  const posePreset = (input as any).posePreset ?? null;
+  const accessoryIds = _uniqueIds((input as any).accessoryIds ?? []);
+  const teleprompterText = (input as any).teleprompterText ?? null;
+  const lowerThirdName = (input as any).lowerThirdName ?? null;
+  const panelFocus = (input as any).panelFocus ?? null;
+  const cameraPreset = (input as any).cameraPreset ?? null;
+
+  const wizard = wizardId ? getProductionWizard(wizardId) : null;
+  if (wizard) {
+    productionId = productionId ?? wizard.productionId;
+    roomId = roomId ?? wizard.generatedRoomId;
+    avatarIds = _uniqueIds([...avatarIds, ...(wizard.generatedAvatarIds ?? [])]);
+    mediaPackageIds = _uniqueIds([
+      ...mediaPackageIds,
+      wizard.generatedMediaPackageId ?? null,
+    ]);
+    previewSnapshotId = previewSnapshotId ?? wizard.generatedPreviewId;
+  }
+
+  const production = productionId ? store.productions.get(productionId) ?? null : null;
+  if (production) {
+    roomId = roomId ?? production.roomId ?? null;
+    avatarIds = _uniqueIds([...avatarIds, ...(production.avatarIds ?? [])]);
+    mediaPackageIds = _uniqueIds([
+      ...mediaPackageIds,
+      ...store.mediaPackages
+        .filter((m) => m.productionId === productionId)
+        .map((m) => m.packageId),
+    ]);
+    approvalState = approvalState ?? getApprovalStage(production.id);
+  }
+
+  const previewSnapshot = previewSnapshotId
+    ? getPreviewSnapshotById(previewSnapshotId)
+    : productionId
+      ? getLatestPreviewSnapshot(productionId)
+      : null;
+  previewSnapshotId = previewSnapshotId ?? previewSnapshot?.snapshotId ?? null;
+
+  const linkedProductionId = productionId;
+  const readiness = linkedProductionId
+    ? (readinessReportId
+      ? listReadinessReports(linkedProductionId).find((r) => r.id === readinessReportId) ?? null
+      : getLatestReadinessReport(linkedProductionId))
+    : null;
+  readinessReportId = readinessReportId ?? readiness?.id ?? null;
+
+  const generatedRoom = roomId
+    ? store.generatedRooms.find((r) => r.roomId === roomId) ?? null
+    : null;
+  const legacyRoom = roomId ? store.rooms.get(roomId) ?? null : null;
+  const roomLabel = generatedRoom?.roomName ?? legacyRoom?.name ?? null;
+
+  const avatarLabels = avatarIds.map((id) => {
+    const generated = store.generatedAvatars.find((a) => a.avatarId === id);
+    const legacy = store.avatars.get(id);
+    return generated?.avatarName ?? legacy?.name ?? id;
+  });
+  characterIds = _uniqueIds([
+    ...characterIds,
+    ...store.cinema4DAnchorCharacters
+      .filter((c) =>
+        (productionId && c.productionId === productionId) ||
+        (roomId && c.roomId === roomId))
+      .map((c) => c.characterId),
+  ]);
+
+  const mediaPackageLabels = mediaPackageIds.map((id) => {
+    const pkg = store.mediaPackages.find((m) => m.packageId === id);
+    return pkg ? `${pkg.packageType}:${pkg.packageId}` : id;
+  });
+
+  return {
+    productionId,
+    roomId,
+    avatarIds,
+    characterIds,
+    mediaPackageIds,
+    wizardId,
+    previewSnapshotId,
+    readinessReportId,
+    approvalState,
+    characterRole,
+    wardrobeStyle,
+    posePreset,
+    accessoryIds,
+    teleprompterText,
+    lowerThirdName,
+    panelFocus,
+    cameraPreset,
+    roomLabel,
+    avatarLabels,
+    mediaPackageLabels,
+    previewSnapshotLabel: previewSnapshot
+      ? `${previewSnapshot.previewMode ?? previewSnapshot.readinessStatus ?? "preview"}:${previewSnapshot.snapshotId}`
+      : null,
+    readinessSummary: readiness
+      ? `overall ${readiness.overallScore}/100, blockers ${readiness.blockers.length}`
+      : null,
+  };
+}
+
+export function listPreviewStudioStatesForExport(productionId?: string): any[] {
+  return listPreviewStudioStates()
+    .filter((s) => !productionId || s.productionId === productionId)
+    .map((s) => ({
+      id: s.id,
+      createdAt: s.createdAt,
+      generatedBy: s.generatedBy,
+      productionId: s.productionId,
+      roomId: s.roomId,
+      avatarIds: [...s.avatarIds],
+      mediaPackageIds: [...s.mediaPackageIds],
+      wizardId: s.wizardId,
+      previewSnapshotId: s.previewSnapshotId,
+      readinessReportId: s.readinessReportId,
+      approvalState: s.approvalState,
+      scene: s.scene,
+      status: "draft" as const,
+      approvalStatus: "draft" as const,
+      visibility: "admin_only_internal" as const,
+      publicUrl: null,
+      signedUrl: null,
+      realSendAllowed: false as const,
+      executionEnabled: false as const,
+      adminPreviewOnly: true as const,
+      notRendered: true as const,
+      notPublished: true as const,
+      noUnrealExecution: true as const,
+      noFourDHardware: true as const,
+      safetyEnvelope: SAFETY_ENVELOPE,
+    }));
+}
+
+function hasUnrealSceneManifestForProduction(production?: Production | null): boolean {
+  if (!production) return false;
+  const manifest = buildUnrealSceneManifest(production);
+  return !!manifest && Object.keys(manifest).length > 0;
 }
 
 /* ------------------------------------------------------------------ */
@@ -2386,11 +2645,6 @@ export function buildUnrealSceneManifest(p: Production): UnrealSceneManifest {
     renderPreset: p.renderSettings.preset,
     envelope: SAFETY_ENVELOPE,
   };
-}
-
-function hasUnrealSceneManifest(production: Production | null | undefined): boolean {
-  if (!production) return false;
-  return Object.keys(buildUnrealSceneManifest(production)).length > 0;
 }
 
 export function buildAvatarManifest(a: Avatar): AvatarManifest {
@@ -3733,7 +3987,7 @@ export function validatePackageLocally(productionId: string): DryRunLocalValidat
   // Manifest present.
   const manifest = getManifestSnapshot(productionId);
   checks.push(check("production_manifest_present", "Production manifest snapshot exists", !!manifest));
-  const unrealScenePresent = hasUnrealSceneManifest(production);
+  const unrealScenePresent = hasUnrealSceneManifestForProduction(production);
   checks.push(check("unreal_scene_manifest_present", "Unreal scene manifest present", unrealScenePresent));
 
   // Asset / voice / video draft + internal-only.
@@ -3813,7 +4067,7 @@ function buildSanitizedBridgeRequestSummary(
     packageSummary: {
       productionType: production?.productionType ?? null,
       manifestPresent: !!manifest,
-      unrealSceneManifestPresent: hasUnrealSceneManifest(production),
+      unrealSceneManifestPresent: hasUnrealSceneManifestForProduction(production),
       assetCounts: {
         voiceAssets: listVoiceAssets(productionId).length,
         assetJobs: listAssetJobs(productionId).length,
@@ -4330,7 +4584,7 @@ function buildSanitizedBridgeNetworkRequest(
       },
       manifestPresence: {
         productionManifest: !!manifest,
-        unrealSceneManifest: hasUnrealSceneManifest(production),
+        unrealSceneManifest: hasUnrealSceneManifestForProduction(production),
       },
       counts: {
         voice: listVoiceAssets(productionId).length,
@@ -4644,7 +4898,7 @@ export function listRealUnrealPrepareSceneDryRunHistory(
 function buildSanitizedPrepareScenePayload(productionId: string): Record<string, unknown> {
   const production = store.productions.get(productionId);
   const manifest = getManifestSnapshot(productionId);
-  const unrealScenePresent = hasUnrealSceneManifest(production);
+  const unrealScenePresent = hasUnrealSceneManifestForProduction(production);
   const avatarManifestPresent =
     !!manifest && Array.isArray((manifest as any).avatars) &&
     (manifest as any).avatars.length > 0;
@@ -8030,14 +8284,173 @@ function _lockPackage(r: MediaPackageRecord): MediaPackageRecord {
     realSendAllowed: false, executionEnabled: false,
     safetyEnvelope: SAFETY_ENVELOPE };
 }
-function _lockPreview(r: z.input<typeof PreviewSnapshotRecordSchema>): PreviewSnapshotRecord {
-  return PreviewSnapshotRecordSchema.parse({ ...r, status: "draft", approvalStatus: "draft",
+function _lockPreview(r: PreviewSnapshotRecord): PreviewSnapshotRecord {
+  return { ...r, status: "draft", approvalStatus: "draft",
     visibility: "admin_only_internal", publicUrl: null, signedUrl: null,
     realSendAllowed: false, executionEnabled: false,
     adminPreviewOnly: true, notRendered: true, notPublished: true,
     noUnrealExecution: true, noFourDHardware: true,
-    safetyEnvelope: SAFETY_ENVELOPE });
+    safetyEnvelope: SAFETY_ENVELOPE };
 }
+
+function _pickEnum<T extends readonly string[]>(
+  values: T,
+  value: unknown,
+  fallback: T[number],
+): T[number] {
+  return values.includes(value as string) ? (value as T[number]) : fallback;
+}
+
+function _lockCinema4DCharacter(raw: any): Cinema4DAnchorCharacterManifest {
+  const id = String(raw?.characterId ?? `c4d_char_${_shortHash(`c4d-char:${Date.now()}`)}`);
+  const rec: Cinema4DAnchorCharacterManifest = {
+    characterId: id,
+    productionId: typeof raw?.productionId === "string" ? raw.productionId : null,
+    roomId: typeof raw?.roomId === "string" ? raw.roomId : null,
+    characterName: String(raw?.characterName || "Mougle Anchor"),
+    characterRole: _pickEnum(CINEMA4D_CHARACTER_ROLES, raw?.characterRole, "news_anchor") as Cinema4DCharacterRole,
+    characterStyle: _pickEnum(CINEMA4D_CHARACTER_STYLES, raw?.characterStyle, "premium_news_anchor") as Cinema4DCharacterStyle,
+    genderPresentation: typeof raw?.genderPresentation === "string"
+      ? raw.genderPresentation.slice(0, 80)
+      : undefined,
+    wardrobeStyle: _pickEnum(CINEMA4D_WARDROBE_STYLES, raw?.wardrobeStyle, "navy_suit") as Cinema4DWardrobeStyle,
+    posePreset: _pickEnum(CINEMA4D_POSE_PRESETS, raw?.posePreset, "seated_desk_hands_folded") as Cinema4DPosePreset,
+    facialExpression: _pickEnum(CINEMA4D_FACIAL_EXPRESSIONS, raw?.facialExpression, "neutral_professional") as Cinema4DFacialExpression,
+    voiceAssetId: typeof raw?.voiceAssetId === "string" ? raw.voiceAssetId : null,
+    lipSyncReadiness: _pickEnum(CINEMA4D_LIP_SYNC_READINESS, raw?.lipSyncReadiness, "future_provider_required") as Cinema4DLipSyncReadiness,
+    bodyMarkerName: String(raw?.bodyMarkerName || "MGL_CHARACTER_Anchor_01_BODY"),
+    headMarkerName: String(raw?.headMarkerName || "MGL_CHARACTER_Anchor_01_HEAD"),
+    faceTargetName: typeof raw?.faceTargetName === "string" ? raw.faceTargetName : "MGL_CHARACTER_Anchor_01_EYE_TARGET",
+    leftHandMarkerName: typeof raw?.leftHandMarkerName === "string" ? raw.leftHandMarkerName : "MGL_CHARACTER_Anchor_01_LEFT_HAND",
+    rightHandMarkerName: typeof raw?.rightHandMarkerName === "string" ? raw.rightHandMarkerName : "MGL_CHARACTER_Anchor_01_RIGHT_HAND",
+    accessoryIds: Array.isArray(raw?.accessoryIds)
+      ? raw.accessoryIds.filter((x: unknown): x is string => typeof x === "string").slice(0, 50)
+      : [],
+    defaultCameraPreset: _pickEnum(
+      [
+        "anchor_closeup","anchor_medium","anchor_over_shoulder","wide_newsroom",
+        "breaking_news_push_in","podcast_two_shot","host_closeup","guest_closeup",
+        "table_wide","overhead_table",
+      ] as const,
+      raw?.defaultCameraPreset,
+      "anchor_medium",
+    ) as Cinema4DAnchorCameraPreset,
+    compatibleWith: Array.isArray(raw?.compatibleWith) && raw.compatibleWith.length
+      ? raw.compatibleWith.filter((x: unknown) =>
+        typeof x === "string" && [
+          "cinema4d_placeholder","metahuman_candidate",
+          "character_creator_candidate","unreal_blueprint_candidate",
+        ].includes(x),
+      )
+      : ["cinema4d_placeholder","metahuman_candidate","character_creator_candidate"],
+    status: "draft",
+    approvalStatus: "draft",
+    visibility: "admin_only_internal",
+    publicUrl: null,
+    signedUrl: null,
+    realSendAllowed: false,
+    executionEnabled: false,
+    safetyEnvelope: SAFETY_ENVELOPE,
+    createdAt: typeof raw?.createdAt === "string" ? raw.createdAt : new Date().toISOString(),
+  };
+  return Cinema4DAnchorCharacterManifestSchema.parse(rec);
+}
+
+function _vec3(raw: any, fallback: { x: number; y: number; z: number }) {
+  return {
+    x: Number.isFinite(Number(raw?.x)) ? Number(raw.x) : fallback.x,
+    y: Number.isFinite(Number(raw?.y)) ? Number(raw.y) : fallback.y,
+    z: Number.isFinite(Number(raw?.z)) ? Number(raw.z) : fallback.z,
+  };
+}
+
+function _lockCinema4DAccessory(raw: any): Cinema4DCharacterAccessoryManifest {
+  const type = _pickEnum(
+    CINEMA4D_CHARACTER_ACCESSORY_TYPES,
+    raw?.accessoryType,
+    "lavalier_mic",
+  ) as Cinema4DCharacterAccessoryType;
+  const rec: Cinema4DCharacterAccessoryManifest = {
+    accessoryId: String(raw?.accessoryId ?? `c4d_acc_${_shortHash(`c4d-acc:${type}:${Date.now()}`)}`),
+    characterId: typeof raw?.characterId === "string" ? raw.characterId : null,
+    roomId: typeof raw?.roomId === "string" ? raw.roomId : null,
+    accessoryType: type,
+    accessoryName: String(raw?.accessoryName || `Cinema 4D ${type}`),
+    attachTo: _pickEnum(CINEMA4D_ACCESSORY_ATTACH_TARGETS, raw?.attachTo, "lapel") as Cinema4DAccessoryAttachTarget,
+    objectName: String(raw?.objectName || `MGL_CHARACTER_Anchor_01_${type.toUpperCase()}`),
+    position: _vec3(raw?.position, { x: 0, y: 120, z: -20 }),
+    rotation: _vec3(raw?.rotation, { x: 0, y: 0, z: 0 }),
+    scale: _vec3(raw?.scale, { x: 1, y: 1, z: 1 }),
+    materialPreset: String(raw?.materialPreset || "mat_black_gloss"),
+    status: "draft",
+    approvalStatus: "draft",
+    visibility: "admin_only_internal",
+    publicUrl: null,
+    signedUrl: null,
+    realSendAllowed: false,
+    executionEnabled: false,
+    safetyEnvelope: SAFETY_ENVELOPE,
+    createdAt: typeof raw?.createdAt === "string" ? raw.createdAt : new Date().toISOString(),
+  };
+  return Cinema4DCharacterAccessoryManifestSchema.parse(rec);
+}
+
+function _lockCinema4DScript(raw: any): Cinema4DRoomCharacterScriptManifest {
+  const rec: Cinema4DRoomCharacterScriptManifest = {
+    scriptId: String(raw?.scriptId ?? `c4d_script_${_shortHash(`c4d-script:${Date.now()}`)}`),
+    roomId: typeof raw?.roomId === "string" ? raw.roomId : null,
+    productionId: typeof raw?.productionId === "string" ? raw.productionId : null,
+    template: raw?.template === "mougle_podcast_studio"
+      ? "mougle_podcast_studio"
+      : "mougle_verified_newsroom",
+    characterIds: Array.isArray(raw?.characterIds) ? raw.characterIds.filter((x: unknown) => typeof x === "string") : [],
+    accessoryIds: Array.isArray(raw?.accessoryIds) ? raw.accessoryIds.filter((x: unknown) => typeof x === "string") : [],
+    cameraPresets: Array.isArray(raw?.cameraPresets) ? raw.cameraPresets : [],
+    qualityTier: _pickEnum(CINEMA4D_QUALITY_TIERS, raw?.qualityTier, "premium_draft") as Cinema4DQualityTier,
+    qualityNotes: Array.isArray(raw?.qualityNotes)
+      ? raw.qualityNotes.filter((x: unknown): x is string => typeof x === "string").slice(0, 20)
+      : [
+        "Real Cinema 4D scene-construction script with primitives, materials, cameras, and lights.",
+        "Final cinema-quality output still requires Cinema 4D rendering and human 3D expert review.",
+      ],
+    script: String(raw?.script || "# Cinema 4D placeholder script draft"),
+    label: "Cinema 4D placeholder anchor — replace later with MetaHuman, Character Creator, or final rig.",
+    status: "draft",
+    approvalStatus: "draft",
+    visibility: "admin_only_internal",
+    publicUrl: null,
+    signedUrl: null,
+    realSendAllowed: false,
+    executionEnabled: false,
+    realRenderCalled: false,
+    unrealCommandSent: false,
+    fourDCommandSent: false,
+    published: false,
+    safetyEnvelope: SAFETY_ENVELOPE,
+    createdAt: typeof raw?.createdAt === "string" ? raw.createdAt : new Date().toISOString(),
+  };
+  return Cinema4DRoomCharacterScriptManifestSchema.parse(rec);
+}
+
+function _cinema4DPreviewCamera(camera: string | null | undefined): any {
+  if (camera === "anchor_closeup" || camera === "host_closeup" || camera === "guest_closeup") {
+    return "anchor_close_up";
+  }
+  if (camera === "wide_newsroom" || camera === "podcast_two_shot" || camera === "table_wide") {
+    return "wide_master";
+  }
+  if (camera === "anchor_over_shoulder") return "panel_overview";
+  return "anchor_two_shot";
+}
+
+function _cinema4DPanelFocus(value: unknown): string {
+  if (Array.isArray(value)) return value.filter(Boolean).slice(0, 4).join(" · ");
+  if (value && typeof value === "object") return Object.keys(value as Record<string, unknown>).slice(0, 4).join(" · ");
+  return String(value ?? "Verified headline / source panel / claim panel").slice(0, 500);
+}
+
+const CINEMA4D_PLACEHOLDER_LABEL =
+  "Cinema 4D placeholder anchor — replace later with MetaHuman, Character Creator, or final rig.";
 
 export function generateGeneratedRoom(input: {
   prompt: string; productionId?: string | null; roomName?: string;
@@ -8165,6 +8578,1175 @@ export function listAvatarAccessories(): AvatarAccessoryRecord[] {
     .map(_lockAccessory);
 }
 
+export function generateCinema4DAnchorCharacterManifest(input: {
+  productionId?: string | null;
+  roomId?: string | null;
+  characterName?: string;
+  characterRole?: Cinema4DCharacterRole;
+  characterStyle?: Cinema4DCharacterStyle;
+  genderPresentation?: string;
+  wardrobeStyle?: Cinema4DWardrobeStyle;
+  posePreset?: Cinema4DPosePreset;
+  facialExpression?: Cinema4DFacialExpression;
+  voiceAssetId?: string | null;
+  accessoryIds?: string[];
+  defaultCameraPreset?: Cinema4DAnchorCameraPreset;
+}): { ok: true; manifest: Cinema4DAnchorCharacterManifest } {
+  const role = input.characterRole ?? "news_anchor";
+  const name = (input.characterName || "Mougle Verified Anchor").slice(0, 160);
+  const characterId = `c4d_char_${_shortHash(
+    `c4d-char:${input.productionId ?? ""}:${input.roomId ?? ""}:${name}:${role}`,
+  )}`;
+  const manifest = _lockCinema4DCharacter({
+    characterId,
+    productionId: input.productionId ?? null,
+    roomId: input.roomId ?? null,
+    characterName: name,
+    characterRole: role,
+    characterStyle: input.characterStyle ?? "premium_news_anchor",
+    genderPresentation: input.genderPresentation,
+    wardrobeStyle: input.wardrobeStyle ?? "navy_suit",
+    posePreset: input.posePreset ?? "seated_desk_hands_folded",
+    facialExpression: input.facialExpression ?? "neutral_professional",
+    voiceAssetId: input.voiceAssetId ?? null,
+    lipSyncReadiness: "future_provider_required",
+    bodyMarkerName: "MGL_CHARACTER_Anchor_01_BODY",
+    headMarkerName: "MGL_CHARACTER_Anchor_01_HEAD",
+    faceTargetName: "MGL_CHARACTER_Anchor_01_EYE_TARGET",
+    leftHandMarkerName: "MGL_CHARACTER_Anchor_01_LEFT_HAND",
+    rightHandMarkerName: "MGL_CHARACTER_Anchor_01_RIGHT_HAND",
+    accessoryIds: input.accessoryIds ?? [],
+    defaultCameraPreset: input.defaultCameraPreset ?? "anchor_medium",
+    compatibleWith: [
+      "cinema4d_placeholder",
+      "metahuman_candidate",
+      "character_creator_candidate",
+      "unreal_blueprint_candidate",
+    ],
+    createdAt: new Date().toISOString(),
+  });
+  const i = store.cinema4DAnchorCharacters.findIndex((r) => r.characterId === manifest.characterId);
+  if (i >= 0) store.cinema4DAnchorCharacters[i] = manifest;
+  else store.cinema4DAnchorCharacters.push(manifest);
+  if (store.cinema4DAnchorCharacters.length > 5000) {
+    store.cinema4DAnchorCharacters.splice(0, store.cinema4DAnchorCharacters.length - 5000);
+  }
+  persistCinema4DAnchorCharacters();
+  recordAudit("root_admin", "cinema4d.character_manifest.generated", manifest.characterId);
+  return { ok: true, manifest };
+}
+
+export function listCinema4DAnchorCharacters(): Cinema4DAnchorCharacterManifest[] {
+  return [...store.cinema4DAnchorCharacters]
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+    .map(_lockCinema4DCharacter);
+}
+
+export function getCinema4DAnchorCharacter(
+  characterId: string,
+): Cinema4DAnchorCharacterManifest | null {
+  const found = store.cinema4DAnchorCharacters.find((r) => r.characterId === characterId);
+  return found ? _lockCinema4DCharacter(found) : null;
+}
+
+export function generateCinema4DCharacterAccessoryManifest(input: {
+  characterId?: string | null;
+  roomId?: string | null;
+  accessoryType?: Cinema4DCharacterAccessoryType;
+  accessoryName?: string;
+  attachTo?: Cinema4DAccessoryAttachTarget;
+  materialPreset?: string;
+}): { ok: true; manifest: Cinema4DCharacterAccessoryManifest } {
+  const type = input.accessoryType ?? "lavalier_mic";
+  const characterId = input.characterId ?? null;
+  const attachTo = input.attachTo ?? (
+    type === "earpiece" ? "ear" :
+    type === "tablet" || type === "cue_card" ? "left_hand" :
+    type === "microphone" || type === "laptop" ? "desk" :
+    "lapel"
+  );
+  const accessoryId = `c4d_acc_${_shortHash(
+    `c4d-acc:${characterId ?? ""}:${input.roomId ?? ""}:${type}:${input.accessoryName ?? ""}`,
+  )}`;
+  const manifest = _lockCinema4DAccessory({
+    accessoryId,
+    characterId,
+    roomId: input.roomId ?? null,
+    accessoryType: type,
+    accessoryName: input.accessoryName ?? `Anchor ${type}`,
+    attachTo,
+    objectName: `MGL_CHARACTER_Anchor_01_${type.toUpperCase()}`,
+    position: type === "earpiece"
+      ? { x: 14, y: 166, z: 0 }
+      : type === "tablet"
+      ? { x: -24, y: 104, z: -42 }
+      : { x: 0, y: 124, z: -24 },
+    rotation: { x: 0, y: 0, z: 0 },
+    scale: type === "tablet" ? { x: 1.1, y: 0.08, z: 0.72 } : { x: 1, y: 1, z: 1 },
+    materialPreset: input.materialPreset ?? (
+      type === "tablet" || type === "laptop" ? "mat_black_gloss" : "mat_dark_metal"
+    ),
+    createdAt: new Date().toISOString(),
+  });
+  const i = store.cinema4DCharacterAccessories.findIndex((r) => r.accessoryId === manifest.accessoryId);
+  if (i >= 0) store.cinema4DCharacterAccessories[i] = manifest;
+  else store.cinema4DCharacterAccessories.push(manifest);
+  if (store.cinema4DCharacterAccessories.length > 5000) {
+    store.cinema4DCharacterAccessories.splice(0, store.cinema4DCharacterAccessories.length - 5000);
+  }
+  persistCinema4DCharacterAccessories();
+
+  if (characterId) {
+    const ci = store.cinema4DAnchorCharacters.findIndex((r) => r.characterId === characterId);
+    if (ci >= 0) {
+      store.cinema4DAnchorCharacters[ci] = _lockCinema4DCharacter({
+        ...store.cinema4DAnchorCharacters[ci],
+        accessoryIds: _uniqueIds([
+          ...(store.cinema4DAnchorCharacters[ci].accessoryIds ?? []),
+          manifest.accessoryId,
+        ]),
+      });
+      persistCinema4DAnchorCharacters();
+    }
+  }
+
+  recordAudit("root_admin", "cinema4d.accessory_manifest.generated", manifest.accessoryId);
+  return { ok: true, manifest };
+}
+
+export function listCinema4DCharacterAccessories(
+  characterId?: string,
+): Cinema4DCharacterAccessoryManifest[] {
+  let arr = [...store.cinema4DCharacterAccessories];
+  if (characterId) arr = arr.filter((r) => r.characterId === characterId);
+  return arr.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+    .map(_lockCinema4DAccessory);
+}
+
+function _cinema4DNewsroomScript(
+  character: Cinema4DAnchorCharacterManifest | null,
+  accessories: Cinema4DCharacterAccessoryManifest[],
+  qualityTier: Cinema4DQualityTier = "premium_draft",
+): string {
+  const characterName = character?.characterName ?? "Mougle Anchor";
+  const accessoryNames = accessories.map((a) => a.objectName);
+  return `# Mougle Cinema 4D Newsroom + Placeholder Anchor
+# ${CINEMA4D_PLACEHOLDER_LABEL}
+# Quality tier: ${qualityTier}
+# Draft/internal only. This script creates real Cinema 4D scene objects from primitives.
+# Final cinema-quality output still requires Cinema 4D rendering and human 3D expert review.
+# It does NOT call Cinema 4D render, Unreal, Movie Render Queue, 4D hardware, or publishing APIs.
+
+import c4d
+from c4d import Vector
+from c4d import utils
+
+QUALITY_TIER = "${qualityTier}"
+SAFETY_LOCKS = {
+    "status": "draft",
+    "approvalStatus": "draft",
+    "visibility": "admin_only_internal",
+    "publicUrl": None,
+    "signedUrl": None,
+    "realSendAllowed": False,
+    "executionEnabled": False,
+    "realRenderCalled": False,
+    "unrealCommandSent": False,
+    "fourDCommandSent": False,
+    "published": False,
+}
+
+def safe_set(obj, key, value):
+    try:
+        obj[key] = value
+    except Exception:
+        pass
+
+def set_attr(obj, attr_name, value):
+    key = getattr(c4d, attr_name, None)
+    if key is not None:
+        safe_set(obj, key, value)
+
+def make_mat(name, color, reflectance=0.0, luminance=None):
+    mat = c4d.BaseMaterial(c4d.Mmaterial)
+    mat.SetName(name)
+    safe_set(mat, c4d.MATERIAL_COLOR_COLOR, color)
+    if luminance is not None:
+        safe_set(mat, c4d.MATERIAL_USE_LUMINANCE, True)
+        safe_set(mat, c4d.MATERIAL_LUMINANCE_COLOR, luminance)
+    if reflectance > 0:
+        set_attr(mat, "MATERIAL_USE_REFLECTION", True)
+        set_attr(mat, "MATERIAL_REFLECTION_BRIGHTNESS", reflectance)
+    doc.InsertMaterial(mat)
+    return mat
+
+def tag_mat(obj, mat):
+    if not mat:
+        return obj
+    tag = c4d.TextureTag()
+    tag.SetMaterial(mat)
+    obj.InsertTag(tag)
+    return obj
+
+def parent(obj, root):
+    if root is not None:
+        obj.InsertUnder(root)
+    return obj
+
+def add_null(name, pos, root=None):
+    obj = c4d.BaseObject(c4d.Onull)
+    obj.SetName(name)
+    obj.SetAbsPos(pos)
+    doc.InsertObject(obj)
+    return parent(obj, root)
+
+def add_cube(name, pos, size, mat=None, root=None, rot=None):
+    obj = c4d.BaseObject(c4d.Ocube)
+    obj.SetName(name)
+    obj.SetAbsPos(pos)
+    safe_set(obj, c4d.PRIM_CUBE_LEN, size)
+    if rot is not None:
+        obj.SetAbsRot(rot)
+    tag_mat(obj, mat)
+    doc.InsertObject(obj)
+    return parent(obj, root)
+
+def add_sphere(name, pos, radius, mat=None, root=None):
+    obj = c4d.BaseObject(c4d.Osphere)
+    obj.SetName(name)
+    obj.SetAbsPos(pos)
+    safe_set(obj, c4d.PRIM_SPHERE_RAD, radius)
+    tag_mat(obj, mat)
+    doc.InsertObject(obj)
+    return parent(obj, root)
+
+def add_cylinder(name, pos, radius, height, mat=None, root=None, rot=None):
+    obj = c4d.BaseObject(c4d.Ocylinder)
+    obj.SetName(name)
+    obj.SetAbsPos(pos)
+    safe_set(obj, c4d.PRIM_CYLINDER_RADIUS, radius)
+    safe_set(obj, c4d.PRIM_CYLINDER_HEIGHT, height)
+    if rot is not None:
+        obj.SetAbsRot(rot)
+    tag_mat(obj, mat)
+    doc.InsertObject(obj)
+    return parent(obj, root)
+
+def add_torus(name, pos, ring_radius, pipe_radius, mat=None, root=None, rot=None):
+    obj = c4d.BaseObject(c4d.Otorus)
+    obj.SetName(name)
+    obj.SetAbsPos(pos)
+    safe_set(obj, c4d.PRIM_TORUS_OUTERRAD, ring_radius)
+    safe_set(obj, c4d.PRIM_TORUS_INNERRAD, pipe_radius)
+    if rot is not None:
+        obj.SetAbsRot(rot)
+    tag_mat(obj, mat)
+    doc.InsertObject(obj)
+    return parent(obj, root)
+
+def add_text(name, text, pos, height, mat=None, root=None):
+    obj = c4d.BaseObject(c4d.Osplinetext)
+    obj.SetName(name)
+    obj.SetAbsPos(pos)
+    safe_set(obj, c4d.PRIM_TEXT_TEXT, text)
+    safe_set(obj, c4d.PRIM_TEXT_HEIGHT, height)
+    tag_mat(obj, mat)
+    doc.InsertObject(obj)
+    return parent(obj, root)
+
+def look_at(obj, target):
+    direction = target - obj.GetAbsPos()
+    obj.SetAbsRot(utils.VectorToHPB(direction))
+    return obj
+
+def add_camera(name, pos, target, focal_length=55, root=None):
+    cam = c4d.BaseObject(c4d.Ocamera)
+    cam.SetName(name)
+    cam.SetAbsPos(pos)
+    safe_set(cam, c4d.CAMERA_FOCUS, focal_length)
+    look_at(cam, target)
+    doc.InsertObject(cam)
+    return parent(cam, root)
+
+def add_light(name, pos, color, intensity=1.0, root=None):
+    light = c4d.BaseObject(c4d.Olight)
+    light.SetName(name)
+    light.SetAbsPos(pos)
+    safe_set(light, c4d.LIGHT_COLOR, color)
+    safe_set(light, c4d.LIGHT_BRIGHTNESS, intensity)
+    safe_set(light, c4d.LIGHT_TYPE, c4d.LIGHT_TYPE_AREA)
+    doc.InsertObject(light)
+    return parent(light, root)
+
+def make_world_map(panel_root, led_mat, gold):
+    dots = [
+        (-155, 246), (-135, 252), (-120, 238), (-98, 250), (-70, 238), (-42, 250),
+        (-18, 244), (12, 252), (38, 240), (66, 250), (94, 236), (122, 246),
+        (150, 236), (-145, 210), (-112, 218), (-82, 206), (-46, 218), (-10, 208),
+        (28, 218), (64, 205), (102, 216), (136, 206), (-86, 184), (-48, 178),
+        (-8, 188), (32, 178), (72, 188), (112, 178)
+    ]
+    for index, (x, y) in enumerate(dots):
+        add_sphere("MGL_LED_WorldMap_Dot_%02d" % index, Vector(x, y, 147), 3.2, led_mat, panel_root)
+    add_text("MGL_LED_WorldMap_Label", "MOUGLE NEWS", Vector(-88, 228, 142), 22, gold, panel_root)
+
+def main():
+    global doc
+    doc.SetDocumentName("Mougle Premium Newsroom - Draft Cinema 4D Scene")
+    scene = add_null("MGL_SCENE_MouglePremiumNewsroom_DRAFT", Vector(0, 0, 0))
+    room = add_null("MGL_GROUP_ROOM_GEOMETRY", Vector(0, 0, 0), scene)
+    panels = add_null("MGL_GROUP_LED_AND_BROADCAST_PANELS", Vector(0, 0, 0), scene)
+    character_root = add_null("MGL_CHARACTER_Anchor_01_ROOT", Vector(0, 0, 0), scene)
+    lighting = add_null("MGL_GROUP_LIGHTS", Vector(0, 0, 0), scene)
+    cameras = add_null("MGL_GROUP_CAMERAS", Vector(0, 0, 0), scene)
+    markers = add_null("MGL_GROUP_MARKERS_AND_BINDINGS", Vector(0, 0, 0), scene)
+
+    blue = make_mat("MGL_RS_READY_Premium_Blue_Glass", Vector(0.015, 0.08, 0.22), 0.42)
+    deep_blue = make_mat("MGL_OCTANE_READY_Deep_Navy_Wall", Vector(0.005, 0.018, 0.055), 0.18)
+    gold = make_mat("MGL_RS_READY_Warm_Gold_Trim", Vector(1.0, 0.62, 0.17), 0.55, Vector(0.85, 0.42, 0.08))
+    desk_mat = make_mat("MGL_RS_OCTANE_READY_Glossy_Reflective_Desk", Vector(0.01, 0.012, 0.018), 0.86)
+    led_mat = make_mat("MGL_MAT_LED_WorldMap_Blue_Emission", Vector(0.08, 0.36, 1.0), 0.2, Vector(0.0, 0.45, 1.0))
+    red = make_mat("MGL_MAT_Breaking_Red_Accent", Vector(0.92, 0.04, 0.03), 0.18, Vector(0.8, 0.02, 0.01))
+    skin = make_mat("MGL_MAT_Placeholder_Skin", Vector(0.82, 0.56, 0.42), 0.08)
+    suit = make_mat("MGL_MAT_Anchor_Suit_${character?.wardrobeStyle ?? "navy_suit"}", Vector(0.015, 0.045, 0.12), 0.22)
+    shirt = make_mat("MGL_MAT_Anchor_Shirt", Vector(0.92, 0.94, 0.96), 0.1)
+    black = make_mat("MGL_MAT_Black_Gloss_Device", Vector(0.005, 0.005, 0.006), 0.65)
+
+    # Premium newsroom architecture and render-ready grouping.
+    add_cylinder("MGL_ROOM_CurvedStudioFloor", Vector(0, -8, -45), 520, 16, desk_mat, room, Vector(0, 0, 0))
+    add_cube("MGL_ROOM_Floor", Vector(0, 0, -55), Vector(760, 12, 520), desk_mat, room)
+    add_cube("MGL_ROOM_BackWall", Vector(0, 190, 165), Vector(760, 250, 24), deep_blue, room)
+    add_cube("MGL_ROOM_Left_CurvedSidePanel", Vector(-405, 132, 40), Vector(28, 205, 360), blue, room, Vector(0, 0.32, 0))
+    add_cube("MGL_ROOM_Right_CurvedSidePanel", Vector(405, 132, 40), Vector(28, 205, 360), blue, room, Vector(0, -0.32, 0))
+    add_torus("MGL_CEILING_LIGHT_RING_Main", Vector(0, 318, -42), 250, 6, gold, lighting, Vector(1.5708, 0, 0))
+    add_torus("MGL_CEILING_LIGHT_RING_Inner_Blue", Vector(0, 306, -42), 155, 4, led_mat, lighting, Vector(1.5708, 0, 0))
+
+    add_cylinder("MGL_ROOM_Glossy_Reflective_News_Desk", Vector(0, 72, -130), 176, 38, desk_mat, room, Vector(1.5708, 0, 0))
+    add_cube("MGL_DESK_CurvedGlassTop", Vector(0, 104, -132), Vector(365, 18, 86), desk_mat, room)
+    add_cube("MGL_DESK_FrontGoldTrim", Vector(0, 92, -178), Vector(330, 12, 14), gold, room)
+    add_text("MGL_DESK_FrontLogo_M", "M", Vector(-18, 105, -186), 52, gold, room)
+
+    add_cube("MGL_ROOM_LED_WORLD_MAP_WALL", Vector(0, 202, 136), Vector(560, 170, 14), blue, panels)
+    add_cube("MGL_LED_WorldMap", Vector(0, 207, 145), Vector(505, 145, 8), deep_blue, panels)
+    make_world_map(panels, led_mat, gold)
+    add_cube("MGL_ROOM_TOP_STORIES_PANEL", Vector(330, 205, 40), Vector(118, 170, 12), blue, panels)
+    add_text("MGL_TEXT_TOP_STORIES", "TOP STORIES", Vector(282, 274, 32), 15, gold, panels)
+    add_cube("MGL_PANEL_SourceConfidence", Vector(-330, 195, 42), Vector(118, 112, 10), blue, panels)
+    add_text("MGL_TEXT_SourceConfidence", "SOURCE\\nCONFIDENCE", Vector(-374, 232, 35), 12, gold, panels)
+    add_cube("MGL_PANEL_Claims", Vector(324, 123, -58), Vector(120, 74, 10), deep_blue, panels)
+    add_text("MGL_TEXT_Claims", "CLAIMS", Vector(286, 146, -66), 12, gold, panels)
+    add_cube("MGL_PANEL_Timeline", Vector(0, 88, -204), Vector(256, 22, 8), blue, panels)
+    add_text("MGL_TEXT_Timeline", "TIMELINE", Vector(-47, 100, -211), 11, gold, panels)
+    add_cube("MGL_TICKER_Main", Vector(0, 32, -222), Vector(690, 22, 8), gold, panels)
+    add_cube("MGL_LOWER_THIRD_Main", Vector(-160, 62, -222), Vector(300, 42, 8), blue, panels)
+    add_cube("MGL_ROOM_TICKER_STRIP", Vector(0, 34, -216), Vector(700, 28, 10), gold, panels)
+    add_cube("MGL_ROOM_LOWER_THIRD_PANEL", Vector(-160, 64, -215), Vector(305, 48, 10), blue, panels)
+    add_cube("MGL_ROOM_SOURCE_PANEL", Vector(-330, 190, 80), Vector(120, 136, 10), blue, panels)
+    add_cube("MGL_ROOM_CLAIM_PANEL", Vector(318, 124, -16), Vector(118, 76, 10), deep_blue, panels)
+    add_text("MGL_TEXT_LowerThird", "${characterName} · MOUGLE VERIFIED NEWS", Vector(-295, 72, -226), 12, gold, panels)
+    add_text("MGL_TEXT_Ticker", "ADMIN PREVIEW ONLY · NOT RENDERED · NOT PUBLISHED · NO UNREAL · NO 4D HARDWARE", Vector(-326, 39, -226), 9, deep_blue, panels)
+
+    # Presenter placeholder. This is intentionally stylized geometry, not a final rig.
+    add_cylinder("MGL_CHARACTER_Anchor_01_BODY", Vector(0, 139, -92), 31, 76, suit, character_root)
+    add_sphere("MGL_CHARACTER_Anchor_01_HEAD", Vector(0, 202, -92), 27, skin, character_root)
+    add_sphere("MGL_CHARACTER_Anchor_01_NECK", Vector(0, 174, -92), 13, skin, character_root)
+    add_cylinder("MGL_CHARACTER_Anchor_01_LEFT_ARM", Vector(-44, 138, -118), 8, 68, suit, character_root, Vector(0.72, 0, -0.48))
+    add_cylinder("MGL_CHARACTER_Anchor_01_RIGHT_ARM", Vector(44, 138, -118), 8, 68, suit, character_root, Vector(0.72, 0, 0.48))
+    add_sphere("MGL_CHARACTER_Anchor_01_LEFT_HAND", Vector(-52, 106, -152), 12, skin, character_root)
+    add_sphere("MGL_CHARACTER_Anchor_01_RIGHT_HAND", Vector(52, 106, -152), 12, skin, character_root)
+    add_cube("MGL_CHARACTER_Anchor_01_SHIRT_PANEL", Vector(0, 145, -123), Vector(28, 54, 6), shirt, character_root)
+    add_cube("MGL_CHARACTER_Anchor_01_TIE_ACCENT", Vector(0, 144, -128), Vector(8, 54, 5), gold, character_root)
+    add_cube("MGL_CHARACTER_Anchor_01_HAIR_BLOCK", Vector(0, 226, -96), Vector(48, 12, 30), black, character_root)
+    add_cube("MGL_CHARACTER_Anchor_01_CHAIR", Vector(0, 70, -56), Vector(96, 84, 88), deep_blue, character_root)
+    add_cube("MGL_CHARACTER_Anchor_01_TABLET", Vector(-58, 107, -168), Vector(58, 4, 36), black, character_root)
+    add_cube("MGL_CHARACTER_Anchor_01_LAPTOP", Vector(70, 105, -170), Vector(74, 6, 42), black, character_root)
+    add_cube("MGL_CHARACTER_Anchor_01_LAV_MIC", Vector(-12, 164, -130), Vector(5, 5, 4), gold, character_root)
+    add_cube("MGL_CHARACTER_Anchor_01_EARPIECE", Vector(26, 202, -92), Vector(6, 12, 5), gold, character_root)
+    add_null("MGL_CHARACTER_Anchor_01_EYE_TARGET", Vector(0, 202, -355), markers)
+    add_null("MGL_CHARACTER_Anchor_01_MOUTH_TARGET", Vector(0, 190, -122), markers)
+    add_null("MGL_CHARACTER_Anchor_01_FACE_TARGET", Vector(0, 197, -270), markers)
+    add_null("MGL_TELEPROMPTER_ANCHOR_01", Vector(0, 176, -335), markers)
+
+    # Lighting and camera objects. They are real scene objects, but this script does not render.
+    add_light("MGL_LIGHT_Key_Blue_Area", Vector(-220, 280, -260), Vector(0.22, 0.48, 1.0), 1.8, lighting)
+    add_light("MGL_LIGHT_WarmGold_Rim_Area", Vector(220, 240, -160), Vector(1.0, 0.58, 0.18), 1.25, lighting)
+    add_light("MGL_LIGHT_Desk_Gloss_Kicker", Vector(0, 155, -235), Vector(0.85, 0.96, 1.0), 0.85, lighting)
+    add_light("MGL_LIGHT_CeilingRing_Area", Vector(0, 312, -45), Vector(1.0, 0.72, 0.32), 1.1, lighting)
+
+    cam_close = add_camera("MGL_CAMERA_AnchorCloseup", Vector(0, 178, -365), Vector(0, 178, -95), 70, cameras)
+    add_camera("MGL_CAMERA_AnchorMedium", Vector(0, 158, -505), Vector(0, 154, -104), 50, cameras)
+    add_camera("MGL_CAMERA_AnchorOverShoulder", Vector(-146, 172, -330), Vector(70, 145, -10), 55, cameras)
+    add_camera("MGL_CAMERA_WideNewsroom", Vector(0, 214, -760), Vector(0, 145, 30), 35, cameras)
+    add_camera("MGL_CAMERA_BreakingNewsPushIn", Vector(0, 178, -430), Vector(0, 176, -100), 80, cameras)
+    doc.SetActiveObject(cam_close)
+    basedraw = doc.GetActiveBaseDraw()
+    if basedraw:
+        basedraw.SetSceneCamera(cam_close)
+
+    add_null("MGL_CAMERA_PRESET_anchor_closeup", Vector(0, 185, -360), markers)
+    add_null("MGL_CAMERA_PRESET_anchor_medium", Vector(0, 165, -520), markers)
+    add_null("MGL_CAMERA_PRESET_anchor_over_shoulder", Vector(-145, 172, -330), markers)
+    add_null("MGL_CAMERA_PRESET_wide_newsroom", Vector(0, 210, -760), markers)
+    add_null("MGL_CAMERA_PRESET_breaking_news_push_in", Vector(0, 176, -430), markers)
+    add_null("MGL_CHARACTER_BINDING_${character?.characterId ?? "unassigned"}", Vector(0, 245, -85), markers)
+    add_null("MGL_CHARACTER_LABEL_${characterName.replace(/[^A-Za-z0-9_]/g, "_")}", Vector(0, 270, -85), markers)
+    add_null("MGL_QUALITY_TIER_${qualityTier}", Vector(0, 288, -85), markers)
+    # Optional accessory markers requested by manifest: ${accessoryNames.join(", ") || "none"}
+
+    c4d.EventAdd()
+
+if __name__ == "__main__":
+    main()
+`;
+}
+
+function _cinema4DPodcastScript(qualityTier: Cinema4DQualityTier = "premium_draft"): string {
+  return `# Mougle Cinema 4D Podcast Studio + Placeholder Host/Guest
+# ${CINEMA4D_PLACEHOLDER_LABEL}
+# Quality tier: ${qualityTier}
+# Draft/internal only. This script creates real Cinema 4D scene objects from primitives.
+# Final cinema-quality output still requires Cinema 4D rendering and human 3D expert review.
+# No render, no Unreal execution, no 4D hardware, no publishing.
+
+import c4d
+from c4d import Vector
+from c4d import utils
+
+QUALITY_TIER = "${qualityTier}"
+
+def safe_set(obj, key, value):
+    try:
+        obj[key] = value
+    except Exception:
+        pass
+
+def set_attr(obj, attr_name, value):
+    key = getattr(c4d, attr_name, None)
+    if key is not None:
+        safe_set(obj, key, value)
+
+def make_mat(name, color, reflectance=0.0, luminance=None):
+    mat = c4d.BaseMaterial(c4d.Mmaterial)
+    mat.SetName(name)
+    safe_set(mat, c4d.MATERIAL_COLOR_COLOR, color)
+    if luminance is not None:
+        safe_set(mat, c4d.MATERIAL_USE_LUMINANCE, True)
+        safe_set(mat, c4d.MATERIAL_LUMINANCE_COLOR, luminance)
+    if reflectance > 0:
+        set_attr(mat, "MATERIAL_USE_REFLECTION", True)
+        set_attr(mat, "MATERIAL_REFLECTION_BRIGHTNESS", reflectance)
+    doc.InsertMaterial(mat)
+    return mat
+
+def tag_mat(obj, mat):
+    if mat:
+        tag = c4d.TextureTag()
+        tag.SetMaterial(mat)
+        obj.InsertTag(tag)
+    return obj
+
+def parent(obj, root):
+    if root is not None:
+        obj.InsertUnder(root)
+    return obj
+
+def add_null(name, pos, root=None):
+    obj = c4d.BaseObject(c4d.Onull)
+    obj.SetName(name)
+    obj.SetAbsPos(pos)
+    doc.InsertObject(obj)
+    return parent(obj, root)
+
+def add_cube(name, pos, size, mat=None, root=None, rot=None):
+    obj = c4d.BaseObject(c4d.Ocube)
+    obj.SetName(name)
+    obj.SetAbsPos(pos)
+    safe_set(obj, c4d.PRIM_CUBE_LEN, size)
+    if rot is not None:
+        obj.SetAbsRot(rot)
+    tag_mat(obj, mat)
+    doc.InsertObject(obj)
+    return parent(obj, root)
+
+def add_sphere(name, pos, radius, mat=None, root=None):
+    obj = c4d.BaseObject(c4d.Osphere)
+    obj.SetName(name)
+    obj.SetAbsPos(pos)
+    safe_set(obj, c4d.PRIM_SPHERE_RAD, radius)
+    tag_mat(obj, mat)
+    doc.InsertObject(obj)
+    return parent(obj, root)
+
+def add_cylinder(name, pos, radius, height, mat=None, root=None, rot=None):
+    obj = c4d.BaseObject(c4d.Ocylinder)
+    obj.SetName(name)
+    obj.SetAbsPos(pos)
+    safe_set(obj, c4d.PRIM_CYLINDER_RADIUS, radius)
+    safe_set(obj, c4d.PRIM_CYLINDER_HEIGHT, height)
+    if rot is not None:
+        obj.SetAbsRot(rot)
+    tag_mat(obj, mat)
+    doc.InsertObject(obj)
+    return parent(obj, root)
+
+def add_torus(name, pos, ring_radius, pipe_radius, mat=None, root=None, rot=None):
+    obj = c4d.BaseObject(c4d.Otorus)
+    obj.SetName(name)
+    obj.SetAbsPos(pos)
+    safe_set(obj, c4d.PRIM_TORUS_OUTERRAD, ring_radius)
+    safe_set(obj, c4d.PRIM_TORUS_INNERRAD, pipe_radius)
+    if rot is not None:
+        obj.SetAbsRot(rot)
+    tag_mat(obj, mat)
+    doc.InsertObject(obj)
+    return parent(obj, root)
+
+def look_at(obj, target):
+    direction = target - obj.GetAbsPos()
+    obj.SetAbsRot(utils.VectorToHPB(direction))
+    return obj
+
+def add_camera(name, pos, target, focal_length=50, root=None):
+    cam = c4d.BaseObject(c4d.Ocamera)
+    cam.SetName(name)
+    cam.SetAbsPos(pos)
+    safe_set(cam, c4d.CAMERA_FOCUS, focal_length)
+    look_at(cam, target)
+    doc.InsertObject(cam)
+    return parent(cam, root)
+
+def add_light(name, pos, color, intensity=1.0, root=None):
+    light = c4d.BaseObject(c4d.Olight)
+    light.SetName(name)
+    light.SetAbsPos(pos)
+    safe_set(light, c4d.LIGHT_COLOR, color)
+    safe_set(light, c4d.LIGHT_BRIGHTNESS, intensity)
+    safe_set(light, c4d.LIGHT_TYPE, c4d.LIGHT_TYPE_AREA)
+    doc.InsertObject(light)
+    return parent(light, root)
+
+def make_character(prefix, x, mat_body, mat_skin, mat_accent, root, facing=1):
+    char_root = add_null(prefix + "_ROOT", Vector(x, 0, -70), root)
+    add_cylinder(prefix + "_BODY", Vector(x, 124, -70), 27, 66, mat_body, char_root)
+    add_sphere(prefix + "_HEAD", Vector(x, 184, -70), 24, mat_skin, char_root)
+    add_cylinder(prefix + "_LEFT_ARM", Vector(x - 37, 126, -100), 7, 58, mat_body, char_root, Vector(0.65, 0, -0.45))
+    add_cylinder(prefix + "_RIGHT_ARM", Vector(x + 37, 126, -100), 7, 58, mat_body, char_root, Vector(0.65, 0, 0.45))
+    add_sphere(prefix + "_LEFT_HAND", Vector(x - 42, 98, -132), 10, mat_skin, char_root)
+    add_sphere(prefix + "_RIGHT_HAND", Vector(x + 42, 98, -132), 10, mat_skin, char_root)
+    add_cube(prefix + "_HEADPHONES", Vector(x, 188, -70), Vector(66, 9, 8), mat_accent, char_root)
+    add_null(prefix + "_EYE_TARGET", Vector(x, 184, -310), root)
+    add_null(prefix + "_MOUTH_TARGET", Vector(x, 174, -96), root)
+    add_cube(prefix + "_CUE_TABLET", Vector(x + (28 * facing), 90, -150), Vector(46, 4, 28), mat_accent, char_root)
+    return char_root
+
+def main():
+    global doc
+    doc.SetDocumentName("Mougle Podcast Studio - Draft Cinema 4D Scene")
+    scene = add_null("MGL_SCENE_MouglePodcastStudio_DRAFT", Vector(0, 0, 0))
+    room = add_null("MGL_GROUP_PODCAST_ROOM_GEOMETRY", Vector(0, 0, 0), scene)
+    characters = add_null("MGL_GROUP_PODCAST_CHARACTER_PLACEHOLDERS", Vector(0, 0, 0), scene)
+    cameras = add_null("MGL_GROUP_PODCAST_CAMERAS", Vector(0, 0, 0), scene)
+    lights = add_null("MGL_GROUP_PODCAST_WARM_LIGHTS", Vector(0, 0, 0), scene)
+    markers = add_null("MGL_GROUP_PODCAST_MARKERS", Vector(0, 0, 0), scene)
+
+    navy = make_mat("MGL_RS_READY_Podcast_Navy_Acoustic", Vector(0.01, 0.03, 0.08), 0.2)
+    warm_gold = make_mat("MGL_OCTANE_READY_Warm_Gold_Practical", Vector(1.0, 0.58, 0.18), 0.45, Vector(0.8, 0.35, 0.08))
+    table_mat = make_mat("MGL_RS_OCTANE_READY_Dark_Wood_Gloss_Table", Vector(0.06, 0.035, 0.018), 0.52)
+    screen = make_mat("MGL_MAT_Podcast_VideoWall_Emission", Vector(0.04, 0.18, 0.36), 0.2, Vector(0.05, 0.4, 0.9))
+    skin = make_mat("MGL_MAT_Podcast_Placeholder_Skin", Vector(0.82, 0.56, 0.42), 0.08)
+    host_suit = make_mat("MGL_MAT_Host_Futuristic_Jacket", Vector(0.82, 0.84, 0.84), 0.32)
+    guest_suit = make_mat("MGL_MAT_Guest_Dark_Blazer", Vector(0.02, 0.025, 0.032), 0.24)
+    black = make_mat("MGL_MAT_Black_Gloss_Audio_Gear", Vector(0.004, 0.004, 0.005), 0.7)
+
+    add_cube("MGL_PODCAST_ROOM_FLOOR", Vector(0, -6, -45), Vector(620, 12, 420), table_mat, room)
+    add_cube("MGL_PODCAST_ACOUSTIC_BACK_WALL", Vector(0, 178, 118), Vector(560, 210, 18), navy, room)
+    add_cube("MGL_PODCAST_VIDEO_WALL", Vector(0, 205, 126), Vector(430, 128, 10), screen, room)
+    add_cube("MGL_PODCAST_SIDE_LED_LEFT", Vector(-290, 138, -22), Vector(16, 170, 250), screen, room)
+    add_cube("MGL_PODCAST_SIDE_LED_RIGHT", Vector(290, 138, -22), Vector(16, 170, 250), screen, room)
+    add_cylinder("MGL_PODCAST_TABLE_GLOSS", Vector(0, 78, -132), 154, 32, table_mat, room, Vector(1.5708, 0, 0))
+    add_torus("MGL_PODCAST_CEILING_WARM_LIGHT_RING", Vector(0, 266, -76), 185, 5, warm_gold, lights, Vector(1.5708, 0, 0))
+
+    # Character placeholder roots created by make_character:
+    # MGL_CHARACTER_Host_01_ROOT
+    # MGL_CHARACTER_Guest_01_ROOT
+    make_character("MGL_CHARACTER_Host_01", -105, host_suit, skin, black, characters, 1)
+    make_character("MGL_CHARACTER_Guest_01", 105, guest_suit, skin, black, characters, -1)
+    add_cylinder("MGL_PODCAST_MIC_HOST_01", Vector(-105, 112, -165), 8, 46, black, room, Vector(0.5, 0, 0))
+    add_cylinder("MGL_PODCAST_MIC_GUEST_01", Vector(105, 112, -165), 8, 46, black, room, Vector(0.5, 0, 0))
+    add_cube("MGL_PODCAST_MIC_ARM_HOST_01", Vector(-132, 123, -150), Vector(70, 7, 7), black, room, Vector(0, 0, -0.35))
+    add_cube("MGL_PODCAST_MIC_ARM_GUEST_01", Vector(132, 123, -150), Vector(70, 7, 7), black, room, Vector(0, 0, 0.35))
+    add_cube("MGL_PODCAST_HEADSET_HOST_01", Vector(-105, 190, -70), Vector(65, 8, 8), black, characters)
+    add_cube("MGL_PODCAST_HEADSET_GUEST_01", Vector(105, 190, -70), Vector(65, 8, 8), black, characters)
+    add_cube("MGL_PODCAST_LOWER_THIRD_HOST", Vector(-112, 56, -218), Vector(178, 28, 8), screen, room)
+    add_cube("MGL_PODCAST_LOWER_THIRD_GUEST", Vector(112, 56, -218), Vector(178, 28, 8), screen, room)
+
+    add_light("MGL_LIGHT_Podcast_Key_Warm", Vector(-185, 245, -260), Vector(1.0, 0.64, 0.34), 1.6, lights)
+    add_light("MGL_LIGHT_Podcast_Blue_Back", Vector(188, 205, 25), Vector(0.18, 0.38, 1.0), 0.9, lights)
+    add_light("MGL_LIGHT_Podcast_Table_Gloss", Vector(0, 150, -230), Vector(1.0, 0.88, 0.62), 0.8, lights)
+
+    two = add_camera("MGL_CAMERA_PodcastTwoShot", Vector(0, 152, -430), Vector(0, 125, -90), 45, cameras)
+    add_camera("MGL_CAMERA_HostCloseup", Vector(-115, 165, -300), Vector(-105, 164, -70), 70, cameras)
+    add_camera("MGL_CAMERA_GuestCloseup", Vector(115, 165, -300), Vector(105, 164, -70), 70, cameras)
+    add_camera("MGL_CAMERA_TableWide", Vector(0, 184, -560), Vector(0, 92, -132), 35, cameras)
+    add_camera("MGL_CAMERA_OverheadTable", Vector(0, 430, -130), Vector(0, 70, -130), 30, cameras)
+    doc.SetActiveObject(two)
+    doc.GetActiveBaseDraw().SetSceneCamera(two)
+
+    add_null("MGL_CAMERA_PRESET_podcast_two_shot", Vector(0, 160, -430), markers)
+    add_null("MGL_CAMERA_PRESET_host_closeup", Vector(-105, 172, -310), markers)
+    add_null("MGL_CAMERA_PRESET_guest_closeup", Vector(105, 172, -310), markers)
+    add_null("MGL_CAMERA_PRESET_table_wide", Vector(0, 190, -560), markers)
+    add_null("MGL_CAMERA_PRESET_overhead_table", Vector(0, 430, -130), markers)
+    add_null("MGL_QUALITY_TIER_${qualityTier}", Vector(0, 290, -70), markers)
+    c4d.EventAdd()
+
+if __name__ == "__main__":
+    main()
+`;
+}
+
+export function generateCinema4DRoomCharacterScript(input: {
+  productionId?: string | null;
+  roomId?: string | null;
+  characterId?: string | null;
+  accessoryIds?: string[];
+  template?: "mougle_verified_newsroom" | "mougle_podcast_studio";
+  qualityTier?: Cinema4DQualityTier;
+}): { ok: true; manifest: Cinema4DRoomCharacterScriptManifest } {
+  const template = input.template ?? "mougle_verified_newsroom";
+  const qualityTier = input.qualityTier ?? "premium_draft";
+  const character = input.characterId ? getCinema4DAnchorCharacter(input.characterId) : null;
+  const accessories = (input.accessoryIds ?? character?.accessoryIds ?? [])
+    .map((id) => store.cinema4DCharacterAccessories.find((a) => a.accessoryId === id))
+    .filter((a): a is Cinema4DCharacterAccessoryManifest => !!a)
+    .map(_lockCinema4DAccessory);
+  const cameraPresets: Cinema4DAnchorCameraPreset[] = template === "mougle_podcast_studio"
+    ? ["podcast_two_shot","host_closeup","guest_closeup","table_wide","overhead_table"]
+    : ["anchor_closeup","anchor_medium","anchor_over_shoulder","wide_newsroom","breaking_news_push_in"];
+  const script = template === "mougle_podcast_studio"
+    ? _cinema4DPodcastScript(qualityTier)
+    : _cinema4DNewsroomScript(character, accessories, qualityTier);
+  const manifest = _lockCinema4DScript({
+    scriptId: `c4d_script_${_shortHash(
+      `c4d-script:${template}:${input.productionId ?? ""}:${input.roomId ?? ""}:${input.characterId ?? ""}`,
+    )}`,
+    roomId: input.roomId ?? character?.roomId ?? null,
+    productionId: input.productionId ?? character?.productionId ?? null,
+    template,
+    characterIds: template === "mougle_podcast_studio"
+      ? ["MGL_CHARACTER_Host_01","MGL_CHARACTER_Guest_01"]
+      : [character?.characterId ?? "MGL_CHARACTER_Anchor_01"],
+    accessoryIds: accessories.map((a) => a.accessoryId),
+    cameraPresets,
+    qualityTier,
+    qualityNotes: [
+      "Real Cinema 4D scene-construction script with primitives, materials, cameras, lights, and organized null groups.",
+      "This is a premium draft, not final human-expert Cinema 4D polish.",
+      "Final cinema-quality output still requires Cinema 4D rendering and human 3D expert review.",
+    ],
+    script,
+    createdAt: new Date().toISOString(),
+  });
+  const i = store.cinema4DRoomCharacterScripts.findIndex((r) => r.scriptId === manifest.scriptId);
+  if (i >= 0) store.cinema4DRoomCharacterScripts[i] = manifest;
+  else store.cinema4DRoomCharacterScripts.push(manifest);
+  if (store.cinema4DRoomCharacterScripts.length > 5000) {
+    store.cinema4DRoomCharacterScripts.splice(0, store.cinema4DRoomCharacterScripts.length - 5000);
+  }
+  persistCinema4DRoomCharacterScripts();
+  recordAudit("root_admin", "cinema4d.room_character_script.generated", manifest.scriptId);
+  return { ok: true, manifest };
+}
+
+export function listCinema4DRoomCharacterScripts(): Cinema4DRoomCharacterScriptManifest[] {
+  return [...store.cinema4DRoomCharacterScripts]
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+    .map(_lockCinema4DScript);
+}
+
+function _sanitizeCinema4DPackageValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(_sanitizeCinema4DPackageValue);
+  if (!value || typeof value !== "object") return value;
+  const out: Record<string, unknown> = {};
+  for (const [key, raw] of Object.entries(value as Record<string, unknown>)) {
+    const lower = key.toLowerCase();
+    if (lower === "publicurl" || lower === "signedurl") {
+      out[key] = null;
+      continue;
+    }
+    if (/secret|token|apikey|api_key|authorization|credential|password|privateurl|providerurl|downloadurl|modelurl|videourl|audiourl/i.test(key)) {
+      out[key] = null;
+      continue;
+    }
+    if (lower.endsWith("url") && typeof raw === "string" && /^https?:\/\//i.test(raw)) {
+      out[key] = null;
+      continue;
+    }
+    out[key] = _sanitizeCinema4DPackageValue(raw);
+  }
+  return out;
+}
+
+function _safeJsonFile(value: unknown): string {
+  return `${JSON.stringify(_sanitizeCinema4DPackageValue(value), null, 2)}\n`;
+}
+
+const ZIP_CRC32_TABLE = (() => {
+  const table = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) {
+    let c = i;
+    for (let k = 0; k < 8; k++) {
+      c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    }
+    table[i] = c >>> 0;
+  }
+  return table;
+})();
+
+function _crc32(buf: Buffer): number {
+  let crc = 0xffffffff;
+  for (const byte of buf) {
+    crc = ZIP_CRC32_TABLE[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function _dosDateTime(date = new Date()): { time: number; day: number } {
+  const year = Math.max(1980, date.getFullYear());
+  const time =
+    (date.getSeconds() >> 1) |
+    (date.getMinutes() << 5) |
+    (date.getHours() << 11);
+  const day =
+    date.getDate() |
+    ((date.getMonth() + 1) << 5) |
+    ((year - 1980) << 9);
+  return { time, day };
+}
+
+function _createStoredZip(files: Record<string, string>): Buffer {
+  const now = _dosDateTime();
+  const localParts: Buffer[] = [];
+  const centralParts: Buffer[] = [];
+  let offset = 0;
+  const names = Object.keys(files).sort();
+
+  for (const name of names) {
+    const nameBuf = Buffer.from(name, "utf8");
+    const data = Buffer.from(files[name] ?? "", "utf8");
+    const crc = _crc32(data);
+
+    const local = Buffer.alloc(30);
+    local.writeUInt32LE(0x04034b50, 0);
+    local.writeUInt16LE(20, 4);
+    local.writeUInt16LE(0, 6);
+    local.writeUInt16LE(0, 8);
+    local.writeUInt16LE(now.time, 10);
+    local.writeUInt16LE(now.day, 12);
+    local.writeUInt32LE(crc, 14);
+    local.writeUInt32LE(data.length, 18);
+    local.writeUInt32LE(data.length, 22);
+    local.writeUInt16LE(nameBuf.length, 26);
+    local.writeUInt16LE(0, 28);
+    localParts.push(local, nameBuf, data);
+
+    const central = Buffer.alloc(46);
+    central.writeUInt32LE(0x02014b50, 0);
+    central.writeUInt16LE(20, 4);
+    central.writeUInt16LE(20, 6);
+    central.writeUInt16LE(0, 8);
+    central.writeUInt16LE(0, 10);
+    central.writeUInt16LE(now.time, 12);
+    central.writeUInt16LE(now.day, 14);
+    central.writeUInt32LE(crc, 16);
+    central.writeUInt32LE(data.length, 20);
+    central.writeUInt32LE(data.length, 24);
+    central.writeUInt16LE(nameBuf.length, 28);
+    central.writeUInt16LE(0, 30);
+    central.writeUInt16LE(0, 32);
+    central.writeUInt16LE(0, 34);
+    central.writeUInt16LE(0, 36);
+    central.writeUInt32LE(0, 38);
+    central.writeUInt32LE(offset, 42);
+    centralParts.push(central, nameBuf);
+
+    offset += local.length + nameBuf.length + data.length;
+  }
+
+  const centralDir = Buffer.concat(centralParts);
+  const end = Buffer.alloc(22);
+  end.writeUInt32LE(0x06054b50, 0);
+  end.writeUInt16LE(0, 4);
+  end.writeUInt16LE(0, 6);
+  end.writeUInt16LE(names.length, 8);
+  end.writeUInt16LE(names.length, 10);
+  end.writeUInt32LE(centralDir.length, 12);
+  end.writeUInt32LE(offset, 16);
+  end.writeUInt16LE(0, 20);
+
+  return Buffer.concat([...localParts, centralDir, end]);
+}
+
+function _cinema4DDefaultCharacter(roomId: string): Cinema4DAnchorCharacterManifest {
+  const existing = store.cinema4DAnchorCharacters
+    .filter((c) => c.roomId === roomId)
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))[0];
+  if (existing) return _lockCinema4DCharacter(existing);
+  return _lockCinema4DCharacter({
+    characterId: `c4d_char_${_shortHash(`download-anchor:${roomId}`)}`,
+    roomId,
+    characterName: "Mougle Verified Anchor",
+    characterRole: "news_anchor",
+    characterStyle: "premium_news_anchor",
+    wardrobeStyle: "navy_suit",
+    posePreset: "seated_desk_hands_folded",
+    facialExpression: "neutral_professional",
+    voiceAssetId: null,
+    lipSyncReadiness: "future_provider_required",
+    compatibleWith: [
+      "cinema4d_placeholder",
+      "metahuman_candidate",
+      "character_creator_candidate",
+      "unreal_blueprint_candidate",
+    ],
+    createdAt: new Date().toISOString(),
+  });
+}
+
+function _cinema4DDefaultAccessories(
+  roomId: string,
+  characterId: string,
+): Cinema4DCharacterAccessoryManifest[] {
+  const existing = store.cinema4DCharacterAccessories
+    .filter((a) => a.roomId === roomId || a.characterId === characterId)
+    .map(_lockCinema4DAccessory);
+  if (existing.length) return existing;
+  return ([
+    ["lavalier_mic", "lapel"],
+    ["earpiece", "ear"],
+    ["tablet", "left_hand"],
+  ] as const).map(([accessoryType, attachTo]) => _lockCinema4DAccessory({
+    accessoryId: `c4d_acc_${_shortHash(`download:${roomId}:${characterId}:${accessoryType}`)}`,
+    characterId,
+    roomId,
+    accessoryType,
+    accessoryName: `Anchor ${accessoryType}`,
+    attachTo,
+    objectName: `MGL_CHARACTER_Anchor_01_${accessoryType.toUpperCase()}`,
+    createdAt: new Date().toISOString(),
+  }));
+}
+
+function _cinema4DRoomManifest(roomId: string, productionId: string | null) {
+  const generatedRoom = getGeneratedRoom(roomId);
+  return {
+    ...(generatedRoom ?? {
+      roomId,
+      productionId,
+      roomName: "Mougle Verified Newsroom",
+      roomCategory: "newsroom",
+      visualStyle: "cinema4d_high_end_blue_gold_newsroom",
+      cameraStyle: "cinematic_anchor_center_composition",
+      lightingStyle: "premium_blue_gold_or_warm_gold",
+      colorPalette: ["#07142b", "#d6a84f", "#ffffff"],
+      screenLayout: "led_world_map_with_top_stories_source_confidence_claims",
+      panelLayout: "ticker_lower_third_source_claims_timeline",
+      audienceMode: "studio_only_mock",
+      fourDCompatibility: ["light", "fog", "bass"],
+      unrealLevelCandidate: "DRAFT_ONLY_NO_UNREAL_EXECUTION",
+      prompt: "High-end Cinema 4D Mougle Verified Newsroom draft with placeholder anchor.",
+      promptHash: _phHash(`cinema4d-download:${roomId}`),
+      createdAt: new Date().toISOString(),
+    }),
+    status: "draft" as const,
+    approvalStatus: "draft" as const,
+    visibility: "admin_only_internal" as const,
+    publicUrl: null,
+    signedUrl: null,
+    realSendAllowed: false as const,
+    executionEnabled: false as const,
+    safetyEnvelope: SAFETY_ENVELOPE,
+  };
+}
+
+function _cinema4DNewsroomBindingsPackage(
+  character: Cinema4DAnchorCharacterManifest,
+): Cinema4DCharacterBindings {
+  return buildCinema4DCharacterBindings({
+    anchorName: character.characterName,
+    verifiedHeadline: "Mougle verified newsroom draft headline",
+    script: "Cinema 4D draft teleprompter text for internal preview only.",
+    confidenceScore: 0,
+    sources: ["Future verified newsroom storage"],
+    claims: ["Draft claim panel placeholder"],
+  }, character);
+}
+
+export function getCinema4DNewsroomDownloadScript(roomId: string, qualityTier: Cinema4DQualityTier = "premium_draft"): {
+  ok: true;
+  filename: "mougle-cinema4d-newsroom-script.py";
+  contentType: "text/x-python";
+  script: string;
+  manifest: Cinema4DRoomCharacterScriptManifest;
+} {
+  const safeRoomId = String(roomId || "mougle_verified_newsroom_room").slice(0, 120);
+  const character = _cinema4DDefaultCharacter(safeRoomId);
+  const accessories = _cinema4DDefaultAccessories(safeRoomId, character.characterId);
+  const script = _cinema4DNewsroomScript(character, accessories, qualityTier);
+  const manifest = _lockCinema4DScript({
+    scriptId: `c4d_script_download_${_shortHash(`download-script:${safeRoomId}:${character.characterId}`)}`,
+    roomId: safeRoomId,
+    productionId: character.productionId,
+    template: "mougle_verified_newsroom",
+    characterIds: [character.characterId],
+    accessoryIds: accessories.map((a) => a.accessoryId),
+    cameraPresets: [
+      "anchor_closeup",
+      "anchor_medium",
+      "anchor_over_shoulder",
+      "wide_newsroom",
+      "breaking_news_push_in",
+    ],
+    qualityTier,
+    qualityNotes: [
+      "Downloadable real Cinema 4D Python scene script with newsroom geometry, presenter placeholder, materials, cameras, and lights.",
+      "Final cinema-quality output still requires Cinema 4D rendering and human 3D expert review.",
+    ],
+    script,
+    createdAt: new Date().toISOString(),
+  });
+  return {
+    ok: true,
+    filename: "mougle-cinema4d-newsroom-script.py",
+    contentType: "text/x-python",
+    script,
+    manifest,
+  };
+}
+
+export function buildCinema4DNewsroomDownloadPackage(roomId: string, qualityTier: Cinema4DQualityTier = "premium_draft"): {
+  ok: true;
+  filename: "mougle-cinema4d-newsroom-package.zip";
+  contentType: "application/zip";
+  files: Record<string, string>;
+  zip: Buffer;
+  scriptManifest: Cinema4DRoomCharacterScriptManifest;
+  characterManifest: Cinema4DAnchorCharacterManifest;
+  accessoriesManifest: Cinema4DCharacterAccessoryManifest[];
+  bindings: Cinema4DCharacterBindings;
+  safetyEnvelope: typeof SAFETY_ENVELOPE;
+} {
+  const safeRoomId = String(roomId || "mougle_verified_newsroom_room").slice(0, 120);
+  const scriptBundle = getCinema4DNewsroomDownloadScript(safeRoomId, qualityTier);
+  const character = _cinema4DDefaultCharacter(safeRoomId);
+  const accessories = _cinema4DDefaultAccessories(safeRoomId, character.characterId);
+  const bindings = _cinema4DNewsroomBindingsPackage(character);
+  const roomManifest = _cinema4DRoomManifest(safeRoomId, character.productionId);
+  const unrealSceneDraft = {
+    productionId: character.productionId,
+    roomId: safeRoomId,
+    template: "mougle_verified_newsroom",
+    qualityTier,
+    qualityTiers: ["placeholder", "premium_draft", "expert_polish_required"],
+    status: "draft",
+    approvalStatus: "draft",
+    visibility: "admin_only_internal",
+    publicUrl: null,
+    signedUrl: null,
+    realSendAllowed: false,
+    executionEnabled: false,
+    adminPreviewOnly: true,
+    notRendered: true,
+    notPublished: true,
+    noUnrealExecution: true,
+    noFourDHardware: true,
+    realRenderCalled: false,
+    unrealCommandSent: false,
+    fourDCommandSent: false,
+    published: false,
+    safetyEnvelope: SAFETY_ENVELOPE,
+    note: "Draft manifest only. No real Unreal command, level load, Sequencer, Movie Render Queue, 4D hardware, render, or publishing action is included.",
+  };
+  const readme = [
+    "# Mougle Cinema 4D Newsroom Package",
+    "",
+    "This package contains draft/internal Cinema 4D script and manifests only.",
+    "It does not render, publish, execute Unreal, or trigger 4D hardware.",
+    "",
+    "## Files",
+    "",
+    "- cinema4d-newsroom-script.py: draft Cinema 4D Python scene builder.",
+    "- room-manifest.json: internal room metadata.",
+    "- anchor-character-manifest.json: placeholder anchor manifest.",
+    "- accessories-manifest.json: placeholder accessory manifests.",
+    "- verified-newsroom-bindings.json: draft teleprompter, lower-third, panel, and camera bindings.",
+    "- unreal-scene-manifest-draft.json: dry-run planning metadata only.",
+    "",
+    "## How To Use In Cinema 4D",
+    "",
+    "1. Open Cinema 4D manually.",
+    "2. Review cinema4d-newsroom-script.py before running it.",
+    "3. Run the script from Cinema 4D Script Manager to create the draft scene objects.",
+    "4. Review cameras, lights, materials, and placeholder character geometry.",
+    "5. Replace placeholder character geometry with a final rig after human 3D review.",
+    "",
+    "## Quality Tier",
+    "",
+    `Selected tier: ${qualityTier}. Available tiers: placeholder, premium_draft, expert_polish_required.`,
+    "This script is a real scene-construction script, but final cinema-quality output still requires Cinema 4D rendering and human 3D expert review.",
+    "",
+    "Safety locks: status draft, approvalStatus draft, visibility admin_only_internal, realSendAllowed false, executionEnabled false.",
+    "",
+  ].join("\n");
+  const files = {
+    "README.md": readme,
+    "accessories-manifest.json": _safeJsonFile(accessories),
+    "anchor-character-manifest.json": _safeJsonFile(character),
+    "cinema4d-newsroom-script.py": scriptBundle.script,
+    "room-manifest.json": _safeJsonFile(roomManifest),
+    "unreal-scene-manifest-draft.json": _safeJsonFile(unrealSceneDraft),
+    "verified-newsroom-bindings.json": _safeJsonFile(bindings),
+  };
+  return {
+    ok: true,
+    filename: "mougle-cinema4d-newsroom-package.zip",
+    contentType: "application/zip",
+    files,
+    zip: _createStoredZip(files),
+    scriptManifest: scriptBundle.manifest,
+    characterManifest: character,
+    accessoriesManifest: accessories,
+    bindings,
+    safetyEnvelope: SAFETY_ENVELOPE,
+  };
+}
+
+export function buildCinema4DCharacterBindings(
+  newsroomDataPackage: any,
+  characterManifest: Cinema4DAnchorCharacterManifest,
+): Cinema4DCharacterBindings {
+  const speakerMap = newsroomDataPackage?.scriptSpeakerMap ?? newsroomDataPackage?.speakers ?? {};
+  const speakerName =
+    speakerMap?.[characterManifest.characterId] ??
+    newsroomDataPackage?.speaker ??
+    newsroomDataPackage?.anchorName ??
+    characterManifest.characterName;
+  const headline =
+    newsroomDataPackage?.verifiedHeadline ??
+    newsroomDataPackage?.headline ??
+    newsroomDataPackage?.storyTitle ??
+    newsroomDataPackage?.title ??
+    "Verified newsroom draft headline";
+  const script =
+    newsroomDataPackage?.script ??
+    newsroomDataPackage?.scriptDraft ??
+    newsroomDataPackage?.teleprompterText ??
+    headline;
+  const confidence = newsroomDataPackage?.confidenceScore ?? newsroomDataPackage?.confidence;
+  const sources = newsroomDataPackage?.sourceList ?? newsroomDataPackage?.sources ?? newsroomDataPackage?.sourcePanel ?? [];
+  const claims = newsroomDataPackage?.claims ?? [];
+  const panelFocus = _cinema4DPanelFocus({
+    headline,
+    confidence,
+    sources,
+    claims,
+  });
+  return Cinema4DCharacterBindingsSchema.parse({
+    characterId: characterManifest.characterId,
+    teleprompterText: String(script).slice(0, 4000),
+    lowerThirdName: String(newsroomDataPackage?.lowerThirdName ?? speakerName).slice(0, 160),
+    voiceAssetId: characterManifest.voiceAssetId,
+    panelFocus,
+    cameraPreset: characterManifest.defaultCameraPreset,
+    cueMarkers: [
+      `speaker:${characterManifest.characterId}`,
+      `voice:${characterManifest.voiceAssetId ?? "future_provider_required"}`,
+      `camera:${characterManifest.defaultCameraPreset}`,
+      `teleprompter:${String(headline).slice(0, 80)}`,
+      ...(Array.isArray(sources) ? sources.slice(0, 3).map((s: unknown) => `source:${String(s).slice(0, 80)}`) : []),
+    ],
+  });
+}
+
+export function openCinema4DPreviewWithCharacter(
+  roomId: string,
+  input: {
+    productionId?: string | null;
+    characterId?: string | null;
+    accessoryIds?: string[];
+    newsroomDataPackage?: any;
+    template?: "mougle_verified_newsroom" | "mougle_podcast_studio";
+  },
+) {
+  const character = input.characterId
+    ? getCinema4DAnchorCharacter(input.characterId)
+    : listCinema4DAnchorCharacters()[0] ?? null;
+  const bindings = character
+    ? buildCinema4DCharacterBindings(input.newsroomDataPackage ?? {}, character)
+    : null;
+  const accessoryIds = _uniqueIds([
+    ...(input.accessoryIds ?? []),
+    ...(character?.accessoryIds ?? []),
+  ]);
+  const mode = input.template === "mougle_podcast_studio" ? "podcast" : "newsroom";
+  const state = generatePreviewStudioState(
+    {
+      mode,
+      layoutPreset: mode === "podcast" ? "podcast_host_guest" : "anchor_left_panel_right",
+      camera: _cinema4DPreviewCamera(bindings?.cameraPreset),
+      lighting: mode === "podcast" ? "podcast_intimate" : "warm_studio",
+      roomLabel: mode === "podcast"
+        ? "Mougle Podcast Studio — Cinema 4D placeholder"
+        : "Mougle Verified Newsroom — Cinema 4D placeholder",
+      lowerThirdText: bindings?.lowerThirdName ?? "Character Preview Only",
+      tickerText: mode === "podcast"
+        ? "CHARACTER PREVIEW ONLY · NOT RENDERED · NOT PUBLISHED"
+        : "CHARACTER PREVIEW ONLY · PLACEHOLDER GEOMETRY · NOT FINAL RIG",
+    },
+    {
+      productionId: input.productionId ?? character?.productionId ?? null,
+      roomId,
+      avatarIds: character ? [character.characterId] : [],
+      characterIds: character ? [character.characterId] : [],
+      mediaPackageIds: [],
+      wizardId: null,
+      previewSnapshotId: null,
+      readinessReportId: null,
+      approvalState: null,
+      characterRole: character?.characterRole ?? null,
+      wardrobeStyle: character?.wardrobeStyle ?? null,
+      posePreset: character?.posePreset ?? null,
+      accessoryIds,
+      teleprompterText: bindings?.teleprompterText ?? null,
+      lowerThirdName: bindings?.lowerThirdName ?? null,
+      panelFocus: bindings?.panelFocus ?? null,
+      cameraPreset: bindings?.cameraPreset ?? null,
+      roomLabel: mode === "podcast"
+        ? "Mougle Podcast Studio — Cinema 4D placeholder"
+        : "Mougle Verified Newsroom — Cinema 4D placeholder",
+      avatarLabels: character ? [
+        `${character.characterName} (${character.characterRole}, ${character.wardrobeStyle}, ${character.posePreset})`,
+      ] : [],
+      mediaPackageLabels: bindings ? [bindings.panelFocus] : [],
+    } as any,
+  );
+  recordAudit("root_admin", "cinema4d.preview_with_character.opened", `${roomId}:${character?.characterId ?? "none"}`);
+  return {
+    ok: true as const,
+    state,
+    character,
+    bindings,
+    previewLabel: "Character Preview Only — placeholder geometry, not final rig, not rendered.",
+    realSendAllowed: false as const,
+    executionEnabled: false as const,
+    realRenderCalled: false as const,
+    unrealCommandSent: false as const,
+    fourDCommandSent: false as const,
+    published: false as const,
+    safetyEnvelope: SAFETY_ENVELOPE,
+  };
+}
+
 export function createProductionUnit(input: {
   unitName: string; unitType: ProductionUnitType;
   productionId?: string | null; roomId?: string | null;
@@ -8242,8 +9824,6 @@ export function generateMediaPackage(input: {
     assetRequirements: ["voice_mock","meshy_mock","runway_mock"],
     fourDCueSuggestions: type === "newsroom_to_4d_cinema"
       ? ["light_red_alert","bass_hit_low","fog_burst_short"] : [],
-    setManifestId: null,
-    rigAssetId: null,
     status: "draft", approvalStatus: "draft",
     visibility: "admin_only_internal",
     publicUrl: null, signedUrl: null,
@@ -8263,38 +9843,6 @@ export function listMediaPackages(): MediaPackageRecord[] {
   return [...store.mediaPackages]
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
     .map(_lockPackage);
-}
-
-export function getMediaPackage(packageId: string): MediaPackageRecord | null {
-  const r = store.mediaPackages.find((x) => x.packageId === packageId);
-  return r ? MediaPackageRecordSchema.parse(_lockPackage(r)) : null;
-}
-
-export function updateMediaPackage3DSelection(
-  packageId: string,
-  patch: { setManifestId?: string | null; rigAssetId?: string | null },
-): { ok: true; record: MediaPackageRecord } | { ok: false; error: string } {
-  const idx = store.mediaPackages.findIndex((x) => x.packageId === packageId);
-  if (idx < 0) return { ok: false, error: "package_not_found" };
-  const cur = store.mediaPackages[idx];
-  const next: MediaPackageRecord = _lockPackage({
-    ...cur,
-    setManifestId:
-      patch.setManifestId === undefined
-        ? cur.setManifestId ?? null
-        : patch.setManifestId === null
-        ? null
-        : String(patch.setManifestId).slice(0, 120),
-    rigAssetId:
-      patch.rigAssetId === undefined
-        ? cur.rigAssetId ?? null
-        : patch.rigAssetId === null
-        ? null
-        : String(patch.rigAssetId).slice(0, 120),
-  });
-  store.mediaPackages[idx] = next;
-  persistMediaPackages();
-  return { ok: true, record: MediaPackageRecordSchema.parse(next) };
 }
 
 export function generateNewsToDebatePackage(input: {
@@ -8322,8 +9870,6 @@ export function generateNewsToDebatePackage(input: {
     avatarRecommendation: ["debate_moderator","guest","guest"],
     assetRequirements: ["voice_mock_moderator","voice_mock_guests"],
     fourDCueSuggestions: ["light_focus_center","ambient_warm_low"],
-    setManifestId: null,
-    rigAssetId: null,
     status: "draft", approvalStatus: "draft",
     visibility: "admin_only_internal",
     publicUrl: null, signedUrl: null,
@@ -8350,12 +9896,21 @@ export function generatePreviewSnapshot(input: {
   const rec: PreviewSnapshotRecord = _lockPreview({
     snapshotId: `preview_${_shortHash(`preview:${input.productionId}:${input.roomId ?? ""}:${(input.avatarIds ?? []).join(",")}:${input.mediaPackageType ?? ""}`)}`,
     productionId: input.productionId,
+    previewMode: "newsroom",
+    layoutPreset: "anchor_center",
     roomId: input.roomId ?? null,
+    selectedRoomId: input.roomId ?? null,
     avatarIds: input.avatarIds ?? [],
+    selectedAvatarIds: input.avatarIds ?? [],
+    selectedMediaPackageIds: [],
+    selectedCueIds: ["light_cue_mock_1", "bass_cue_mock_2"],
     screenLayout: "main_stage_with_side_panels_mock",
     panelLayout: "lower_third_plus_ticker_mock",
+    panelSummary: "Main stage with side panels",
     lowerThird: "Admin Preview Only — Not Rendered",
+    lowerThirdText: "Admin Preview Only — Not Rendered",
     ticker: "INTERNAL-ONLY · NOT PUBLISHED · NO UNREAL EXECUTION",
+    tickerText: "INTERNAL-ONLY · NOT PUBLISHED · NO UNREAL EXECUTION",
     cameraPreset: "MOCK_CAM_PRESET_PRIMARY",
     lightingPreset: "MOCK_LIGHT_PRESET_DRAMATIC",
     fourDCueMarkers: ["light_cue_mock_1","bass_cue_mock_2"],

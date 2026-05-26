@@ -7,6 +7,14 @@ Branch: cleanup/v1-2-stabilization
 These files exist in V1.2 and in uploaded zip archives, but with different content.
 They were not auto-overwritten to avoid undoing cleanup and stabilization work.
 
+## Controlled merge applied (2026-05-26)
+- server/routes/production-house-routes.ts
+- server/services/production-house-service.ts
+- server/services/production-house-storage.ts
+- server/services/preview-studio-service.ts
+- shared/production-house.ts
+- tests/production-house.test.ts
+
 ## Changed existing files (not auto-overwritten)
 - .replit
 - client/public/opengraph.jpg
@@ -38,7 +46,6 @@ They were not auto-overwritten to avoid undoing cleanup and stabilization work.
 - server/middleware/admin-auth.ts
 - server/routes.ts
 - server/routes/preview-studio-routes.ts
-- server/routes/production-house-routes.ts
 - server/services/admin-access-request-service.ts
 - server/services/avatar-video-render-service.ts
 - server/services/discussion-service.ts
@@ -49,8 +56,6 @@ They were not auto-overwritten to avoid undoing cleanup and stabilization work.
 - server/services/panic-button-service.ts
 - server/services/persistent-storage-service.ts
 - server/services/preview-studio-service.ts
-- server/services/production-house-service.ts
-- server/services/production-house-storage.ts
 - server/services/render-srt-service.ts
 - server/services/replit-object-storage-adapter.ts
 - server/static.ts
@@ -58,10 +63,8 @@ They were not auto-overwritten to avoid undoing cleanup and stabilization work.
 - server/vite.ts
 - shared/newsroom-schema.ts
 - shared/newsroom-types.ts
-- shared/production-house.ts
 - shared/schema.ts
 - tests/preview-studio.test.ts
-- tests/production-house.test.ts
 - tsconfig.json
 
 ## Risk-skipped paths
