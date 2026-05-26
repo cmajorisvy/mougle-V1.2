@@ -2,6 +2,7 @@
 
 Date: 2026-05-26
 Branch: `cleanup/v1-2-stabilization`
+Commit: `e930a8ff37e933901537ec0a3638f85efeb513ff`
 
 ## Commands run
 
@@ -15,7 +16,7 @@ Branch: `cleanup/v1-2-stabilization`
 |---|---|---|
 | `npm run check` | PASS | TypeScript + local tests + safety lint + perf checks passed (`150 pass, 0 fail`). |
 | `npm run build` | PASS | Client/server build successful. Non-blocking chunk-size warnings remain. |
-| `npm run test:e2e:smoke` | FAIL (environmental) | Chromium launch blocked in current host runtime (`MachPortRendezvous ... Permission denied (1100)`), before app-level assertions execute. |
+| `npm run test:e2e:smoke` | FAIL (environmental) | Chromium launch blocked in current host runtime (`MachPortRendezvous ... Permission denied (1100)`), before app-level assertions execute (6/6 smoke cases). |
 
 ## Details
 

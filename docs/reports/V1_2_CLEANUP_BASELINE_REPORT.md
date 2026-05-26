@@ -5,7 +5,7 @@ Date: 2026-05-26
 ## Baseline Context
 
 - Branch: `cleanup/v1-2-stabilization`
-- Commit SHA at baseline run: `f4df82e4d1a0d92769aa3540df3e73afadbf4998`
+- Commit SHA at baseline run: `e930a8ff37e933901537ec0a3638f85efeb513ff`
 - Remote origin: `https://github.com/cmajorisvy/mougle-V1.2.git`
 
 ## Commands Run
@@ -22,29 +22,28 @@ Date: 2026-05-26
 
 ## TypeScript Errors
 
-- None in baseline run (`tsc --noEmit` passed via `npm run check`).
+- None (`tsc --noEmit` passed via `npm run check`).
 
 ## Failing Tests
 
-- None in baseline run (`tests: 147`, `pass: 147`, `fail: 0`).
+- None in baseline run (`tests: 150`, `pass: 150`, `fail: 0` via `npm run check`).
 
 ## Notable Non-Blocking Warnings
 
-- `npm install` reported known vulnerabilities in dependency tree (`25 vulnerabilities`, inherited baseline state).
-- Build warns that some chunks exceed 500k after minification.
-- Build logs `meta-images` warning when Replit deployment domain is not present.
-- Server bundle size notice (`dist/index.cjs` around 4.1mb).
+- `npm install` reported existing dependency advisories (`25 vulnerabilities`, inherited baseline state).
+- Build warns that some client chunks exceed 500k after minification.
+- Build logs `meta-images` notice when a Replit deployment domain is not present.
+- Server bundle size notice (`dist/index.cjs` around 4.2mb).
 
 ## Suspected Root Causes
 
-- Existing broad prototype footprint and large client bundle size.
-- Legacy/accumulated module surface in a single app package.
-- Replit-domain-specific plugin behavior in non-Replit local build contexts.
+- Prototype-scale client surface concentrated in one app bundle.
+- Large historical feature footprint retained for compatibility.
+- Non-Replit local context does not provide deployment-domain metadata expected by some tooling.
 
 ## Next Required Fixes
 
-1. Complete identity/docs cleanup to align repository as canonical V1.2 baseline.
-2. Remove unrelated external redirects and add redirect safety test coverage.
-3. Add explicit feature flag registry for risky/future modules.
-4. Reduce navigation/admin clutter via safe gating (not destructive removal).
-5. Produce route/schema/provider cleanup plans for phased follow-up work.
+1. Continue controlled merges from zip change queue in small, validation-backed batches.
+2. Keep unsafe/future execution paths disabled behind feature flags and admin gates.
+3. Continue modular route/schema extraction in non-breaking phases.
+4. Re-run smoke E2E in a runtime that permits headless Chromium launch.
