@@ -1,0 +1,189 @@
+Create an Archive Library and Development Documentation Policy for Mougle.
+
+Goal:
+Every prompt, task, feature, development, audit, cleanup, design, bug fix, dependency install, schema change, dashboard change, safety change, and production change must leave a clear document trail in docs/ or docs/reports/. Archived work should be reusable later so we do not rebuild missing functions from scratch or spend unnecessary time/cost.
+
+This is documentation/indexing only.
+
+Do not restore archived files into active code.
+Do not delete archived files.
+Do not change runtime behavior.
+Do not change routes, services, schemas, migrations, dashboard files, or tests except for the short replit.md instruction.
+Do not implement new feature behavior.
+
+Use current archive locations:
+- docs/archive/
+- docs/archive/cleanup-archive-2026-05-22/
+- docs/archive/cleanup-archive-2026-05-22/attached_assets-sessions-2026-05/
+- docs/archive/cleanup-archive-2026-05-22/codex-phase-1-2026-05/
+- docs/archive/REPLIT_TASK_HISTORY_ARCHIVE_2026-05-22.md
+- any other existing archive folders
+
+Create:
+
+1. docs/archive/ARCHIVE_LIBRARY_INDEX.md
+
+Purpose:
+Archived material is a reusable reference library, not trash.
+
+The index must include:
+- archive catalog
+- search keywords
+- reuse policy
+- restore policy
+- cost-saving instruction
+- archived prompt/report groups
+- pointers to useful historical designs
+
+Archive catalog table:
+
+Archive Path | Original Location | Type | Topic | Status | Reuse Potential | Notes
+
+Status values:
+- reference_only
+- reusable_design
+- reusable_prompt
+- superseded_report
+- historical_context
+- do_not_restore_directly
+- needs_review_before_reuse
+
+Reuse Potential:
+- high
+- medium
+- low
+- unknown
+
+Index:
+- 126 attached_assets/Pasted-*.txt workspace autosaves as reusable_prompt / historical_context
+- 5 superseded CODEX_* reports as superseded_report / reference_only
+- replit task history archive as historical_context / reusable_design where applicable
+- any other archive folders currently present
+
+Add search keywords:
+newsroom, podcast, debate, production house, 3D, 4D, Unreal, R3F, WebGL, Unity, avatar, YouTube, social distribution, shorts, approval, safety, safe-mode, audit, retention, dashboard, admin, migration, schema, rendering, media pipeline
+
+Restore policy:
+- Never restore archived code directly into active source without review.
+- Never restore old unsafe publishing/render/live behavior.
+- Never restore old routes without checking current App.tsx.
+- Never restore old schemas without migration review.
+- Never restore old prompts that conflict with current safety gates.
+- Always prefer current active code over archive unless archive contains a missing feature idea.
+- Any restore must be a separate approved task.
+
+Cost-saving rule:
+When a requested function seems missing, first search the archive index and archived reports/prompts for an existing version, design, or partial implementation. Report what was found before building new code.
+
+2. docs/DEVELOPMENT_DOCUMENTATION_POLICY.md
+
+Purpose:
+Every development task must create or update a documentation artifact so future agents can understand what was asked, what changed, what was not changed, why decisions were made, what tests ran, and where to reuse old work.
+
+Policy requirements:
+
+For every future task/prompt, create or update one of:
+
+- docs/reports/<TASK_OR_FEATURE_NAME>.md
+- docs/design/<FEATURE_DESIGN_NAME>.md
+- docs/archive/<ARCHIVE_NAME>.md
+- docs/runbooks/<RUNBOOK_NAME>.md
+- docs/testing/<TEST_PLAN_NAME>.md
+
+Every task document must include:
+
+A. Task title
+B. Date
+C. Prompt/request summary
+D. Goal
+E. Scope
+F. Explicit non-goals
+G. Files changed
+H. Routes changed
+I. Backend/service changes
+J. Schema/migration changes
+K. Admin/dashboard changes
+L. Safety gates affected
+M. Approval gates affected
+N. Tests/checks run
+O. Results
+P. Risks
+Q. Rollback plan
+R. Follow-ups
+S. Archive/library references checked
+T. Confirmation whether source behavior changed
+
+For planning-only tasks:
+- state “planning-only”
+- confirm no code changed
+- include proposed future implementation phases
+
+For implementation tasks:
+- include exact files changed
+- include test results
+- include safety/approval impact
+- include rollback instructions
+
+For cleanup/archive tasks:
+- include source paths
+- archive paths
+- reason for archive
+- restore command
+- confirmation no permanent deletion unless explicitly approved
+
+For dependency tasks:
+- include package versions
+- peer dependency result
+- package-lock delta
+- audit delta
+- build/typecheck result
+- rollback command
+
+For prompt-only tasks:
+- preserve the final approved prompt in docs/prompts/ or docs/archive/prompts/
+- include when/why to reuse it
+
+3. docs/prompts/README.md
+
+Purpose:
+A central place to store final approved prompts and task briefs.
+
+Include:
+- naming convention
+- when to add a prompt
+- how to search prompts before creating new ones
+- safety note that prompts are reusable reference, not automatic instructions
+
+Suggested naming:
+docs/prompts/YYYY-MM-DD_<topic>_<task>.md
+
+4. Update replit.md with a short instruction only
+
+Add a concise "Documentation and Archive Library" note:
+
+Before rebuilding missing News/Podcast/Debate/Production/3D/R3F/Admin features, check docs/archive/ARCHIVE_LIBRARY_INDEX.md and relevant archived files. Archived material is reusable reference, not active code. Do not restore archive content without explicit approval.
+
+For every development task, create or update a documentation artifact under docs/reports/, docs/design/, docs/runbooks/, docs/testing/, docs/prompts/, or docs/archive/. Follow docs/DEVELOPMENT_DOCUMENTATION_POLICY.md.
+
+Keep this replit.md addition short. Do not re-expand replit.md.
+
+5. Verification
+
+Run:
+- ls docs/archive/
+- confirm docs/archive/ARCHIVE_LIBRARY_INDEX.md exists
+- confirm docs/DEVELOPMENT_DOCUMENTATION_POLICY.md exists
+- confirm docs/prompts/README.md exists
+- confirm replit.md links to both Archive Library and Documentation Policy
+- confirm no source code changed
+- confirm no runtime behavior changed
+
+Final response must include:
+- archive index path
+- documentation policy path
+- prompts README path
+- replit.md update summary
+- number of archive groups indexed
+- restore policy summary
+- future documentation rule summary
+- confirmation no behavior changed

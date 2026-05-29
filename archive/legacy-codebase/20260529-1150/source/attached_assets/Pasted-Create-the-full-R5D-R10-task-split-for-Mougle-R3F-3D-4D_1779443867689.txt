@@ -1,0 +1,493 @@
+Create the full R5D–R10 task split for Mougle R3F / 3D / 4D / WebGL / Unity Production House development.
+
+Important:
+Do not implement all tasks as one large task.
+Do not merge dependency tasks out of order.
+Do not start unsafe/runtime tasks until their dependency tasks are complete.
+Create the split first, then execute only tasks I explicitly approve.
+
+Use as source inputs:
+
+* #738 / R5C master blueprint
+* docs/reports/R3F_REAL_3D_ASSET_LIBRARY_R5C_PLAN.md if present
+* docs/reports/R3F_ASSET_METADATA_SAFETY_MODEL_R4_DESIGN.md
+* docs/reports/R3F_STATIC_GLB_DEMO_LOADER_R5B_REPORT.md
+* docs/reports/R3F_PREVIEW_SANDBOX_R3_REPORT.md
+* docs/reports/R3F_WEBGL_UNITY_PRODUCTION_HOUSE_INTEGRATION_R1_DESIGN.md
+* docs/archive/ARCHIVE_LIBRARY_INDEX.md
+* docs/library/INDEX.md
+* docs/DEVELOPMENT_DOCUMENTATION_POLICY.md
+
+Global rules for all tasks:
+
+* Every task must create/update a report under docs/reports/.
+* Every task must update docs/library/INDEX.md.
+* Every task must preserve archive/library lookup discipline.
+* No publicUrl unless explicitly approved in a later public publishing task.
+* No signedUrl stored long-term in DB.
+* No realSendAllowed=true.
+* No executionEnabled=true.
+* No autonomous publishing.
+* No real render execution.
+* No live runner.
+* No Unreal execution.
+* No Cinema 4D execution.
+* No Unity execution outside sandbox.
+* No 4D hardware.
+* No Spyder/Barco/Novastar hardware control.
+* No provider API calls from browser/client.
+* All unsafe server routes must require admin/root-admin auth, CSRF, audit logging, and safety validation.
+* Do not remove existing R5B sandbox-cube.glb or its generator.
+* Do not alter News Room, Podcast Room, Debate Room, or Production House behavior unless the specific task explicitly says so.
+* Do not combine tasks unless I explicitly approve.
+
+Dependency rules:
+
+* R5D, R5E, and R5G may be developed independently, but must not be integrated until reviewed.
+* R5F depends on R5D.
+* R5H depends on R5D + R5E + R5F + R5G.
+* R5I depends on R5H.
+* R5J depends on R5H + R5I.
+* R5K depends on R5D–R5J.
+* R6 depends on R5K.
+* R7 depends on R5K and may reuse R6 patterns.
+* R8 depends on R5K but stays sandbox-only.
+* R9 depends on R5K + R6 + R7.
+* R10 depends on all prior R tasks.
+
+Create and propose these tasks:
+
+R5D — Schema and migration only
+
+Goal:
+Add the database foundation for production 3D assets.
+
+Scope:
+
+* Add production_assets table.
+* Add production_asset_audit_log table.
+* Add insert/select types.
+* Generate one migration.
+* Add safest defaults.
+
+Allowed files:
+
+* shared/schema.ts
+* migrations or generated migration folder
+* docs/reports/R5D_PRODUCTION_ASSET_SCHEMA_REPORT.md
+* docs/library/INDEX.md
+
+Do not add:
+
+* routes
+* storage service
+* object storage integration
+* upload flow
+* admin UI
+* R3F loading
+* Production House integration
+
+production_assets required defaults:
+
+* status = draft
+* lifecycleState = uploaded
+* licenseStatus = unknown
+* safetyReview = pending
+* approvalGate = not_approved
+* publicUrl = null
+* realSendAllowed = false if present
+* executionEnabled = false if present
+
+production_assets required columns:
+id, name, format, byteSize, sha256, originalSourceUrl, storageKey, uploaderUserId, status, lifecycleState, licenseStatus, licenseSource, licenseNote, safetyReview, safetyNote, approvalGate, publicUrl, metadata, createdAt, updatedAt.
+
+production_asset_audit_log required columns:
+id, assetId, actorUserId, event, payload, createdAt.
+
+Verification:
+
+* migration generated
+* schema compiles
+* defaults documented
+* no runtime behavior changed
+* no db:push unless explicitly approved
+
+R5E — Deterministic GLB/GLTF validator only
+
+Goal:
+Create a deterministic server-side GLB/GLTF validator.
+
+Scope:
+
+* Add server/services/gltf-validator.ts
+* Add focused tests for validator
+* No DB usage
+* No object storage writes
+* No HTTP routes
+* No provider calls
+* No renderer/headless browser
+
+Validator must check:
+
+* GLB magic 0x46546C67
+* version 2
+* total length matches buffer length
+* JSON chunk type 0x4E4F534A
+* JSON parses
+* optional BIN chunk type 0x004E4942
+* asset.version === "2.0"
+* node/mesh/accessor/bufferView caps
+* byteSize <= 25 MB default
+* reject unsupported extensionsRequired
+* reject external image URIs
+* allow only data URI or bufferView images if needed
+* return { ok: true, metadata } or { ok: false, reason }
+
+Create:
+docs/reports/R5E_GLTF_VALIDATOR_REPORT.md
+
+Verification:
+
+* tests pass
+* no DB change
+* no route change
+* no object storage writes
+
+R5F — Storage repository layer only
+
+Goal:
+Add database CRUD/audit repository methods for production_assets after R5D.
+
+Scope:
+
+* Extend server/storage.ts or project’s storage pattern.
+* Add createAsset, getAssetById, getAssetBySha256, listAssets, updateAssetLicense, updateAssetSafetyReview, advanceAssetApprovalGate, archiveAsset, appendAssetAuditLog, listAuditLogForAsset.
+* Use Drizzle queries.
+* Use Zod validation from schema where available.
+* No HTTP routes.
+* No object storage writes.
+* No R3F code.
+
+Create:
+docs/reports/R5F_PRODUCTION_ASSET_STORAGE_REPOSITORY_REPORT.md
+
+Verification:
+
+* repository methods typecheck
+* focused tests if current project pattern supports them
+* no route/UI changes
+* no runtime user-facing behavior change
+
+R5G — Private object-storage service only
+
+Goal:
+Create a server-side object storage wrapper for private 3D asset files.
+
+Scope:
+
+* Add server/services/production-asset-storage.ts.
+* Use PRIVATE_OBJECT_DIR only.
+* Provide putAssetBytes(storageKey, buffer), headAsset(storageKey), issueSignedPreviewUrl(storageKey, { adminUserId, ttlSeconds }).
+* Cap signed preview URL TTL at 900 seconds.
+* Refuse public path writes.
+* No HTTP routes.
+* No DB writes except none.
+* No UI.
+
+Create:
+docs/reports/R5G_PRIVATE_ASSET_OBJECT_STORAGE_REPORT.md
+
+Safety:
+
+* no public bucket writes
+* no direct bucket browsing
+* signed URLs are ephemeral
+* no signed URL persisted
+
+Verification:
+
+* unit tests/mocks if possible
+* no public path writes
+* no route/UI/schema changes
+
+R5H — Admin production asset API routes only
+
+Goal:
+Add admin-only HTTP API for production assets after R5D–R5G are complete.
+
+Scope:
+Add routes:
+
+* POST /api/admin/production-assets/upload
+* POST /api/admin/production-assets/import-from-url
+* GET /api/admin/production-assets
+* GET /api/admin/production-assets/:id
+* POST /api/admin/production-assets/:id/signed-preview-url
+* POST /api/admin/production-assets/:id/safety-review
+* POST /api/admin/production-assets/:id/license
+* POST /api/admin/production-assets/:id/approval
+* POST /api/admin/production-assets/:id/archive
+
+Requirements:
+
+* admin/root-admin auth as appropriate
+* CSRF on unsafe methods
+* validator runs before storage persistence
+* private object storage only
+* audit row for every successful mutation
+* signed preview URL issued only for admin request, TTL <= 15 min
+* publicUrl always null in responses
+* approvalGate can only advance to approved_internal in this phase
+* no approved_public route in R5H
+
+Create:
+docs/reports/R5H_PRODUCTION_ASSET_ADMIN_API_REPORT.md
+
+Verification:
+
+* API-level smoke tests
+* non-admin 403 tests
+* CSRF rejection tests
+* invalid GLB rejection
+* no publicUrl
+* no provider calls
+* no render/live/Unreal/4D/publish behavior
+
+R5I — Admin 3D Asset Library UI only
+
+Goal:
+Add admin pages for managing production 3D assets.
+
+Routes:
+
+* /admin/3d-assets
+* /admin/3d-assets/:id
+* /admin/3d-assets/:id/safety-review
+* /admin/3d-assets/upload
+
+Pages:
+
+* AssetLibraryList
+* AssetUpload
+* AssetDetail
+* AssetSafetyReview
+
+Dashboard:
+
+* Add one dashboard card under 3D / 4D / Unreal linking to /admin/3d-assets.
+
+Requirements:
+
+* admin-only routes
+* safety badges
+* list/filter assets
+* upload/import form
+* asset metadata view
+* audit log tail
+* issue signed preview URL button
+* safety/license review form
+* no R3F approved-asset loading yet
+* no public publishing
+* no render execution
+
+Create:
+docs/reports/R5I_ADMIN_3D_ASSET_LIBRARY_UI_REPORT.md
+
+Verification:
+
+* build passes
+* route grep
+* dashboard link exists
+* old R3F sandbox still works
+* no backend changes except use existing R5H APIs
+* no Production House integration
+
+R5J — R3F sandbox approved-internal asset loader
+
+Goal:
+Extend /admin/r3f-preview-sandbox to load approved internal assets from the new asset library.
+
+Scope:
+
+* Keep R5B demo GLB toggle.
+* Add second toggle: Load approved internal asset.
+* Add dropdown for assets where approvalGate=approved_internal.
+* On select, call signed-preview-url endpoint.
+* Pass ephemeral signed URL to useGLTF.
+* Reuse Suspense, ErrorBoundary, WebGL fallback.
+* Add safety badge: Approved internal only.
+
+Rules:
+
+* No Production House integration yet.
+* No publicUrl.
+* No signed URL persistence.
+* No provider calls.
+* No render/export/live/Unreal/4D/publishing behavior.
+
+Create:
+docs/reports/R5J_R3F_APPROVED_INTERNAL_ASSET_LOADER_REPORT.md
+
+Verification:
+
+* build
+* sandbox default remains unchanged
+* demo toggle still works
+* approved internal asset loads with signed URL
+* rejected/draft asset cannot load
+* signed URL expires/handles error
+* no provider/env references
+
+R5K — Full smoke/E2E/safety verification for R5D–R5J
+
+Goal:
+Verify the complete 3D asset foundation.
+
+Scope:
+
+* upload valid demo GLB
+* reject invalid GLB
+* list asset
+* detail page loads
+* audit log row exists
+* license review
+* safety review
+* approve_internal
+* issue signed preview URL
+* R3F sandbox loads approved internal asset
+* confirm draft/rejected/quarantined assets cannot load
+* confirm no publicUrl
+* confirm no executionEnabled
+* confirm no realSendAllowed
+* confirm no public bucket writes
+* confirm no provider calls
+* confirm no render/live/Unreal/4D/publishing enabled
+
+Create:
+docs/reports/R5K_3D_ASSET_FOUNDATION_SMOKE_E2E_REPORT.md
+
+Verification:
+
+* all tests/checks listed
+* pass/fail matrix
+* screenshots if safe
+* no behavior outside R5 asset foundation changed
+
+R6 — Virtual set preview design and static prototype
+
+Goal:
+After R5K, design and optionally prototype static virtual set previews for News Room, Podcast Room, and Debate Room.
+
+Phase R6A design-only:
+
+* scene package manifest shape
+* set types: newsroom, podcast_room, debate_room
+* allowed asset types
+* camera/lighting manifest
+* screen panel layout
+* safety badges
+* no Production House integration yet
+
+Phase R6B static prototype:
+
+* use local/static approved-internal-style demo assets only
+* no new DB tables unless approved
+* no real news/podcast/debate data binding
+* no render execution
+
+Create:
+docs/reports/R6_VIRTUAL_SET_PREVIEW_DESIGN_REPORT.md
+and if built:
+docs/reports/R6B_STATIC_VIRTUAL_SET_PREVIEW_REPORT.md
+
+R7 — Avatar rig visual preview
+
+Goal:
+Create admin-only visual avatar rig preview.
+
+Scope:
+
+* visual-only
+* no HeyGen
+* no ElevenLabs
+* no voice generation
+* no video generation
+* no provider API
+* no facial/lip-sync production output
+* may use static demo rig only
+* safety badges
+
+Create:
+docs/reports/R7_AVATAR_RIG_VISUAL_PREVIEW_REPORT.md
+
+R8 — Unity WebGL sandbox
+
+Goal:
+Create sandbox-only Unity WebGL embed design/prototype.
+
+Scope:
+
+* sandboxed iframe only
+* same-origin/signed admin URL only
+* postMessage allow-list
+* no arbitrary external Unity URLs
+* no provider calls
+* no production render
+* no public embedding
+
+Create:
+docs/reports/R8_UNITY_WEBGL_SANDBOX_REPORT.md
+
+R9 — Production House package integration
+
+Goal:
+Integrate approved 3D asset/scene previews into Production House package views.
+
+Scope:
+
+* read-only preview integration first
+* package type aware: news_video, podcast_video, debate_video, social_clip, cinematic_4d_package
+* no render execution
+* no public URL
+* no publishing
+* no Unreal/4D hardware
+* no provider calls
+* only approved_internal assets
+
+Create:
+docs/reports/R9_PRODUCTION_HOUSE_R3F_INTEGRATION_REPORT.md
+
+R10 — Complete 3D/4D/R3F safety + performance E2E suite
+
+Goal:
+End-to-end safety, performance, and regression verification.
+
+Scope:
+
+* route smoke
+* asset upload/validation
+* signed preview URL
+* R3F loading
+* virtual set preview
+* avatar preview
+* Unity sandbox if built
+* Production House read-only preview if built
+* performance budget
+* no provider calls
+* no publicUrl
+* no realSendAllowed
+* no executionEnabled
+* no render/live/Unreal/4D/publishing
+
+Create:
+docs/reports/R10_R3F_3D_4D_E2E_SAFETY_PERFORMANCE_REPORT.md
+
+Final instruction:
+Create the task split and dependency graph first.
+Do not start R5D until founder approves.
+Do not run R5D–R10 simultaneously unless the dependency graph says a task is independent.
+
+```
+
+This is the safe structure. “Simultaneously” should only apply to **independent branches** like R5E validator and R5G object-storage wrapper after R5D is understood. UI/API/R3F integration must wait.
+```

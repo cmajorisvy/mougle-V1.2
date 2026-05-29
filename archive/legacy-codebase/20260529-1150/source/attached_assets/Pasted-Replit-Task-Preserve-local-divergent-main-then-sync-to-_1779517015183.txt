@@ -1,0 +1,67 @@
+Replit Task: Preserve local divergent main, then sync to GitHub main
+
+Current situation:
+Replit local `main` is clean but 788 commits ahead of `origin/main`. Do not pull directly. Do not hard reset until the current local history is preserved.
+
+Goal:
+Preserve the current Replit local `main` history safely, then update Replit `main` to the latest GitHub `origin/main`.
+
+Rules:
+
+* Do not force push.
+* Do not push to `main`.
+* Do not run migrations.
+* Do not run Supabase commands.
+* Do not call providers.
+* Do not enable rendering, publishing, live runner, Unreal, Cinema 4D, Unity, or 4D hardware.
+* Do not hard reset until the backup branch is created and preferably pushed.
+* Stop and report if any command would overwrite or lose local work.
+
+Step 1 — confirm current state:
+git status --short --branch
+git log -1 --oneline
+
+Step 2 — create a local backup branch from current Replit main:
+git branch backup/replit-main-before-github-sync-2026-05-23
+
+Step 3 — verify backup points to current HEAD:
+git rev-parse main
+git rev-parse backup/replit-main-before-github-sync-2026-05-23
+
+The two SHAs must match. If not, STOP.
+
+Step 4 — push backup branch to GitHub, not main:
+git push origin backup/replit-main-before-github-sync-2026-05-23
+
+If GitHub rejects the push because of workflow-scope or token permissions, STOP and report. Do not reset.
+
+Step 5 — only if backup branch push succeeds, fetch GitHub main:
+git fetch origin main
+
+Step 6 — sync local main to GitHub main:
+git checkout main
+git reset --hard origin/main
+
+Step 7 — verify final state:
+git status --short --branch
+git log -1 --oneline
+
+Step 8 — run safe checks:
+npm run build
+node scripts/safety-lint.cjs
+npm run test:local
+
+If typecheck is run and Node OOM happens, retry with:
+NODE_OPTIONS=--max-old-space-size=4096
+
+Report:
+
+* original Replit HEAD SHA
+* backup branch name
+* whether backup branch pushed successfully
+* final local main SHA
+* final GitHub origin/main SHA
+* build result
+* safety-lint result
+* test:local result
+* confirmation that no DB commands, migrations, Supabase writes, provider calls, rendering, publishing, live runner, Unreal, Cinema 4D, Unity, or 4D hardware were used

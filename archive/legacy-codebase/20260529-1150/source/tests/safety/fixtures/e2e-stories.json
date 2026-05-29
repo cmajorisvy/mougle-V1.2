@@ -1,0 +1,208 @@
+{
+  "stories": [
+    {
+      "id": "fix_clean_001",
+      "label": "clean story — licensed, approved, draft, simulated, stylized",
+      "adversarial": false,
+      "media": {
+        "mediaId": "media_clean_1",
+        "status": "licensed",
+        "tier": "stock_paid",
+        "source": "stock-provider",
+        "attribution": "Acme Stock"
+      },
+      "item": { "itemId": "pkg_clean_1", "mode": "draft", "approvalActionId": "act_clean" },
+      "approval": {
+        "actionId": "act_clean",
+        "state": "approved",
+        "requiresFounderApproval": true,
+        "approvedBy": "founder@mougle.com"
+      },
+      "hardware": "simulated",
+      "scene": "stylized",
+      "brollUrl": "https://stock-provider.example.com/licensed/clip-1.mp4",
+      "expect": "pass-all-gates"
+    },
+    {
+      "id": "fix_copyrighted_002",
+      "label": "copyrighted-URL story (youtube b-roll, unlicensed)",
+      "adversarial": true,
+      "media": {
+        "mediaId": "media_yt_1",
+        "status": "unlicensed",
+        "tier": "unknown",
+        "source": "scraped-youtube"
+      },
+      "item": { "itemId": "pkg_copy_1", "mode": "draft", "approvalActionId": "act_copy" },
+      "approval": {
+        "actionId": "act_copy",
+        "state": "pending",
+        "requiresFounderApproval": true
+      },
+      "hardware": "simulated",
+      "scene": "stylized",
+      "brollUrl": "https://www.youtube.com/watch?v=copyrighted",
+      "rejectAtStage": "broll",
+      "expectGate": "licensed_media_only"
+    },
+    {
+      "id": "fix_sensitive_shapeshift_003",
+      "label": "sensitive story requesting shapeshift_explainer",
+      "adversarial": true,
+      "media": {
+        "mediaId": "media_clean_2",
+        "status": "licensed",
+        "tier": "owned",
+        "source": "platform-original"
+      },
+      "item": { "itemId": "pkg_sens_1", "mode": "draft", "approvalActionId": "act_sens" },
+      "approval": {
+        "actionId": "act_sens",
+        "state": "approved",
+        "requiresFounderApproval": true,
+        "approvedBy": "founder@mougle.com"
+      },
+      "hardware": "simulated",
+      "scene": "stylized",
+      "anchor": {
+        "brief": { "packageId": "pkg_sens_1", "sensitive": true, "mood": "feature", "eventType": "disaster" },
+        "beats": [
+          { "index": 0, "text": "open" },
+          { "index": 3, "text": "closer", "modeOverride": "shapeshift_explainer" }
+        ]
+      },
+      "rejectAtStage": "anchor",
+      "expectGate": "no_live_unreal_scenes"
+    },
+    {
+      "id": "fix_missing_license_004",
+      "label": "story with no license metadata on b-roll source",
+      "adversarial": true,
+      "media": null,
+      "item": { "itemId": "pkg_nolic_1", "mode": "draft", "approvalActionId": "act_nolic" },
+      "approval": {
+        "actionId": "act_nolic",
+        "state": "approved",
+        "requiresFounderApproval": true,
+        "approvedBy": "founder@mougle.com"
+      },
+      "hardware": "simulated",
+      "scene": "stylized",
+      "brollUrl": "https://unknown-cdn.example.com/clip.mp4",
+      "rejectAtStage": "compositor",
+      "expectGate": "licensed_media_only"
+    },
+    {
+      "id": "fix_cost_exceeded_005",
+      "label": "story whose cost would exceed the cap",
+      "adversarial": true,
+      "media": {
+        "mediaId": "media_cost_1",
+        "status": "licensed",
+        "tier": "stock_paid",
+        "source": "stock-provider"
+      },
+      "item": { "itemId": "pkg_cost_1", "mode": "draft", "approvalActionId": "act_cost" },
+      "approval": {
+        "actionId": "act_cost",
+        "state": "approved",
+        "requiresFounderApproval": true,
+        "approvedBy": "founder@mougle.com"
+      },
+      "hardware": "simulated",
+      "scene": "stylized",
+      "costKind": "broadcast_full",
+      "costEstUsd": 9999.99,
+      "rejectAtStage": "cost-gate",
+      "expectGate": "cost_gate_enforced"
+    },
+    {
+      "id": "fix_publish_without_approval_006",
+      "label": "story trying to publish without approval",
+      "adversarial": true,
+      "media": {
+        "mediaId": "media_pub_1",
+        "status": "licensed",
+        "tier": "owned",
+        "source": "platform-original"
+      },
+      "item": { "itemId": "pkg_pub_1", "mode": "scheduled", "approvalActionId": "act_pub" },
+      "approval": {
+        "actionId": "act_pub",
+        "state": "pending",
+        "requiresFounderApproval": true
+      },
+      "hardware": "simulated",
+      "scene": "stylized",
+      "rejectAtStage": "playout",
+      "expectGate": "no_premature_publish"
+    },
+    {
+      "id": "fix_real_hardware_007",
+      "label": "story attempting real 4D hardware",
+      "adversarial": true,
+      "media": {
+        "mediaId": "media_hw_1",
+        "status": "licensed",
+        "tier": "owned",
+        "source": "platform-original"
+      },
+      "item": { "itemId": "pkg_hw_1", "mode": "draft", "approvalActionId": "act_hw" },
+      "approval": {
+        "actionId": "act_hw",
+        "state": "approved",
+        "requiresFounderApproval": true,
+        "approvedBy": "founder@mougle.com"
+      },
+      "hardware": "real_device",
+      "scene": "stylized",
+      "rejectAtStage": "package",
+      "expectGate": "no_real_hardware"
+    },
+    {
+      "id": "fix_live_unreal_008",
+      "label": "story requesting live-action Unreal render",
+      "adversarial": true,
+      "media": {
+        "mediaId": "media_unreal_1",
+        "status": "licensed",
+        "tier": "owned",
+        "source": "platform-original"
+      },
+      "item": { "itemId": "pkg_unreal_1", "mode": "draft", "approvalActionId": "act_unreal" },
+      "approval": {
+        "actionId": "act_unreal",
+        "state": "approved",
+        "requiresFounderApproval": true,
+        "approvedBy": "founder@mougle.com"
+      },
+      "hardware": "simulated",
+      "scene": "live_action_unreal",
+      "rejectAtStage": "anchor",
+      "expectGate": "no_live_unreal_scenes"
+    },
+    {
+      "id": "fix_kill_switch_009",
+      "label": "story attempting to enqueue while the kill switch is engaged",
+      "adversarial": true,
+      "media": {
+        "mediaId": "media_kill_1",
+        "status": "licensed",
+        "tier": "owned",
+        "source": "platform-original"
+      },
+      "item": { "itemId": "pkg_kill_1", "mode": "draft", "approvalActionId": "act_kill" },
+      "approval": {
+        "actionId": "act_kill",
+        "state": "approved",
+        "requiresFounderApproval": true,
+        "approvedBy": "founder@mougle.com"
+      },
+      "hardware": "simulated",
+      "scene": "stylized",
+      "broadcastId": "bcast_kill_e2e",
+      "rejectAtStage": "playout",
+      "expectGate": "kill_switch_respected"
+    }
+  ]
+}

@@ -1,0 +1,205 @@
+name: e2e-3d-assets
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  static-safe:
+    name: Safe static 3D asset checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: R10 perf budget
+        run: node scripts/r10-perf-budget-check.mjs
+
+      - name: List Playwright tests
+        run: npx playwright test --list
+
+      - name: Run static-safe Production House wiring spec when present
+        run: |
+          if [ -f tests/e2e/production-house-wiring.spec.ts ]; then
+            npx playwright test tests/e2e/production-house-wiring.spec.ts --project=chromium --no-deps
+          else
+            echo "::notice::tests/e2e/production-house-wiring.spec.ts is not present on this revision; skipping that static-safe spec and relying on Playwright --list plus R10 perf/static invariants."
+          fi
+
+  runtime-e2e:
+    name: Runtime 3D asset Playwright (explicitly gated)
+    runs-on: ubuntu-latest
+    needs: static-safe
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: mougle
+          POSTGRES_PASSWORD: mougle
+          POSTGRES_DB: mougle_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U mougle"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      NODE_ENV: test
+      PORT: "5000"
+      E2E_BASE_URL: http://localhost:5000
+      DATABASE_URL: postgres://mougle:mougle@localhost:5432/mougle_e2e
+      SESSION_SECRET: ci-session-secret-do-not-use-in-prod
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+      ADMIN_PASSWORD_HASH: ${{ secrets.E2E_ADMIN_PASSWORD_HASH }}
+      RUN_3D_ASSETS_RUNTIME_E2E: ${{ vars.RUN_3D_ASSETS_RUNTIME_E2E }}
+      PUBLIC_OBJECT_SEARCH_PATHS: /tmp/e2e-public
+      PRIVATE_OBJECT_DIR: /tmp/e2e-private
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Runtime E2E gate
+        id: runtime-gate
+        run: |
+          if [ "${RUN_3D_ASSETS_RUNTIME_E2E:-}" != "1" ]; then
+            echo "::notice::Runtime 3D asset Playwright skipped. Set repository variable RUN_3D_ASSETS_RUNTIME_E2E=1 and provide local/staging E2E admin secrets to enable it."
+            echo "run_runtime=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ -z "${ADMIN_PASSWORD:-}" ] || [ -z "${ADMIN_PASSWORD_HASH:-}" ]; then
+            echo "::notice::Runtime 3D asset Playwright skipped because E2E_ADMIN_PASSWORD and/or E2E_ADMIN_PASSWORD_HASH are not configured. Default CI stays green and safe-local only."
+            echo "run_runtime=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "run_runtime=true" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        if: steps.runtime-gate.outputs.run_runtime == 'true'
+        run: npm ci
+
+      - name: Install Playwright browsers
+        if: steps.runtime-gate.outputs.run_runtime == 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Prepare object-storage scratch dirs
+        if: steps.runtime-gate.outputs.run_runtime == 'true'
+        run: |
+          mkdir -p "$PUBLIC_OBJECT_SEARCH_PATHS" "$PRIVATE_OBJECT_DIR"
+
+      - name: Verify runtime database target is local
+        if: steps.runtime-gate.outputs.run_runtime == 'true'
+        run: |
+          case "$DATABASE_URL" in
+            postgres://mougle:mougle@localhost:5432/mougle_e2e|postgresql://mougle:mougle@localhost:5432/mougle_e2e)
+              echo "Runtime E2E database target is the local CI Postgres service."
+              ;;
+            *)
+              echo "::error::Runtime E2E refused: DATABASE_URL must point at the local CI Postgres service, not Supabase Pro or another shared database."
+              exit 1
+              ;;
+          esac
+
+      - name: Push local CI database schema
+        if: steps.runtime-gate.outputs.run_runtime == 'true'
+        run: npm run db:push -- --force
+
+      - name: Build server + client
+        if: steps.runtime-gate.outputs.run_runtime == 'true'
+        run: npm run build
+
+      - name: Start app (background)
+        if: steps.runtime-gate.outputs.run_runtime == 'true'
+        run: |
+          NODE_ENV=production node dist/index.cjs > /tmp/app.log 2>&1 &
+          echo $! > /tmp/app.pid
+
+      - name: Wait for app to be ready
+        if: steps.runtime-gate.outputs.run_runtime == 'true'
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sfS "http://localhost:5000/" >/dev/null 2>&1; then
+              echo "App is ready after ${i}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::App did not become ready on :5000 within 60s"
+          echo "----- /tmp/app.log -----"
+          tail -n 200 /tmp/app.log || true
+          exit 1
+
+      - name: Run 3D-asset Playwright specs
+        if: steps.runtime-gate.outputs.run_runtime == 'true'
+        run: |
+          set -o pipefail
+          mkdir -p test-results
+          SPECS=()
+          if [ -f tests/e2e/r5-3d-asset-approval-flow.spec.ts ]; then
+            SPECS+=(tests/e2e/r5-3d-asset-approval-flow.spec.ts)
+          else
+            echo "::warning::tests/e2e/r5-3d-asset-approval-flow.spec.ts is not present in this revision; running the R10 3D route-smoke spec as the 3D-asset E2E surface."
+          fi
+          SPECS+=(tests/e2e/r10-r3f-3d-4d-route-smoke.spec.ts)
+          PLAYWRIGHT_JSON_OUTPUT_NAME=test-results/results.json \
+            npx playwright test "${SPECS[@]}" --reporter=list,json
+
+          node -e '
+            const fs = require("fs");
+            const r = JSON.parse(fs.readFileSync("test-results/results.json", "utf8"));
+            const s = r.stats || {};
+            const expected = Number(s.expected || 0);
+            const unexpected = Number(s.unexpected || 0);
+            const flaky = Number(s.flaky || 0);
+            console.log(JSON.stringify({ expected, unexpected, flaky }));
+            if (expected === 0) {
+              console.error("::error::Playwright ran 0 expected tests for the 3D-asset suite. Failing.");
+              process.exit(1);
+            }
+            if (unexpected > 0 || flaky > 0) {
+              console.error("::error::3D-asset Playwright run had unexpected/flaky failures.");
+              process.exit(1);
+            }
+          '
+
+      - name: Stop app
+        if: always()
+        run: |
+          if [ -f /tmp/app.pid ]; then
+            kill "$(cat /tmp/app.pid)" 2>/dev/null || true
+          fi
+
+      - name: Upload Playwright artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-3d-assets-artifacts
+          path: |
+            test-results
+            /tmp/app.log
+          if-no-files-found: ignore

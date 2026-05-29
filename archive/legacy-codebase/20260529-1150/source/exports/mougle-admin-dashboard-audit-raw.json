@@ -1,0 +1,289 @@
+{
+  "executive_summary": "The dashboard has a strong dark-first visual system, consistent shadcn-style cards, and a clear safety-first tone, but it currently reads more like a founder map of every Mougle surface than a daily operations console for non-engineer staff. The most serious verified defect is the second metric row overflow: the Council Layer value and the Credits value/text break out of their cards and visually collide across the row. The priority queue is correctly placed near the top, but its spacing and lack of explicit ownership/SLA make it less operational than it should be. The onboarding guide, How Mougle Works, is useful but placed at the very bottom, so a new staff member is unlikely to find their daily routine before scanning many dense card grids.",
+  "score_overall": 70,
+  "scores": {
+    "visual_polish": 78,
+    "information_hierarchy": 68,
+    "newcomer_friendliness": 55,
+    "operational_efficiency": 62,
+    "accessibility": 66,
+    "density_balance": 64
+  },
+  "alignment_bugs": [
+    {
+      "severity": "high",
+      "location": "Metric row 2, Council Layer card",
+      "issue": "The long value beginning with internal_admin_previ overflows the Council Layer card instead of truncating or wrapping. It visually extends into the neighboring Credits card area.",
+      "fix": "Constrain the value container with min-w-0, max-w-full, overflow-hidden, text-ellipsis, and whitespace-nowrap, or render long internal identifiers in a smaller monospace token with a copy button and tooltip for the full value."
+    },
+    {
+      "severity": "high",
+      "location": "Metric row 2, Credits card",
+      "issue": "The Credits value area shows 190,810 and additional visible trailing text outside the card boundary, including text at the far right of the row. This confirms the known overflow issue and makes the metric row look broken.",
+      "fix": "Give every metric card a fixed internal layout: icon column, content column with min-w-0, status badge column that cannot be pushed, and clamp metric values to the card width. Use font-variant-numeric: tabular-nums for numbers."
+    },
+    {
+      "severity": "med",
+      "location": "Metric rows, especially Council Layer and Credits",
+      "issue": "Metric value typography is sized for short values like 0, Ready, or 45%, but the same style is used for long operational identifiers and large numbers. This causes the row to lose alignment and visual predictability.",
+      "fix": "Create metric value variants: numeric, percentage, state, and identifier. Identifiers should use text-sm or text-base, monospace, ellipsis, and a tooltip; numbers can remain larger but should still be constrained."
+    },
+    {
+      "severity": "med",
+      "location": "Priority Queue cards",
+      "issue": "The two-column queue cards feel tightly packed vertically and the spacing between the Priority Queue header/subtitle and the first row is less generous than the zone sections below. The queue reads as another card grid rather than the main daily work area.",
+      "fix": "Increase the gap above the first queue row, standardize row gaps to 12-16px, and consider a denser list/table treatment with clear severity, owner, age, and action instead of equal promotional cards."
+    },
+    {
+      "severity": "low",
+      "location": "Safety & Governance, Agents & Civilization, Knowledge & Truth, Marketplace & Economy, Operations grids",
+      "issue": "Several sections have incomplete final rows with large empty right-side gaps, for example Knowledge Alignment alone in Knowledge & Truth and AI CFO alone in Marketplace & Economy. This makes the long page feel uneven and contributes to scan fatigue.",
+      "fix": "Use collapsible sections, a compact list mode, or group low-priority lone cards under 'More' so incomplete rows do not create large blank areas."
+    },
+    {
+      "severity": "low",
+      "location": "Marketplace & Economy, Revenue Flywheel card",
+      "issue": "Revenue Flywheel has a visible blue outline/focus-like border while neighboring cards do not. If this is not an intentional active or keyboard-focus state, it appears visually inconsistent.",
+      "fix": "Only show the emphasized border for a real selected/focused state and pair it with an accessible focus ring. Otherwise normalize the card border to match the surrounding grid."
+    },
+    {
+      "severity": "low",
+      "location": "Top header right controls",
+      "issue": "The Search pill and icon-only actions are visually compact and low-label. Their hit areas and meanings are hard to verify from the screenshot, especially for non-technical staff.",
+      "fix": "Ensure 40px minimum hit targets, add accessible labels/tooltips, and consider surfacing the command/search control as a more prominent global action."
+    }
+  ],
+  "ux_issues": [
+    {
+      "severity": "high",
+      "location": "How Mougle Works guide",
+      "issue": "The staff onboarding and daily routine content is placed at the bottom after all zones. A new staff member must scroll through many dense card grids before finding 'Getting started in 60 seconds' or 'Daily routine for new staff'.",
+      "fix": "Move a compact onboarding module near the hero or make it a persistent 'Need help?' drawer. Keep the full guide available, but expose 'Daily routine for new staff' in the first viewport."
+    },
+    {
+      "severity": "high",
+      "location": "Overall dashboard task discovery",
+      "issue": "A non-technical staff member can find 'Review attention queue' quickly, but finding their actual daily task in under 30 seconds is not reliable because most sections are broad system areas with similar-looking cards and technical labels.",
+      "fix": "Add a 'Today' or 'My queue' panel above the zone grids showing assigned tasks, unresolved attention items, approvals needed, and links to the next safe action."
+    },
+    {
+      "severity": "high",
+      "location": "Priority Queue",
+      "issue": "The queue lists important items such as 'Fresh Playwright sweep required', 'Media packages require manual approval', and 'Marketplace remains safe-clone sandbox', but it does not show owner, age, SLA, consequence, or primary action.",
+      "fix": "Convert queue cards into operational rows with severity, status, owner/team, last updated, due time/SLA, and one explicit safe action such as 'Open review', 'Assign', or 'Mark acknowledged'."
+    },
+    {
+      "severity": "med",
+      "location": "Hero and Release caution",
+      "issue": "The Release caution card communicates what not to imply, but it does not provide a next step or link to the relevant release checklist/audit evidence.",
+      "fix": "Add action links such as 'Open release checklist', 'View latest audit', or 'See blocked capabilities'. Keep the caution text but make it operational."
+    },
+    {
+      "severity": "med",
+      "location": "Zone card grids",
+      "issue": "Many cards use similar structure, icon, badge, title, and one-line description, which makes it hard to distinguish urgent work from reference-only surfaces. Live, Manual, Dry run, Admin only, and Root only badges are helpful but not enough as hierarchy.",
+      "fix": "Add section-level summaries and sort cards by required action first, then by read-only/reference. Use stronger visual differentiation for actionable cards versus informational cards."
+    },
+    {
+      "severity": "med",
+      "location": "Navigation bar",
+      "issue": "The zone tabs help jump by area, but there is no visible role/persona switcher for Support, Media Ops, Safety, Finance, or Founder. Non-engineer staff may not know which zone belongs to them.",
+      "fix": "Add role views or a 'Show my tasks only' toggle that filters nav tabs, cards, and queues based on permissions and staff function."
+    },
+    {
+      "severity": "med",
+      "location": "Badges across cards",
+      "issue": "Badge meanings require interpretation. The guide explains them, but the explanation is far below the point of use.",
+      "fix": "Add hover/focus tooltips on every badge and include a small badge legend near the top, especially for Manual, Dry run, Admin only, Root only, Attention, and Disabled."
+    },
+    {
+      "severity": "med",
+      "location": "Dashboard-wide activity visibility",
+      "issue": "There is no visible recent activity stream, audit timeline, or 'who changed what' context in the screenshot. For an admin console, this limits trust and operational handoff.",
+      "fix": "Add a right rail or expandable panel for recent admin actions, queue updates, approvals, permission changes, and system refresh events."
+    },
+    {
+      "severity": "low",
+      "location": "Footer tip",
+      "issue": "Keyboard shortcuts are only hinted at the bottom, after the full dashboard. Staff who would benefit from shortcuts may never discover them.",
+      "fix": "Surface shortcuts in the search/command trigger tooltip and in the onboarding module near the top."
+    },
+    {
+      "severity": "low",
+      "location": "Copy tone throughout cards",
+      "issue": "The safety language is clear but often technical, with phrases like 'capability groups', 'projection boundaries', 'Redaction Wall', 'Gluon contribution identity', and 'fake adapter previews'. New staff may need definitions before acting.",
+      "fix": "Add plain-language subtext or glossary tooltips for internal terms, especially in Knowledge & Truth, Safety & Governance, and Marketplace & Economy."
+    }
+  ],
+  "design_strengths": [
+    "The dashboard has a cohesive dark-first visual language with consistent rounded cards, subtle borders, soft blue accents, and status chips.",
+    "The hero clearly frames the product intent: operate Mougle surfaces from one calm screen, with a prominent 'Review attention queue' primary action.",
+    "Safety boundaries are repeatedly reinforced through labels such as Root only, Admin only, Manual, Dry run, Disabled, and Attention.",
+    "The top navigation by zones gives staff a predictable mental model: Safety, Agents, Knowledge, Media, Marketplace, and Operations.",
+    "The Priority Queue appears near the top, which is the right location for urgent/manual review items.",
+    "The How Mougle Works guide is well-structured once found, especially the badge explanations and newcomer-oriented sections.",
+    "Card descriptions are concise and avoid dangerous ambiguity around autonomous actions, payouts, checkout, publishing, and production deployment.",
+    "The release caution panel is visually distinct and appropriately separates high-risk release messaging from the normal dashboard cards."
+  ],
+  "top_10_improvements": [
+    {
+      "rank": 1,
+      "title": "Fix second metric row overflow immediately",
+      "impact": "high",
+      "effort": "S",
+      "description": "The Council Layer and Credits metrics visibly break out of their cards, damaging trust in the admin console and confirming the known overflow bug.",
+      "concrete_implementation": "Update MetricCard with grid-cols-[auto_minmax(0,1fr)_auto], add min-w-0 to the content wrapper, use truncate on the value, add title/Tooltip for full values, and create an identifier value variant using text-sm font-mono. Test with internal_admin_preview_configured_data and 999,999,999."
+    },
+    {
+      "rank": 2,
+      "title": "Move newcomer guidance into the first viewport",
+      "impact": "high",
+      "effort": "M",
+      "description": "How Mougle Works is valuable but buried at the bottom, so new staff will not see the daily routine before scanning the whole dashboard.",
+      "concrete_implementation": "Add a compact 'New here? Start with 3 steps' card beside or below the hero with links to 'Daily routine for new staff', 'Reading status badges', and 'Common tasks'. Keep the full guide at the bottom or open it in a drawer/modal."
+    },
+    {
+      "rank": 3,
+      "title": "Add a Today / My Queue operational panel",
+      "impact": "high",
+      "effort": "M",
+      "description": "The page currently maps many surfaces but does not clearly tell staff what to do next.",
+      "concrete_implementation": "Place a 'Today' panel directly below the hero with sections for 'Needs review', 'Assigned to me', 'Blocked', and 'Recently changed'. Include task count, owner, age, SLA, and primary action links."
+    },
+    {
+      "rank": 4,
+      "title": "Convert Priority Queue cards into actionable rows",
+      "impact": "high",
+      "effort": "M",
+      "description": "Priority items are visible, but their current card format hides operational metadata and treats all items similarly.",
+      "concrete_implementation": "Use a compact queue component with columns for severity, title, status badge, owner/team, last updated, due/SLA, and action. Preserve non-destructive behavior with an 'Open review' action instead of direct execution."
+    },
+    {
+      "rank": 5,
+      "title": "Introduce role-based views",
+      "impact": "high",
+      "effort": "L",
+      "description": "A founder/root console contains too many areas for non-engineer staff to parse without knowing what belongs to them.",
+      "concrete_implementation": "Add a role switcher or segmented control: Founder, Safety, Media Ops, Support, Finance, Engineering/Admin. Filter nav tabs, cards, queue items, and guide content based on the selected or authenticated role."
+    },
+    {
+      "rank": 6,
+      "title": "Upgrade Search into a true command palette",
+      "impact": "high",
+      "effort": "M",
+      "description": "A Search ⌘K trigger is visible, but the screenshot does not show a full 2026-grade command palette with actions, task jump, docs, logs, and safe workflows.",
+      "concrete_implementation": "Implement a cmdk-powered palette with grouped results for Zones, Cards, Queue Items, Audit Logs, Help, and Safe Actions. Include synonyms like 'YouTube approval', 'billing', 'staff access', and 'release checklist'."
+    },
+    {
+      "rank": 7,
+      "title": "Add real-time activity and audit timeline",
+      "impact": "high",
+      "effort": "L",
+      "description": "The console lacks visible context for what changed, who acted, and what is pending after the last refresh.",
+      "concrete_implementation": "Add a right-side activity rail or slide-over with event types: approval created, queue item updated, permission changed, manual review completed, release check refreshed. Include actor, timestamp, diff summary, and link to full audit record."
+    },
+    {
+      "rank": 8,
+      "title": "Reduce grid fatigue with progressive disclosure",
+      "impact": "med",
+      "effort": "M",
+      "description": "The long page contains many visually similar cards across Safety, Agents, Knowledge, Media, Marketplace, and Operations.",
+      "concrete_implementation": "Collapse lower-priority sections by default, show section summary counts, and provide 'Show all surfaces' only when needed. Prioritize cards with Attention, Manual, or assigned work above read-only/admin-only reference cards."
+    },
+    {
+      "rank": 9,
+      "title": "Improve contrast, typography, and focus accessibility",
+      "impact": "med",
+      "effort": "M",
+      "description": "The dark UI is polished, but small gray descriptions, tiny badges, and icon-only controls may be hard to read or navigate.",
+      "concrete_implementation": "Audit all text against WCAG contrast, raise muted text contrast, ensure 40px hit targets, add visible keyboard focus rings, provide aria-labels for icon buttons, and allow text scaling without clipping card content."
+    },
+    {
+      "rank": 10,
+      "title": "Add an AI operations assistant with safe boundaries",
+      "impact": "med",
+      "effort": "L",
+      "description": "For non-technical staff, an assistant could explain unfamiliar terms, summarize queues, and suggest next safe steps without executing privileged actions.",
+      "concrete_implementation": "Add a read-only assistant panel that can answer 'What should I review first?', summarize attention items, explain badges, and draft handoff notes. Require explicit human confirmation for any action and log assistant interactions."
+    }
+  ],
+  "advanced_features_missing": [
+    {
+      "feature": "Full command palette",
+      "why": "A Search ⌘K control is visible, but no palette UI is shown with grouped actions, jump targets, docs, logs, or safe workflows.",
+      "implementation_hint": "Use cmdk or a shadcn Command dialog with indexed zones, cards, queue items, help content, and action intents. Include keyboard shortcuts and fuzzy synonyms."
+    },
+    {
+      "feature": "AI operations assistant",
+      "why": "There is no visible assistant to help non-technical staff interpret technical cards, prioritize queue items, or understand safe next steps.",
+      "implementation_hint": "Add a read-only assistant drawer connected to queue metadata, guide content, and audit logs. Keep execution gated behind explicit human approval."
+    },
+    {
+      "feature": "Real-time activity feed",
+      "why": "The dashboard shows 'Last data refresh: just now' and a refresh icon, but no live stream of recent operations, approvals, or system changes is visible.",
+      "implementation_hint": "Add a live activity rail with WebSocket/SSE updates, actor, timestamp, event type, affected surface, and link to details."
+    },
+    {
+      "feature": "Role/persona views",
+      "why": "The page mixes founder, root, admin, media, safety, support, and finance surfaces without a visible way to filter by staff responsibility.",
+      "implementation_hint": "Add role-based filtering from authenticated permissions and a visible selector for Founder, Safety, Media Ops, Support, Finance, and Admin."
+    },
+    {
+      "feature": "Audit timeline",
+      "why": "Admin-only and root-only actions are referenced, but there is no visible chronological audit trail for who did what and why.",
+      "implementation_hint": "Create an Audit Timeline view with immutable events, diff summaries, permission changes, approvals, comments, and exportable evidence."
+    },
+    {
+      "feature": "SLA and ownership for queues",
+      "why": "Priority Queue items show status labels but not owner, age, deadline, escalation state, or expected resolution path.",
+      "implementation_hint": "Extend queue schema with owner, team, created_at, due_at, severity, escalation_level, and resolution_status. Render these in queue rows."
+    },
+    {
+      "feature": "Task assignment and handoff notes",
+      "why": "The dashboard does not show who is responsible for manual reviews or what context should be passed between staff shifts.",
+      "implementation_hint": "Add assign/unassign, watcher, internal comment, and handoff summary features to each queue item and high-risk surface."
+    },
+    {
+      "feature": "Inline glossary and badge education",
+      "why": "The guide explains badge meanings at the bottom, but technical labels appear throughout the dashboard before the explanation is found.",
+      "implementation_hint": "Attach accessible tooltips/popovers to badges and domain terms, with links to the relevant guide section."
+    },
+    {
+      "feature": "Saved filters and custom workspaces",
+      "why": "There is no visible way for staff to save a view like 'Manual media approvals' or 'Safety attention only'.",
+      "implementation_hint": "Add saved views backed by query params and user preferences, with quick chips for Attention, Manual, Mine, Live, Dry run, and Root only."
+    },
+    {
+      "feature": "Operational health dependency map",
+      "why": "Cards expose many surfaces but do not show dependencies or blast radius between Safety, Agents, Knowledge, Media, Marketplace, and Operations.",
+      "implementation_hint": "Add a dependency graph or impact panel for selected cards showing upstream/downstream systems, blocked capabilities, and risk level."
+    }
+  ],
+  "phased_roadmap": {
+    "phase_1_immediate_24h": [
+      "Fix Council Layer and Credits metric overflow with min-w-0, truncate, tooltips, and value variants.",
+      "Add test fixtures for long identifiers such as internal_admin_preview_configured_data and large credit values.",
+      "Increase Priority Queue spacing and make queue cards visually more prominent than regular zone cards.",
+      "Move or duplicate a compact 'Getting started in 60 seconds' and 'Daily routine for new staff' entry point into the first viewport.",
+      "Add tooltips or title attributes to all status badges and truncated values.",
+      "Verify icon-only header controls have aria-labels, keyboard focus states, and minimum hit targets."
+    ],
+    "phase_2_week_1": [
+      "Create a Today / My Queue panel with assigned work, attention items, manual approvals, and blocked tasks.",
+      "Convert Priority Queue from generic cards into actionable rows with owner, age, severity, SLA, and safe primary action.",
+      "Add a badge legend near the top of the page and link it to the full How Mougle Works guide.",
+      "Add role-based filters or at minimum quick filters for Founder, Safety, Media, Support, Finance, and Operations.",
+      "Improve contrast for muted descriptions, small badge text, and secondary metadata in the dark theme.",
+      "Make lower-priority zone sections collapsible and preserve open/closed state."
+    ],
+    "phase_3_month_1": [
+      "Ship a full command palette with zones, queue items, audit logs, help docs, and safe action intents.",
+      "Add real-time activity feed and audit timeline with actor, timestamp, event type, and affected surface.",
+      "Introduce staff role workspaces with saved filters, permissions-aware navigation, and task assignments.",
+      "Add an AI operations assistant for queue summaries, term explanations, and safe next-step recommendations.",
+      "Build handoff notes, comments, watchers, and escalation workflows for priority items.",
+      "Add an operational dependency map to show blast radius and blocked capabilities across Mougle surfaces."
+    ]
+  },
+  "newcomer_staff_verdict": "A new non-technical staff member would probably find the big 'Review attention queue' button within 30 seconds, but they would not reliably understand their daily routine or which zone belongs to their role without scrolling to the bottom guide or asking someone. The dashboard is promising and safety-conscious, but it needs a top-level 'Today/My tasks' experience, role filtering, and earlier onboarding to become staff-friendly."
+}
