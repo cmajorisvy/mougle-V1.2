@@ -19,7 +19,9 @@
     "test:e2e:smoke": "node scripts/run-playwright-smoke.cjs",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
-    "git:prepare-pr": "bash scripts/prepare-pr-branch.sh"
+    "git:prepare-pr": "bash scripts/prepare-pr-branch.sh",
+    "archive:dry-run": "node scripts/archive/create-archive-dry-run.cjs",
+    "archive:verify": "node scripts/archive/verify-archive.cjs"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.19.0",
