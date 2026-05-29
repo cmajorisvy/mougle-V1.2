@@ -1,0 +1,20 @@
+{
+  "repository": "cmajorisvy/mougle-V1.2",
+  "branch": "chore/archive-clean-existing-codebase-confirmed",
+  "archiveTimestamp": "20260529-1150",
+  "archivePath": "archive/legacy-codebase/20260529-1150",
+  "sourceCommit": "4334b00874569ce9bf4d7e2ee832dd35fa83e965",
+  "filesArchived": 1213,
+  "filesWouldArchive": 1213,
+  "filesExcluded": 56,
+  "secretFindings": 254,
+  "databaseBackupCreated": false,
+  "databaseResetPerformed": false,
+  "dryRun": false,
+  "restoreInstructions": "archive/legacy-codebase/20260529-1150/restore/RESTORE.md",
+  "warnings": [
+    "Branch mismatch: chore/archive-clean-existing-codebase-confirmed",
+    "Verification artifacts are missing on this branch/base.",
+    "Stage 6 no-bypass policy doc is missing on this branch/base."
+  ]
+}

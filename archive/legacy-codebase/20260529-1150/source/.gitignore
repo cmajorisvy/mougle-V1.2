@@ -1,0 +1,21 @@
+node_modules
+dist
+.DS_Store
+.env
+.env.*
+!.env.example
+server/public
+vite.config.ts.*
+*.tar.gz
+# Large generated backup archives
+attached_assets/*.tgz
+
+# Local QA and generated runtime artifacts
+test-results/
+output/playwright/
+generated_clips/
+temp_flywheel/
+
+# Production House file-based persistence (interim storage, see SKILL roadmap)
+data/production-house/
+.internal/

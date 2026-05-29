@@ -1,0 +1,104 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "X4bLsfSQbgYH4CiYPKypQ"
+uri = "file://exports/mougle_full_e2e_report_20260505095401.pdf"
+type = "pdf"
+title = "Mougle Full E2E Report — GPT-5.5 (PDF)"
+
+[[outputs]]
+id = "5R6u1eybWF7GT-AdiV_bD"
+uri = "file://exports/mougle_full_e2e_report_20260505095401.md"
+type = "text"
+title = "Mougle Full E2E Report — GPT-5.5 (Markdown)"
+
+[[outputs]]
+id = "BFy4CSgEoUJ5Dxv3TIVH9"
+uri = "file://exports/mougle-admin-dashboard-audit.pdf"
+type = "pdf"
+title = "Mougle Admin Dashboard — Audit & Recommendations (14-page PDF)"
+
+[[outputs]]
+id = "VD04aN3Dt1jLPIqH4dlNP"
+uri = "file://exports/mougle-admin-dashboard-audit-raw.json"
+type = "unspecified"
+title = "Raw GPT-5.5 audit JSON (for engineering reference)"
+
+[[outputs]]
+id = "xZtPyjKNH1DJKn3akLvBe"
+uri = "file://exports/mougle-source-20260505_121443.zip"
+type = "unspecified"
+title = "Mougle — Complete Source (17 MB, 580 files)"
+
+[[outputs]]
+id = "1Lrz39Vsw23GhJlzPCDR_"
+uri = "file://exports/mougle-source-20260505_151744.zip"
+type = "unspecified"
+title = "Mougle — Source-Only (17 MB — recommended if 893 MB hangs in browser)"
+
+[[outputs]]
+id = "6hzzYSWU40ZXHNVesuCNv"
+uri = "file://exports/mougle-complete-20260505_122228.zip"
+type = "unspecified"
+title = "Mougle — Complete Project (893 MB — restored at original path)"
+
+[[outputs]]
+id = "4TGoHzoZRZfFWV_eQdTG3"
+uri = "file://exports/mougle-project-overview.pdf"
+type = "pdf"
+title = "Mougle — Project Overview & Functional Flow"
+
+[[outputs]]
+id = "xC99envVWZ8lXRloI4iLT"
+uri = "file://downloads/mougle-production-house-unit.zip"
+type = "unspecified"
+title = "Mougle Production House — unit snapshot (524 KB)"
+
+[[outputs]]
+id = "vAl3HmM-IpY16pPTpnpr-"
+uri = "file://docs/MOUGLE_NEWSROOM_ARCHITECTURE.md"
+type = "text"
+title = "Mougle Newsroom — Functional Flow & Data Structures (Markdown)"
+
+[[outputs]]
+id = "DvQHQ5-HEMJxPvxoBrpej"
+uri = "file://downloads/MOUGLE_NEWSROOM_ARCHITECTURE.pdf"
+type = "pdf"
+title = "Mougle Newsroom — Functional Flow & Data Structures (PDF)"
+
+[[outputs]]
+id = "Pj06fjAoMkAVzTNtzmik5"
+uri = "file://backups/full-site/mougle-full-site-source-backup-2026-05-22.zip"
+type = "unspecified"
+title = "Mougle Full Source Backup (36 MB, 1167 entries)"
+
+[[outputs]]
+id = "7xA3CNniQLg2pMw86FPR1"
+uri = "file://backups/full-site/mougle-assets-backup-2026-05-22.zip"
+type = "unspecified"
+title = "Mougle Assets Backup (client/public, 4 MB)"
+
+[[outputs]]
+id = "vPHEsQOlP1vZEAiA4xFF6"
+uri = "file://backups/full-site/BACKUP_MANIFEST_2026-05-22.md"
+type = "text"
+title = "Backup Manifest"
+
+[[outputs]]
+id = "rISlyfCjlamQYP77ecXyW"
+uri = "file://backups/full-site/db/DB_BACKUP_INSTRUCTIONS_2026-05-22.md"
+type = "text"
+title = "Database Backup Instructions (pg_dump blocked by pooler)"
+
+[[outputs]]
+id = "FWGcJ4-NFkVIThh1NNVdr"
+uri = "file://backups/full-site/ENVIRONMENT_VARIABLES_INVENTORY_2026-05-22.md"
+type = "text"
+title = "Environment Variables Inventory (names only)"
+
+[[outputs]]
+id = "yA5DeA-A_cnNWknKqkCtn"
+uri = "file://docs/reports/R7A_AVATAR_RIG_VISUAL_PREVIEW_AUDIT.md"
+type = "text"
+title = "R7A — Avatar Rig Visual Preview Audit"
