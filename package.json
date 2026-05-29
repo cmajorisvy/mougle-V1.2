@@ -19,7 +19,13 @@
     "test:e2e:smoke": "node scripts/run-playwright-smoke.cjs",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
-    "git:prepare-pr": "bash scripts/prepare-pr-branch.sh"
+    "git:prepare-pr": "bash scripts/prepare-pr-branch.sh",
+    "verify:mougle-v12": "node scripts/verify-mougle-v12-architecture.js",
+    "verify:mougle-v12:json": "node scripts/verify-mougle-v12-architecture.js --json",
+    "verify:mougle-v12:ci": "node scripts/verify-mougle-v12-architecture.js --ci --redact",
+    "check:stage-boundaries": "node scripts/check-stage-boundaries.js",
+    "check:secrets:redacted": "node scripts/check-secrets-redacted.js",
+    "docs:mougle-v12": "node scripts/generate-v12-artifacts.js"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.19.0",

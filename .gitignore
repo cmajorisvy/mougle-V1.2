@@ -19,3 +19,25 @@ temp_flywheel/
 # Production House file-based persistence (interim storage, see SKILL roadmap)
 data/production-house/
 .internal/
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.csr
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.bak
+*.log
+logs/
+coverage/
+dist/
+build/
+.next/
+.cache/
+tmp/
+uploads/
+artifacts/private/
+archive/private/

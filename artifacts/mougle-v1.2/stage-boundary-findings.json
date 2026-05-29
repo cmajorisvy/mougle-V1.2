@@ -1,0 +1,2122 @@
+[
+  {
+    "id": "secret_vault_to_llm:.env.example:5",
+    "file": ".env.example",
+    "line": 5,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "# Secret vault values must not be passed to LLMs.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:AGENTS.md:34",
+    "file": "AGENTS.md",
+    "line": 34,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "- Do not expose secrets, tokens, DATABASE_URL, OpenAI keys, or credentials.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:AGENTS.md:100",
+    "file": "AGENTS.md",
+    "line": 100,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "- Secret vaults must never be sent to LLMs.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:client/src/pages/Billing.tsx:351",
+    "file": "client/src/pages/Billing.tsx",
+    "line": 351,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "<span>Compute credit billing is separate from Gluon. Credit purchase availability depends on configured payment providers and does not create Gluon, GVI, payout, or redemption value.</span>",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:client/src/pages/admin/AdminDashboard.tsx:210",
+    "file": "client/src/pages/admin/AdminDashboard.tsx",
+    "line": 210,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "{ label: \"Knowledge Economy\", href: \"/admin/knowledge-economy\", status: \"manual\", icon: Dna, description: \"Knowledge packets, Gluon contribution identity, GVI admin analysis.\", tooltip: \"Gluon is contribution identity/pr",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:client/src/pages/admin/AdminDashboard.tsx:1406",
+    "file": "client/src/pages/admin/AdminDashboard.tsx",
+    "line": 1406,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "{ title: \"Gluon is contribution identity only\", description: \"Knowledge economy review may show admin analysis, but Gluon must not be treated as cash, payout, token, shares, or wallet value.\", href: \"/admin/knowledge-eco",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:client/src/pages/admin/KnowledgeEconomy.tsx:100",
+    "file": "client/src/pages/admin/KnowledgeEconomy.tsx",
+    "line": 100,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "\"Gluon is an internal contribution credit, not withdrawable cash.\",",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:client/src/pages/admin/KnowledgeEconomy.tsx:543",
+    "file": "client/src/pages/admin/KnowledgeEconomy.tsx",
+    "line": 543,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "Gluon is non-withdrawable, non-cashout, and separate from credits, purchases, payouts, Stripe, Razorpay, and creator earnings. DNA mutation stays preview-only.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:client/src/pages/admin/KnowledgeEconomy.tsx:647",
+    "file": "client/src/pages/admin/KnowledgeEconomy.tsx",
+    "line": 647,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "Gluon preview: {score(preview.gluon.amount)} · {preview.gluon.reasons?.[0]}",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:client/src/pages/docs/EntitiesExplained.tsx:98",
+    "file": "client/src/pages/docs/EntitiesExplained.tsx",
+    "line": 98,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "Entities may use compute credits for AI operations, while public Gluon views show contribution identity and provenance records only. Gluon IDs are contribution records, not cash, tokens, shares, or payout promises. The s",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:client/src/pages/docs/HowItWorks.tsx:149",
+    "file": "client/src/pages/docs/HowItWorks.tsx",
+    "line": 149,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "Compute credits and billing are separate from Gluon. Public Gluon views show contribution IDs, subtype, status, and visibility only. Gluon IDs are contribution records, not cash, tokens, shares, or payout promises.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:docs/FINAL_MOUGLE_V2_STATUS.md:45",
+    "file": "docs/FINAL_MOUGLE_V2_STATUS.md",
+    "line": 45,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "| Knowledge Economy | Complete foundation | `/admin/knowledge-economy`, `knowledge_packets`, Gluon ledger | Draft/internal packets, consent mesh, weighted acceptance, non-cashout Gluon. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:docs/FINAL_MOUGLE_V2_STATUS.md:85",
+    "file": "docs/FINAL_MOUGLE_V2_STATUS.md",
+    "line": 85,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "| Phase 33 Redemption Compliance | Complete design preview | `gluon_redemption_eligibility_reviews` | No real redemption/cashout/payment. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:docs/FINAL_MOUGLE_V2_STATUS.md:198",
+    "file": "docs/FINAL_MOUGLE_V2_STATUS.md",
+    "line": 198,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "- Gluon ledger entries are non-convertible and do not touch credit, wallet, payout, Stripe, Razorpay, creator earnings, or marketplace transaction systems.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:docs/FINAL_MOUGLE_V2_STATUS.md:201",
+    "file": "docs/FINAL_MOUGLE_V2_STATUS.md",
+    "line": 201,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "GVI is read-only informational. It uses the approved basket formula and manual/static fallback values. It does not make Gluon convertible and does not create cash value, payable balance, purchase power, or wallet changes",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "reputation_payout_confusion:docs/FINAL_MOUGLE_V2_STATUS.md:201",
+    "file": "docs/FINAL_MOUGLE_V2_STATUS.md",
+    "line": 201,
+    "severity": "P0",
+    "rule": "reputation_payout_confusion",
+    "description": "Potential use of reputation/UES as payout or approval.",
+    "snippet": "GVI is read-only informational. It uses the approved basket formula and manual/static fallback values. It does not make Gluon convertible and does not create cash value, payable balance, purchase power, or wallet changes",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:docs/FINAL_MOUGLE_V2_STATUS.md:203",
+    "file": "docs/FINAL_MOUGLE_V2_STATUS.md",
+    "line": 203,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "Redemption compliance preview is disabled by design. `platformConversionRate` is zero, so `informationalEstimate = validGluon * latestGVI * 0`. The UI wording states that Gluon is not withdrawable cash, GVI is not a trad",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "direct_verified_knowledge_write:docs/architecture/CODEX_PHASE_1B_VERIFIED_NEWSROOM_ARCHITECTURE.md:435",
+    "file": "docs/architecture/CODEX_PHASE_1B_VERIFIED_NEWSROOM_ARCHITECTURE.md",
+    "line": 435,
+    "severity": "P0",
+    "rule": "direct_verified_knowledge_write",
+    "description": "Potential direct write to Stage 4 verified knowledge.",
+    "snippet": "| correction | verified \\| developing \\| disputed | correction | Creates a **new** `verified_knowledge` row (status `verified`); old row's `status` set to `correction` and `supersededByVerifiedId` set on the new row. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/architecture/CODEX_PHASE_1B_VERIFIED_NEWSROOM_ARCHITECTURE.md:748",
+    "file": "docs/architecture/CODEX_PHASE_1B_VERIFIED_NEWSROOM_ARCHITECTURE.md",
+    "line": 748,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "1. **Schema rollback** — Phase 1B introduces only **additive** tables (no column drops, no type changes on existing tables, no FK additions to existing tables — the render link lives inside an existing JSONB field). Roll",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:docs/architecture/MOUGLE_ADMIN_DASHBOARD_REDESIGN_REPORT.md:184",
+    "file": "docs/architecture/MOUGLE_ADMIN_DASHBOARD_REDESIGN_REPORT.md",
+    "line": 184,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "- Rechecked status wording for provider, publishing, marketplace, Gluon, checkout, payout, and autonomous-action claims.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/architecture/PHASE_36C_REMAINING_ROADMAP_PROMPTS.md:193",
+    "file": "docs/architecture/PHASE_36C_REMAINING_ROADMAP_PROMPTS.md",
+    "line": 193,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "Implement a local fake adapter dry-run harness using static/mock output only. It must never call providers, read credentials, route requests, store raw prompts, store raw completions, or publish.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/archive/cleanup-archive-2026-05-22/codex-phase-1-2026-05/CODEX_GO_LIVE_BLOCKER_POST_FIX_AUDIT.md:48",
+    "file": "docs/archive/cleanup-archive-2026-05-22/codex-phase-1-2026-05/CODEX_GO_LIVE_BLOCKER_POST_FIX_AUDIT.md",
+    "line": 48,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "`SESSION_SECRET`, `OPENAI_API_KEY` (alias `AI_INTEGRATIONS_OPENAI_API_KEY`),",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/archive/cleanup-archive-2026-05-22/codex-phase-1-2026-05/CODEX_GO_LIVE_BLOCKER_POST_FIX_AUDIT.md:216",
+    "file": "docs/archive/cleanup-archive-2026-05-22/codex-phase-1-2026-05/CODEX_GO_LIVE_BLOCKER_POST_FIX_AUDIT.md",
+    "line": 216,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "`drizzle-kit push` will not create the verified-newsroom tables in a",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/archive/cleanup-archive-2026-05-22/codex-phase-1-2026-05/CODEX_GO_LIVE_BLOCKER_POST_FIX_AUDIT.md:253",
+    "file": "docs/archive/cleanup-archive-2026-05-22/codex-phase-1-2026-05/CODEX_GO_LIVE_BLOCKER_POST_FIX_AUDIT.md",
+    "line": 253,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "| `db:push` invocation in any new file | **No** (`rg \"db:push\\|drizzle-kit push\" server/index.ts server/config/ server/services/shutdown-registry.ts` empty) |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "reputation_payout_confusion:docs/backend-routes.md:1220",
+    "file": "docs/backend-routes.md",
+    "line": 1220,
+    "severity": "P0",
+    "rule": "reputation_payout_confusion",
+    "description": "Potential use of reputation/UES as payout or approval.",
+    "snippet": "{ \"user\": { \"id\": \"uuid\", \"username\": \"ada\", \"email\": \"...\", \"role\": \"human\", \"energy\": 500, \"reputation\": 0, \"rankLevel\": \"Basic\", \"creditWallet\": 0, \"intelligenceStage\": \"explorer\", \"intelligenceXp\": 0 } }",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:docs/backend-services.md:159",
+    "file": "docs/backend-services.md",
+    "line": 159,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "| `social-publisher-service.ts` | Auto-publishes drafts on a 5-minute interval. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:docs/content-flywheels.md:211",
+    "file": "docs/content-flywheels.md",
+    "line": 211,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "- `social-publisher-service.ts` — auto-publishes drafts every 5 minutes.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/design/PROMPT_TO_PRODUCTION_CREATOR_CONSOLE_DESIGN.md:360",
+    "file": "docs/design/PROMPT_TO_PRODUCTION_CREATOR_CONSOLE_DESIGN.md",
+    "line": 360,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| `core_ai_brain` | Core AI Brain | ai_planning | Helps plan scripts, scenes, shots, cues, manifests, and admin guidance. | OpenAI API / GPT-5.5 Pro planner; Codex / Replit Agent build assistant; Replit Secrets manager |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/library/INDEX.md:143",
+    "file": "docs/library/INDEX.md",
+    "line": 143,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| `docs/design/PROMPT_TO_PRODUCTION_CREATOR_CONSOLE_DESIGN.md` | md | design (prompt-to-production creator console) | P2P-1 - Prompt-to-Production Creator Console design for prompt-first News Room, Podcast Room, Debate R",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:5",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 5,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | .env.example:5 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:6",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 6,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | AGENTS.md:34 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:7",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 7,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | AGENTS.md:100 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "reputation_payout_confusion:docs/mougle-v1.2-architecture-gaps.md:20",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 20,
+    "severity": "P0",
+    "rule": "reputation_payout_confusion",
+    "description": "Potential use of reputation/UES as payout or approval.",
+    "snippet": "| P0 | reputation_payout_confusion | docs/FINAL_MOUGLE_V2_STATUS.md:201 | Potential use of reputation/UES as payout or approval. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:25",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 25,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/architecture/PHASE_36C_REMAINING_ROADMAP_PROMPTS.md:193 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:26",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 26,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/archive/cleanup-archive-2026-05-22/codex-phase-1-2026-05/CODEX_GO_LIVE_BLOCKER_POST_FIX_AUDIT.md:48 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "reputation_payout_confusion:docs/mougle-v1.2-architecture-gaps.md:29",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 29,
+    "severity": "P0",
+    "rule": "reputation_payout_confusion",
+    "description": "Potential use of reputation/UES as payout or approval.",
+    "snippet": "| P0 | reputation_payout_confusion | docs/backend-routes.md:1220 | Potential use of reputation/UES as payout or approval. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:32",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 32,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/design/PROMPT_TO_PRODUCTION_CREATOR_CONSOLE_DESIGN.md:360 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:33",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 33,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/library/INDEX.md:143 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:34",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 34,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:5 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:35",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 35,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:6 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:36",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 36,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:7 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "reputation_payout_confusion:docs/mougle-v1.2-architecture-gaps.md:37",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 37,
+    "severity": "P0",
+    "rule": "reputation_payout_confusion",
+    "description": "Potential use of reputation/UES as payout or approval.",
+    "snippet": "| P0 | reputation_payout_confusion | docs/mougle-v1.2-architecture-gaps.md:20 | Potential use of reputation/UES as payout or approval. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:38",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 38,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:25 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:39",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 39,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:26 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "reputation_payout_confusion:docs/mougle-v1.2-architecture-gaps.md:40",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 40,
+    "severity": "P0",
+    "rule": "reputation_payout_confusion",
+    "description": "Potential use of reputation/UES as payout or approval.",
+    "snippet": "| P0 | reputation_payout_confusion | docs/mougle-v1.2-architecture-gaps.md:29 | Potential use of reputation/UES as payout or approval. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:41",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 41,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:32 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:42",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 42,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:33 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:43",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 43,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:34 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:44",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 44,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:35 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:45",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 45,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:36 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:46",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 46,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:37 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:47",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 47,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:38 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:48",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 48,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:39 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:49",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 49,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:40 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:50",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 50,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:41 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:51",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 51,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:42 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:52",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 52,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:43 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:53",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 53,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:44 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:54",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 54,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:45 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:55",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 55,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:46 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:56",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 56,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:47 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:57",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 57,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:48 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:58",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 58,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:49 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:59",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 59,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:50 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:60",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 60,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:51 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:61",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 61,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:52 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:62",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 62,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:53 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:63",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 63,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:54 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:64",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 64,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:55 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:65",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 65,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:56 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:66",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 66,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:57 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:67",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 67,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:58 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:68",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 68,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:59 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:69",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 69,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:60 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:70",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 70,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:61 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:71",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 71,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:62 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:72",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 72,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:63 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:73",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 73,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:64 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:74",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 74,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:65 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:75",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 75,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:66 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:76",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 76,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:67 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:77",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 77,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:68 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:78",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 78,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:69 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:79",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 79,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:70 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:80",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 80,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:71 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:81",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 81,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:72 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:82",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 82,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:73 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:83",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 83,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:74 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:84",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 84,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:75 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:85",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 85,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:76 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:86",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 86,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:77 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:87",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 87,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:78 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:88",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 88,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:79 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:89",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 89,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:80 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:90",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 90,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:81 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:91",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 91,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:82 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:92",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 92,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:83 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:93",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 93,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:84 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:94",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 94,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:85 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:95",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 95,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:86 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:96",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 96,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:87 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:97",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 97,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:88 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:98",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 98,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:89 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:99",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 99,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:90 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:100",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 100,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:91 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:101",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 101,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:92 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:102",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 102,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:93 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:103",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 103,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:94 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:104",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 104,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:95 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:105",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 105,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:96 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:106",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 106,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:97 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:107",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 107,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:98 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:108",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 108,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:99 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:109",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 109,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:100 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:110",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 110,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:101 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:111",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 111,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:102 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:112",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 112,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:103 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:113",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 113,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:104 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:114",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 114,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:105 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:115",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 115,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:106 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:116",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 116,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:107 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:117",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 117,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:108 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:118",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 118,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:109 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:119",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 119,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:110 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:120",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 120,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:111 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:121",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 121,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:112 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:122",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 122,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:113 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:123",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 123,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:114 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/mougle-v1.2-architecture-gaps.md:124",
+    "file": "docs/mougle-v1.2-architecture-gaps.md",
+    "line": 124,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| P0 | secret_vault_to_llm | docs/mougle-v1.2-architecture-gaps.md:115 | Potential secret/private vault value exposed to LLM context. |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:docs/overview.md:97",
+    "file": "docs/overview.md",
+    "line": 97,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "- **Social Publisher** — auto-publishes drafts on a schedule with AI captions.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "reputation_payout_confusion:docs/policy/gluon-not-money-policy.md:3",
+    "file": "docs/policy/gluon-not-money-policy.md",
+    "line": 3,
+    "severity": "P0",
+    "rule": "reputation_payout_confusion",
+    "description": "Potential use of reputation/UES as payout or approval.",
+    "snippet": "Gluon, AgentRank, UES, reputation, SignalStrength, LocalReadiness, and Truth Confidence are not cash, wallet balance, payout eligibility, share value, legal approval, financial approval, or settlement authority.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/policy/private-memory-boundaries.md:5",
+    "file": "docs/policy/private-memory-boundaries.md",
+    "line": 5,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "Secret vault values must never be sent to LLMs.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:docs/product/GLUON_EXPLAINER_VIDEO_SCRIPT.md:46",
+    "file": "docs/product/GLUON_EXPLAINER_VIDEO_SCRIPT.md",
+    "line": 46,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "\"Gluon IDs are contribution records, not cash, tokens, shares, or payout promises.\"",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:docs/product/GLUON_EXPLAINER_VIDEO_SCRIPT.md:102",
+    "file": "docs/product/GLUON_EXPLAINER_VIDEO_SCRIPT.md",
+    "line": 102,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "\"Gluon is Mougle's contribution identity system. A Gluon ID helps identify reviewed knowledge, signals, packets, or learning patterns. Public views show only safe details like ID, type, status, and visibility. Deeper met",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:docs/product/GLUON_EXPLAINER_VIDEO_SCRIPT.md:143",
+    "file": "docs/product/GLUON_EXPLAINER_VIDEO_SCRIPT.md",
+    "line": 143,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "\"Gluon IDs are contribution records, not cash, tokens, shares, or payout promises.\"",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/repo-structure.md:20",
+    "file": "docs/repo-structure.md",
+    "line": 20,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "├── drizzle.config.ts    # Drizzle Kit config (DB push)",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:docs/reports/CODEX_PHASE_1B_NEWSROOM_PACKAGE_BUILDER_REPORT.md:60",
+    "file": "docs/reports/CODEX_PHASE_1B_NEWSROOM_PACKAGE_BUILDER_REPORT.md",
+    "line": 60,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "- `publishable: true` does **not** authorise auto-publish; the safety envelope still locks all publish/social/live flags off.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/reports/CODEX_PHASE_1B_SCHEMA_CONTRACTS_REPORT.md:90",
+    "file": "docs/reports/CODEX_PHASE_1B_SCHEMA_CONTRACTS_REPORT.md",
+    "line": 90,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "- **`shared/newsroom-schema.ts` is NOT imported anywhere** (verified by ripgrep). `drizzle.config.ts` reads only `./shared/schema.ts`, so `drizzle-kit push` does not see these tables. Running `npm run db:push` today prod",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/reports/CODEX_PHASE_1B_SCHEMA_CONTRACTS_REPORT.md:135",
+    "file": "docs/reports/CODEX_PHASE_1B_SCHEMA_CONTRACTS_REPORT.md",
+    "line": 135,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "- `DROP TABLE` the 6 newsroom tables in any order (no cross-FKs).",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/reports/FULL_TEST_AUDIT_REPORT_CODEX_2026-05-23.md:424",
+    "file": "docs/reports/FULL_TEST_AUDIT_REPORT_CODEX_2026-05-23.md",
+    "line": 424,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "| `drizzle-kit push` run | **No** |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/reports/FULL_TEST_AUDIT_REPORT_CODEX_2026-05-23.md:425",
+    "file": "docs/reports/FULL_TEST_AUDIT_REPORT_CODEX_2026-05-23.md",
+    "line": 425,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "| `supabase db push` run | **No** |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/reports/GITHUB_SUPABASE_SYNC_CHECKPOINT_REPORT.md:139",
+    "file": "docs/reports/GITHUB_SUPABASE_SYNC_CHECKPOINT_REPORT.md",
+    "line": 139,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "2. Verify whether Supabase remote schema has `production_rigs` + `permanent_avatars*` tables applied; if not, run `drizzle-kit migrate` (NOT `db:push`) under the working service‑role connection string. **DONE in Task #90",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/reports/R3F_ASSET_METADATA_SAFETY_MODEL_R4_DESIGN.md:345",
+    "file": "docs/reports/R3F_ASSET_METADATA_SAFETY_MODEL_R4_DESIGN.md",
+    "line": 345,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "3. **No client-side provider credentials.** Frontend never sees Meshy / Runway / OpenAI keys. R3F sandbox in particular reads no env secrets (already enforced in R3).",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/reports/R3F_PREVIEW_SANDBOX_R3_REPORT.md:104",
+    "file": "docs/reports/R3F_PREVIEW_SANDBOX_R3_REPORT.md",
+    "line": 104,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| Zero provider / env / secret references | `grep -iE \"openai\\|elevenlabs\\|meshy\\|runway\\|heygen\\|process\\.env\\|apiRequest\\|signedUrl=\\|publicUrl=\\|realSendAllowed=\\|executionEnabled=\" R3FPreviewSandbox.tsx ProductionCan",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:docs/reports/R3F_STATIC_GLB_DEMO_LOADER_R5B_REPORT.md:104",
+    "file": "docs/reports/R3F_STATIC_GLB_DEMO_LOADER_R5B_REPORT.md",
+    "line": 104,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "| 4 | Zero provider / env / secret refs | `grep -iE \"openai\\|elevenlabs\\|meshy\\|runway\\|heygen\\|process\\.env\\|apiRequest(\\|fetch(\" R3FPreviewSandbox.tsx ProductionCanvasSandbox.tsx` | ✅ `NONE_FOUND_OK` |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/reports/R7B_PERMANENT_AVATAR_SCHEMA_REPORT.md:103",
+    "file": "docs/reports/R7B_PERMANENT_AVATAR_SCHEMA_REPORT.md",
+    "line": 103,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "`drizzle-kit generate` detected four pre-existing `production_asset_orphan_sweep_*` tables that live in `shared/schema.ts` but were never journaled (applied to the live DB by an earlier `drizzle-kit push`; the correspond",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/reports/SUPABASE_R7B_APPLY_AND_JOURNAL_BACKFILL_909C_REPORT.md:15",
+    "file": "docs/reports/SUPABASE_R7B_APPLY_AND_JOURNAL_BACKFILL_909C_REPORT.md",
+    "line": 15,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "| No `drizzle-kit push` | ✅ |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/reports/SUPABASE_R7B_APPLY_AND_JOURNAL_BACKFILL_909C_REPORT.md:17",
+    "file": "docs/reports/SUPABASE_R7B_APPLY_AND_JOURNAL_BACKFILL_909C_REPORT.md",
+    "line": 17,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "| No `supabase db push` | ✅ (no `supabase/migrations/` in repo) |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/reports/SUPABASE_R7B_APPLY_AND_JOURNAL_BACKFILL_909C_REPORT.md:32",
+    "file": "docs/reports/SUPABASE_R7B_APPLY_AND_JOURNAL_BACKFILL_909C_REPORT.md",
+    "line": 32,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "| Orphan‑sweep tables BEFORE (4 in 0004_r7b's `IF NOT EXISTS` block) | all **present** (drift from earlier `drizzle-kit push`) |",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/runbooks/SAFE_DEFAULT_CI_AND_E2E_3D_ASSETS.md:44",
+    "file": "docs/runbooks/SAFE_DEFAULT_CI_AND_E2E_3D_ASSETS.md",
+    "line": 44,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "- Do not run `db:push`, `drizzle-kit push`, `supabase db push`, destructive SQL, reset, restore, or seed overwrite against Supabase Pro.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/runbooks/SAFE_LOCAL_STAGING_E2E_DB_WORKFLOW.md:10",
+    "file": "docs/runbooks/SAFE_LOCAL_STAGING_E2E_DB_WORKFLOW.md",
+    "line": 10,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "- Do not run `db:push`, `drizzle-kit push`, or `supabase db push` against production.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:docs/setup.md:91",
+    "file": "docs/setup.md",
+    "line": 91,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "- `socialPublisherService.startAutoPublisher(5)` (every 5 minutes)",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:docs/setup.md:161",
+    "file": "docs/setup.md",
+    "line": 161,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "- **Database pushes overwrite columns** — `drizzle-kit push` is destructive; always review the prompt before confirming.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "direct_verified_knowledge_write:migrations/0000_baseline_pre_r5d.sql:3995",
+    "file": "migrations/0000_baseline_pre_r5d.sql",
+    "line": 3995,
+    "severity": "P0",
+    "rule": "direct_verified_knowledge_write",
+    "description": "Potential direct write to Stage 4 verified knowledge.",
+    "snippet": "CREATE INDEX \"IDX_broadcast_briefs_verified_knowledge_id\" ON \"broadcast_briefs\" USING btree (\"verified_knowledge_id\");--> statement-breakpoint",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:migrations/0004_r7b_permanent_avatars.sql:10",
+    "file": "migrations/0004_r7b_permanent_avatars.sql",
+    "line": 10,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "-- (applied to the live DB by an earlier `drizzle-kit push`; the corresponding",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:python-workers/shared/security.py:12",
+    "file": "python-workers/shared/security.py",
+    "line": 12,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "3. Secrets (OPENAI_API_KEY, DATABASE_URL, etc.) are read from environment",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:scripts/verify-mougle-v12-architecture.js:12",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 12,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "memoryVault:['memory','vault','consent','sensitivity','permission','personal_memory','secret','credential','private_context','llm_visible','redaction'],",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "direct_truth_score_write:scripts/verify-mougle-v12-architecture.js:27",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 27,
+    "severity": "P0",
+    "rule": "direct_truth_score_write",
+    "description": "Potential direct write to Stage 1 truth output.",
+    "snippet": "['direct_truth_score_write','P0',/(insert|update|set|create).{0,80}(truth_scores?|true_value_score|truth_crown)/is,'Potential direct write to Stage 1 truth output.'],",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "direct_verified_knowledge_write:scripts/verify-mougle-v12-architecture.js:28",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 28,
+    "severity": "P0",
+    "rule": "direct_verified_knowledge_write",
+    "description": "Potential direct write to Stage 4 verified knowledge.",
+    "snippet": "['direct_verified_knowledge_write','P0',/(insert|update|set|create).{0,80}(verified_knowledge|knowledge_packets?).{0,80}(verified|approved)/is,'Potential direct write to Stage 4 verified knowledge.'],",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:scripts/verify-mougle-v12-architecture.js:29",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 29,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "['gluon_money_confusion','P0',/(gluon).{0,80}(payout|cash|wallet|stripe|settlement|price|amount)/is,'Potential conversion of Gluon-like credit into money.'],",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "reputation_payout_confusion:scripts/verify-mougle-v12-architecture.js:30",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 30,
+    "severity": "P0",
+    "rule": "reputation_payout_confusion",
+    "description": "Potential use of reputation/UES as payout or approval.",
+    "snippet": "['reputation_payout_confusion','P0',/(reputation|agent_rank|ues).{0,80}(payout|wallet|cash|settlement|legal_approval|financial_approval)/is,'Potential use of reputation/UES as payout or approval.'],",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:scripts/verify-mougle-v12-architecture.js:31",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 31,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "['secret_vault_to_llm','P0',/(secret|credential|private_memory|vault).{0,120}(openai|anthropic|llm|prompt|completion|chat)/is,'Potential secret/private vault value exposed to LLM context.'],",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:scripts/verify-mougle-v12-architecture.js:32",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 32,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "['publish_without_verification','P0',/(publish|publicUrl|youtube|social).{0,120}(skip verification|auto.?publish|realSendAllowed:\\s*true|executionEnabled:\\s*true)/is,'Potential public publishing or external execution wit",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:scripts/verify-mougle-v12-architecture.js:33",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 33,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "['destructive_database_command','P0',/(DROP TABLE|TRUNCATE TABLE|DELETE FROM .*WHERE 1=1|drizzle-kit push|db push|migrate reset)/is,'Potential destructive DB command.'],",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "expensive_verification_hot_path:scripts/verify-mougle-v12-architecture.js:34",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 34,
+    "severity": "P1",
+    "rule": "expensive_verification_hot_path",
+    "description": "Potential expensive Stage 6 audit lane on a hot path.",
+    "snippet": "['expensive_verification_hot_path','P1',/(hdbscan|optics|spectral|agglomerative).{0,160}(dashboard|click|render|useEffect|GET)/is,'Potential expensive Stage 6 audit lane on a hot path.']",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:scripts/verify-mougle-v12-architecture.js:46",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 46,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "function domain(file,text){const v=`${file}\\n${text.slice(0,2500)}`.toLowerCase();if(file.startsWith('tests/'))return 'tests';if(v.includes('passport'))return 'agent_passport_registry';if(v.includes('vault')||v.includes(",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "reputation_payout_confusion:scripts/verify-mougle-v12-architecture.js:46",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 46,
+    "severity": "P0",
+    "rule": "reputation_payout_confusion",
+    "description": "Potential use of reputation/UES as payout or approval.",
+    "snippet": "function domain(file,text){const v=`${file}\\n${text.slice(0,2500)}`.toLowerCase();if(file.startsWith('tests/'))return 'tests';if(v.includes('passport'))return 'agent_passport_registry';if(v.includes('vault')||v.includes(",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "reputation_payout_confusion:scripts/verify-mougle-v12-architecture.js:113",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 113,
+    "severity": "P0",
+    "rule": "reputation_payout_confusion",
+    "description": "Potential use of reputation/UES as payout or approval.",
+    "snippet": "function staticDocs(){write('docs/policy/stage6-no-bypass-policy.md','# Stage 6 No-Bypass Policy\\n\\nNo user agent, council, dashboard, local micro-pyramid, marketplace flow, media flow, or legacy service may write direct",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:scripts/verify-mougle-v12-architecture.js:113",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 113,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "function staticDocs(){write('docs/policy/stage6-no-bypass-policy.md','# Stage 6 No-Bypass Policy\\n\\nNo user agent, council, dashboard, local micro-pyramid, marketplace flow, media flow, or legacy service may write direct",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:scripts/verify-mougle-v12-architecture.js:115",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 115,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "export function buildRun(){const a=argv(),dirty=sh('git status --short'),git={branch:sh('git branch --show-current')||'unknown',commit:sh('git rev-parse HEAD')||'unknown',origin:sh('git remote get-url origin')||'unknown'",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "reputation_payout_confusion:scripts/verify-mougle-v12-architecture.js:115",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 115,
+    "severity": "P0",
+    "rule": "reputation_payout_confusion",
+    "description": "Potential use of reputation/UES as payout or approval.",
+    "snippet": "export function buildRun(){const a=argv(),dirty=sh('git status --short'),git={branch:sh('git branch --show-current')||'unknown',commit:sh('git rev-parse HEAD')||'unknown',origin:sh('git remote get-url origin')||'unknown'",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:scripts/verify-mougle-v12-architecture.js:115",
+    "file": "scripts/verify-mougle-v12-architecture.js",
+    "line": 115,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "export function buildRun(){const a=argv(),dirty=sh('git status --short'),git={branch:sh('git branch --show-current')||'unknown',commit:sh('git rev-parse HEAD')||'unknown',origin:sh('git remote get-url origin')||'unknown'",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:server/index.ts:413",
+    "file": "server/index.ts",
+    "line": 413,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "socialPublisherService.startAutoPublisher(5);",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "reputation_payout_confusion:server/routes.ts:1730",
+    "file": "server/routes.ts",
+    "line": 1730,
+    "severity": "P0",
+    "rule": "reputation_payout_confusion",
+    "description": "Potential use of reputation/UES as payout or approval.",
+    "snippet": "res.json({ identity, agent: agent ? { displayName: agent.displayName, avatar: agent.avatar, reputation: agent.reputation, rankLevel: agent.rankLevel, creditWallet: agent.creditWallet } : null, plan });",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/agent-behavior-engine.ts:485",
+    "file": "server/services/agent-behavior-engine.ts",
+    "line": 485,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "amount: packet.gluonSignal.amount,",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:server/services/audience-audit-email-scheduler.ts:512",
+    "file": "server/services/audience-audit-email-scheduler.ts",
+    "line": 512,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "await db.execute(sql`TRUNCATE TABLE audience_audit_email_runs, audience_audit_email_schedules`);",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:server/services/audience-connector-secrets-service.ts:415",
+    "file": "server/services/audience-connector-secrets-service.ts",
+    "line": 415,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "sql`TRUNCATE TABLE audience_connector_secrets, audience_connector_secret_rotations`,",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:server/services/broadcast-brief-builder-service.ts:464",
+    "file": "server/services/broadcast-brief-builder-service.ts",
+    "line": 464,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "await db.execute(dsql`TRUNCATE TABLE broadcast_briefs`);",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/gluon-redemption-compliance-service.ts:264",
+    "file": "server/services/gluon-redemption-compliance-service.ts",
+    "line": 264,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "current.totalGluon = round(current.totalGluon + round(row.amount));",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/gluon-redemption-compliance-service.ts:471",
+    "file": "server/services/gluon-redemption-compliance-service.ts",
+    "line": 471,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "if (category === \"valid\") validGluon += amount;",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/gluon-redemption-compliance-service.ts:472",
+    "file": "server/services/gluon-redemption-compliance-service.ts",
+    "line": 472,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "else if (category === \"pending\") pendingGluon += amount;",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/gluon-redemption-compliance-service.ts:473",
+    "file": "server/services/gluon-redemption-compliance-service.ts",
+    "line": 473,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "else invalidGluon += amount;",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/gluon-redemption-compliance-service.ts:584",
+    "file": "server/services/gluon-redemption-compliance-service.ts",
+    "line": 584,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "\"Gluon is an internal contribution credit, not withdrawable cash.\",",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/gluon-value-index-service.ts:250",
+    "file": "server/services/gluon-value-index-service.ts",
+    "line": 250,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "\"Gluon is an internal contribution credit, not withdrawable cash.\",",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/knowledge-economy-service.ts:403",
+    "file": "server/services/knowledge-economy-service.ts",
+    "line": 403,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "\"Gluon is an internal non-cashout wisdom signal in this phase.\",",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/knowledge-economy-service.ts:540",
+    "file": "server/services/knowledge-economy-service.ts",
+    "line": 540,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "\"Gluon is non-convertible and never touches credits or payouts.\",",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/knowledge-economy-service.ts:633",
+    "file": "server/services/knowledge-economy-service.ts",
+    "line": 633,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "? item.message.replace(/\\bGluon\\b/g, \"the contribution record\").replace(/\\bcashout\\b/gi, \"financial use\")",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/knowledge-economy-service.ts:1017",
+    "file": "server/services/knowledge-economy-service.ts",
+    "line": 1017,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "const gluonSignal = roundReasoningScore(Math.min(1, Math.max(0, gluon.amount) / 100));",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/knowledge-economy-service.ts:1240",
+    "file": "server/services/knowledge-economy-service.ts",
+    "line": 1240,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "amount: gluon.amount,",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/knowledge-economy-service.ts:1241",
+    "file": "server/services/knowledge-economy-service.ts",
+    "line": 1241,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "normalized: roundReasoningScore(Math.min(1, Math.max(0, gluon.amount) / 100)),",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/knowledge-economy-service.ts:1279",
+    "file": "server/services/knowledge-economy-service.ts",
+    "line": 1279,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "\"No packets, DNA rows, graph rows, Gluon ledger entries, wallets, payouts, or marketplace transactions are mutated.\",",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/knowledge-economy-service.ts:1470",
+    "file": "server/services/knowledge-economy-service.ts",
+    "line": 1470,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "graphLearningSignalEligible: reviewStatus === \"accepted\" && [\"verified\", \"approved\", \"supported\"].includes(packet.verificationStatus) && gluon.amount > 0,",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/knowledge-economy-service.ts:1480",
+    "file": "server/services/knowledge-economy-service.ts",
+    "line": 1480,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "gluonEarned: gluon.amount,",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/knowledge-economy-service.ts:1493",
+    "file": "server/services/knowledge-economy-service.ts",
+    "line": 1493,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "amount: gluon.amount,",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/knowledge-economy-service.ts:1501",
+    "file": "server/services/knowledge-economy-service.ts",
+    "line": 1501,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "amount: gluon.amount,",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/marketplace-review-trust-service.ts:222",
+    "file": "server/services/marketplace-review-trust-service.ts",
+    "line": 222,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "amount: sql<number>`coalesce(sum(${gluonLedgerEntries.amount}), 0)`,",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:server/services/marketplace-review-trust-service.ts:232",
+    "file": "server/services/marketplace-review-trust-service.ts",
+    "line": 232,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "const gluonEarned = Math.max(Number(packetRow?.gluonEarned || 0), Number(ledgerRow?.amount || 0));",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:server/services/newsroom/newsroomDataPackageBuilder.ts:69",
+    "file": "server/services/newsroom/newsroomDataPackageBuilder.ts",
+    "line": 69,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "* Note: publishable=true NEVER implies the package may be auto-published.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:server/services/newsroom-package-builder-service.ts:556",
+    "file": "server/services/newsroom-package-builder-service.ts",
+    "line": 556,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "await db.execute(dsql`TRUNCATE TABLE newsroom_packages`);",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:server/services/omni-channel-audience-safety-service.ts:796",
+    "file": "server/services/omni-channel-audience-safety-service.ts",
+    "line": 796,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "await db.execute(sql`TRUNCATE TABLE",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:server/services/social-publisher-service.ts:142",
+    "file": "server/services/social-publisher-service.ts",
+    "line": 142,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "console.log(`[SocialPublisher] Auto-publisher started (every ${intervalMinutes} min)`);",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:server/services/social-publisher-service.ts:157",
+    "file": "server/services/social-publisher-service.ts",
+    "line": 157,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "if (!(await socialDistributionApprovalService.canLegacyAutoPublisherRun())) {",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:server/services/social-publisher-service.ts:163",
+    "file": "server/services/social-publisher-service.ts",
+    "line": 163,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "console.log(`[SocialPublisher] Auto-published ${processed} posts`);",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:server/services/social-publisher-service.ts:166",
+    "file": "server/services/social-publisher-service.ts",
+    "line": 166,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "console.log(\"[SocialPublisher] Auto-publish error:\", (err as Error).message);",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:server/services/unreal-bridge-contract.ts:498",
+    "file": "server/services/unreal-bridge-contract.ts",
+    "line": 498,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "// Deep scan for any nested non-null publicUrl/signedUrl or realSendAllowed:true.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "gluon_money_confusion:shared/gluon-presentation.ts:2",
+    "file": "shared/gluon-presentation.ts",
+    "line": 2,
+    "severity": "P0",
+    "rule": "gluon_money_confusion",
+    "description": "Potential conversion of Gluon-like credit into money.",
+    "snippet": "\"Gluon IDs are contribution records, not cash, tokens, shares, or payout promises.\";",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:shared/schema.ts:4867",
+    "file": "shared/schema.ts",
+    "line": 4867,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "/*   SUPABASE_DB_URL) — drizzle-kit push is intentionally not used.      */",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:tests/audience-secrets-key-rotation.test.ts:18",
+    "file": "tests/audience-secrets-key-rotation.test.ts",
+    "line": 18,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "await db.execute(sql`TRUNCATE TABLE audience_connector_secrets`);",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:tests/cinema-control.test.ts:340",
+    "file": "tests/cinema-control.test.ts",
+    "line": 340,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "assert.equal(text.includes(\"sk-supersecret\"), false, \"openai secret leaked\");",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "destructive_database_command:tests/production-asset-orphan-bulk-reconcile.test.ts:51",
+    "file": "tests/production-asset-orphan-bulk-reconcile.test.ts",
+    "line": 51,
+    "severity": "P0",
+    "rule": "destructive_database_command",
+    "description": "Potential destructive DB command.",
+    "snippet": "// requiring drizzle-kit push.",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "secret_vault_to_llm:tests/production-house.test.ts:1991",
+    "file": "tests/production-house.test.ts",
+    "line": 1991,
+    "severity": "P0",
+    "rule": "secret_vault_to_llm",
+    "description": "Potential secret/private vault value exposed to LLM context.",
+    "snippet": "assert.ok(!txt.includes(\"sk-SECRET_VALUE_AAA\"), `export ${t} leaked OPENAI key`);",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  },
+  {
+    "id": "publish_without_verification:tests/production-house.test.ts:3536",
+    "file": "tests/production-house.test.ts",
+    "line": 3536,
+    "severity": "P0",
+    "rule": "publish_without_verification",
+    "description": "Potential public publishing or external execution without verification.",
+    "snippet": "it(\"local validation has explicit checks for no publicUrl/signedUrl values and no realSendAllowed:true\", async () => {",
+    "recommendation": "Route through Council Socket Fabric, Stage 7/6, policy gate, and audit ledger."
+  }
+]

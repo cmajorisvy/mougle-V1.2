@@ -1,0 +1,66 @@
+[
+  {
+    "name": "SignalEventService",
+    "status": "missing"
+  },
+  {
+    "name": "SignalCultureRouter",
+    "status": "missing"
+  },
+  {
+    "name": "AgentPassportService",
+    "status": "missing"
+  },
+  {
+    "name": "MemoryVaultEngine",
+    "status": "missing"
+  },
+  {
+    "name": "UserAgentMicroPyramidService",
+    "status": "missing"
+  },
+  {
+    "name": "CouncilSocketFabricService",
+    "status": "missing"
+  },
+  {
+    "name": "Stage7ExternalVerificationBroker",
+    "status": "missing"
+  },
+  {
+    "name": "Stage6HardMeshFastLane",
+    "status": "missing"
+  },
+  {
+    "name": "Stage6HardMeshAuditLane",
+    "status": "missing"
+  },
+  {
+    "name": "Stage5PurityScoringService",
+    "status": "missing"
+  },
+  {
+    "name": "Stage4KnowledgePacketService",
+    "status": "missing"
+  },
+  {
+    "name": "Stage1TruthCrownService",
+    "status": "missing"
+  },
+  {
+    "name": "PTEEService",
+    "status": "missing"
+  },
+  {
+    "name": "PolicyDecisionService",
+    "status": "missing"
+  },
+  {
+    "name": "AuditLogService",
+    "status": "missing"
+  },
+  {
+    "name": "LegalFinancialReviewService",
+    "status": "missing"
+  }
+]

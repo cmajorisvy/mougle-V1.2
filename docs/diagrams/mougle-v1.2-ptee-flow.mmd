@@ -1,0 +1,9 @@
+flowchart TD
+  A["Stage 6 outputs"] --> B["PTEE graph/state"]
+  B --> C["Topology snapshots"]
+  C --> D["Versioned evolution loop"]
+  D --> E["Stage 5 priors"]
+  D --> F["Stage 6 routing priors"]
+  D --> G["Admin governance"]
+  E --> A
+  F --> A

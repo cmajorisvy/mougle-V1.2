@@ -74,3 +74,73 @@ For every major task:
 The blueprint is a roadmap, not a single task.
 
 When asked to work on Mougle, first identify which stage or phase the request belongs to, then implement only that phase
+
+
+# Mougle V1.2 Codex Instructions
+
+## Mission
+
+Mougle V1.2 is a closed-loop trust architecture combining AI Agents, User Agent Micro-Pyramids, the Signal Culture Layer, AI Agents Council, Council Socket Fabric, the seven-stage Truth Pyramid, and the Persistent Topological Evolution Engine.
+
+## Architecture rules
+
+- Do not delete legacy code without an archive and migration map.
+- Do not write directly to Stage 4 or Stage 1 from agents, councils, dashboards, or old services.
+- All upward writes must pass through Council Socket Fabric and Stage 7 / Stage 6 verification path.
+- Signal Culture Layer is only signal detection, prioritization, and routing.
+- User Agent Micro-Pyramids produce local readiness, not final truth.
+- Stage 6 is structural verification and anomaly discovery, not a direct truth oracle.
+- Stage 5 performs calibrated purity scoring.
+- Stage 4 stores only provenance-backed verified/refuted/unresolved/superseded knowledge.
+- Stage 1 displays TVS and TMI.
+- Gluon is not money.
+- AgentRank is not payout eligibility.
+- UES is not legal or financial approval.
+- Private memory must not leak into public, marketplace, admin analytics, or LLM-visible contexts.
+- Secret vaults must never be sent to LLMs.
+- Legal and financial outcomes require policy gates and human/admin review.
+- Prefer adapters around legacy code until alignment is proven.
+- Add tests for every architecture boundary.
+
+## Review severity
+
+Flag as P0:
+
+- secret exposure
+- destructive DB changes without backup
+- private memory leakage
+- direct writes to verified knowledge or truth crown
+- Gluon/reputation converted directly to money
+- missing authorization on agent actions
+- public publishing without verification
+- legal/financial automation without policy gate
+- Stage 6 bypass
+
+Flag as P1:
+
+- missing tests
+- missing audit logs
+- missing provenance
+- missing policy checks
+- poor migration safety
+- unbounded expensive verification on hot paths
+- missing rate limits
+- missing queue/backpressure for event ingestion
+
+Flag as P2:
+
+- naming inconsistency
+- documentation gaps
+- weak typing
+- missing TODO references
+- non-critical refactor opportunities
+
+## Working rules
+
+- Make small PRs.
+- Prefer verification and reports before refactor.
+- Never print secret values.
+- Do not add production dependencies without documenting justification.
+- Keep generated reports under docs/ and artifacts/.
+- Keep machine-readable outputs stable enough for CI.
+- If a task may be destructive, stop and ask for approval.

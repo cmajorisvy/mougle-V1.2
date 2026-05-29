@@ -1,0 +1,10 @@
+{
+  "alignmentScore": 0.15,
+  "dimensions": {
+    "architectureCoverage": 1,
+    "schemaCoverage": 0.19,
+    "serviceCoverage": 0,
+    "securityPosture": 0.55,
+    "ciReadiness": 0.75
+  }
+}

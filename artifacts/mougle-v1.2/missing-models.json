@@ -1,0 +1,258 @@
+[
+  {
+    "name": "accounts",
+    "status": "missing"
+  },
+  {
+    "name": "sessions",
+    "status": "missing"
+  },
+  {
+    "name": "roles",
+    "status": "missing"
+  },
+  {
+    "name": "permissions",
+    "status": "missing"
+  },
+  {
+    "name": "user_settings",
+    "status": "missing"
+  },
+  {
+    "name": "agent_profiles",
+    "status": "missing"
+  },
+  {
+    "name": "agent_skills",
+    "status": "missing"
+  },
+  {
+    "name": "agent_rank_records",
+    "status": "missing"
+  },
+  {
+    "name": "agent_rooms",
+    "status": "missing"
+  },
+  {
+    "name": "agent_action_requests",
+    "status": "missing"
+  },
+  {
+    "name": "agent_simulation_runs",
+    "status": "missing"
+  },
+  {
+    "name": "memories",
+    "status": "missing"
+  },
+  {
+    "name": "vaults",
+    "status": "missing"
+  },
+  {
+    "name": "memory_permissions",
+    "status": "missing"
+  },
+  {
+    "name": "consent_records",
+    "status": "missing"
+  },
+  {
+    "name": "agent_vault_permissions",
+    "status": "missing"
+  },
+  {
+    "name": "agent_memory_records",
+    "status": "missing"
+  },
+  {
+    "name": "evidence_bundles",
+    "status": "missing"
+  },
+  {
+    "name": "verification_runs",
+    "status": "missing"
+  },
+  {
+    "name": "truth_scores",
+    "status": "missing"
+  },
+  {
+    "name": "purity_scores",
+    "status": "missing"
+  },
+  {
+    "name": "provenance_records",
+    "status": "missing"
+  },
+  {
+    "name": "lineage_records",
+    "status": "missing"
+  },
+  {
+    "name": "hardmesh_clusters",
+    "status": "missing"
+  },
+  {
+    "name": "hardmesh_runs",
+    "status": "missing"
+  },
+  {
+    "name": "hardmesh_metrics",
+    "status": "missing"
+  },
+  {
+    "name": "anomaly_records",
+    "status": "missing"
+  },
+  {
+    "name": "query_tank_items",
+    "status": "missing"
+  },
+  {
+    "name": "cluster_stability_scores",
+    "status": "missing"
+  },
+  {
+    "name": "equation_versions",
+    "status": "missing"
+  },
+  {
+    "name": "calibration_runs",
+    "status": "missing"
+  },
+  {
+    "name": "publish_gate_decisions",
+    "status": "missing"
+  },
+  {
+    "name": "verified_knowledge_graph_nodes",
+    "status": "missing"
+  },
+  {
+    "name": "verified_knowledge_graph_edges",
+    "status": "missing"
+  },
+  {
+    "name": "knowledge_packet_versions",
+    "status": "missing"
+  },
+  {
+    "name": "claim_status_history",
+    "status": "missing"
+  },
+  {
+    "name": "topology_snapshots",
+    "status": "missing"
+  },
+  {
+    "name": "ptee_versions",
+    "status": "missing"
+  },
+  {
+    "name": "topology_stability_signals",
+    "status": "missing"
+  },
+  {
+    "name": "topology_evolution_jobs",
+    "status": "missing"
+  },
+  {
+    "name": "rollback_states",
+    "status": "missing"
+  },
+  {
+    "name": "ues_records",
+    "status": "missing"
+  },
+  {
+    "name": "purchases",
+    "status": "missing"
+  },
+  {
+    "name": "subscriptions",
+    "status": "missing"
+  },
+  {
+    "name": "revenue_splits",
+    "status": "missing"
+  },
+  {
+    "name": "payout_records",
+    "status": "missing"
+  },
+  {
+    "name": "ledger_entries",
+    "status": "missing"
+  },
+  {
+    "name": "settlement_records",
+    "status": "missing"
+  },
+  {
+    "name": "signal_events",
+    "status": "missing"
+  },
+  {
+    "name": "signal_vectors",
+    "status": "missing"
+  },
+  {
+    "name": "signal_routes",
+    "status": "missing"
+  },
+  {
+    "name": "event_archive",
+    "status": "missing"
+  },
+  {
+    "name": "signal_node_states",
+    "status": "missing"
+  },
+  {
+    "name": "signal_spikes",
+    "status": "missing"
+  },
+  {
+    "name": "signal_threshold_configs",
+    "status": "missing"
+  },
+  {
+    "name": "signal_weight_profiles",
+    "status": "missing"
+  },
+  {
+    "name": "signal_decay_profiles",
+    "status": "missing"
+  },
+  {
+    "name": "audit_logs",
+    "status": "missing"
+  },
+  {
+    "name": "admin_actions",
+    "status": "missing"
+  },
+  {
+    "name": "policy_decisions",
+    "status": "missing"
+  },
+  {
+    "name": "legal_review_queue",
+    "status": "missing"
+  },
+  {
+    "name": "moderation_queue",
+    "status": "missing"
+  },
+  {
+    "name": "approval_requests",
+    "status": "missing"
+  },
+  {
+    "name": "debug_approval_requests",
+    "status": "missing"
+  }
+]

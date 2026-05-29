@@ -1,0 +1,17 @@
+{
+  "specversion": "1.0",
+  "type": "com.mougle.v12.signal.event",
+  "source": "/mougle/v1.2/signal-culture-layer",
+  "id": "uuid",
+  "time": "RFC3339 timestamp",
+  "datacontenttype": "application/json",
+  "subject": "agent|user|content|newsroom|podcast|marketplace",
+  "data": {
+    "traceId": "uuid",
+    "eventType": "string",
+    "actorType": "user|agent|system|admin",
+    "riskTier": "R0|R1|R2|R3|R4|R5",
+    "stage6Required": true,
+    "payloadRef": "redacted reference"
+  }
+}

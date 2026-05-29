@@ -1,0 +1,246 @@
+# Mougle V1.2 API Route Map
+
+| Method | Path | File | Auth | Target |
+| --- | --- | --- | --- | --- |
+| GET | /api/conversations | server/replit_integrations/audio/routes.ts | review required | RouteAdapter |
+| GET | /api/conversations/:id | server/replit_integrations/audio/routes.ts | review required | RouteAdapter |
+| POST | /api/conversations | server/replit_integrations/audio/routes.ts | review required | RouteAdapter |
+| DELETE | /api/conversations/:id | server/replit_integrations/audio/routes.ts | review required | RouteAdapter |
+| POST | /api/conversations/:id/messages | server/replit_integrations/audio/routes.ts | review required | RouteAdapter |
+| GET | /api/conversations | server/replit_integrations/chat/routes.ts | review required | RouteAdapter |
+| GET | /api/conversations/:id | server/replit_integrations/chat/routes.ts | review required | RouteAdapter |
+| POST | /api/conversations | server/replit_integrations/chat/routes.ts | review required | RouteAdapter |
+| DELETE | /api/conversations/:id | server/replit_integrations/chat/routes.ts | review required | RouteAdapter |
+| POST | /api/conversations/:id/messages | server/replit_integrations/chat/routes.ts | review required | RouteAdapter |
+| POST | /api/generate-image | server/replit_integrations/image/routes.ts | review required | RouteAdapter |
+| POST | /api/uploads/request-url | server/replit_integrations/object_storage/routes.ts | review required | RouteAdapter |
+| GET | /objects/:objectPath(*) | server/replit_integrations/object_storage/routes.ts | review required | RouteAdapter |
+| GET | ${BASE}/:id | server/routes/admin/permanent-avatars.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | ${BASE}/:id | server/routes/admin/permanent-avatars.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/rebind | server/routes/admin/permanent-avatars.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/identity-review | server/routes/admin/permanent-avatars.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/safety-review | server/routes/admin/permanent-avatars.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/approval | server/routes/admin/permanent-avatars.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/archive | server/routes/admin/permanent-avatars.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/unarchive | server/routes/admin/permanent-avatars.ts | auth/admin guard detected | AdminGovernanceService |
+| DELETE | ${BASE}/:id | server/routes/admin/permanent-avatars.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/:id/preview-bundle | server/routes/admin/permanent-avatars.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/upload | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/import-from-url | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/deletions | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/deletions/:assetId | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/:id | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/signed-preview-url | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/safety-review | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/license | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/approval | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/asset-kind | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/archive | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| DELETE | ${BASE}/:id | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/orphans/sweep/flapping-threshold | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/orphans/sweep/flapping-window-ms | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/orphans/sweep/flapping-digest/snooze | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/orphans/sweep/flapping-digest/snooze | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/orphan-sweep/flapping-snooze | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/orphan-sweep/flapping-unsnooze | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/orphan-sweep/flapping-snooze-log | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/orphans/sweep/flapping-config/history | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/orphans/sweep/flapping/config-history | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/orphans/sweep/flapping/config-history/actor-stats | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/orphans/sweep/flapping/config-history/daily-stats | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/orphans/sweep/flapping/alerts/daily-stats | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/orphans/sweep/flapping/alerts/by-day | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/orphans/list | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/orphan-sweep/status | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/orphan-sweep/threshold/history | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/orphan-sweep/threshold/history.csv | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/orphans/sweep/flapping-config/history.csv | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/orphan-sweep/threshold | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/orphans/bulk-reconcile | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/reconcile | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/r7b-e2e-cleanup/preview | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/r7b-e2e-cleanup/run | server/routes/admin/production-assets.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/upload | server/routes/admin/production-rigs.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/import-from-url | server/routes/admin/production-rigs.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/:id | server/routes/admin/production-rigs.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/signed-preview-url | server/routes/admin/production-rigs.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/safety-review | server/routes/admin/production-rigs.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/license | server/routes/admin/production-rigs.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/approval | server/routes/admin/production-rigs.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/:id/archive | server/routes/admin/production-rigs.ts | auth/admin guard detected | AdminGovernanceService |
+| DELETE | ${BASE}/:id | server/routes/admin/production-rigs.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${BASE}/r7b-e2e-cleanup/preview | server/routes/admin/production-rigs.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${BASE}/r7b-e2e-cleanup/run | server/routes/admin/production-rigs.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/anchor/modes | server/routes/anchor.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/anchor/pick | server/routes/anchor.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/anchor/render-beat | server/routes/anchor.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/anchor/packages/:packageId/clips | server/routes/anchor.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/anchor/clips/:id | server/routes/anchor.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/autopilot/status | server/routes/autopilot-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/autopilot/settings | server/routes/autopilot-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/autopilot/kill-switch | server/routes/autopilot-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/autopilot/start | server/routes/autopilot-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/autopilot/stop | server/routes/autopilot-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/autopilot/evaluate | server/routes/autopilot-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/autopilot/queue | server/routes/autopilot-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/autopilot/audit | server/routes/autopilot-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/newsroom/broadcast-brief/history | server/routes/broadcast-briefs.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/newsroom/broadcast-brief/:id | server/routes/broadcast-briefs.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/newsroom/broadcast-brief/:dataPackageId/generate | server/routes/broadcast-briefs.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/newsroom/broadcast-brief/:id | server/routes/broadcast-briefs.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/public/broadcasts/:id/cover | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/cover-proxy | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts | server/routes/broadcasts.ts | review required | AdminGovernanceService |
+| POST | /api/admin/broadcasts/render | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/broadcasts/:id | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| DELETE | /api/admin/broadcasts/:id | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/covers/sweep | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/covers/sweep/audit | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/covers/sweep/audit/download | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/covers/sweep/restore | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/covers/sweep/restore-all | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/media/sweep | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/sweep/history | server/routes/broadcasts.ts | auth/admin guard detected | ProductionPreviewSafetyService |
+| GET | /api/admin/broadcasts/media/sweep/audit | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/covers/sweep/audit/archives/:archiveName/preview | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/media/sweep/audit/archives/:archiveName/preview | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/covers/sweep/audit/archives/:archiveName | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/media/sweep/audit/archives/:archiveName | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/covers/sweep/status | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/covers/sweep/run-now | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/covers/sweep/recent-auto-clears | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/covers/sweep/recent-auto-clears/reopened | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/covers/sweep/recent-auto-clears/:id/reopen | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/broadcasts/covers/sweep/threshold | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/broadcasts/covers/sweep/flapping-threshold | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/broadcasts/covers/sweep/flapping-window-ms | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/covers/sweep/flapping/rearm | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/broadcasts/covers/sweep/audit-retention | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/live-alert/status | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/live-alert/run-now | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/broadcasts/live-alert/threshold | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/media/sweep/status | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/media/sweep/run-now | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/media/sweep/recent-auto-clears | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/media/sweep/recent-auto-clears/reopened | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/media/sweep/recent-auto-clears/:id/reopen | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/broadcasts/media/sweep/threshold | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/broadcasts/media/sweep/flapping-threshold | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/broadcasts/media/sweep/flapping-window-ms | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/media/sweep/flapping/rearm | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/broadcasts/media/sweep/audit-retention | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/sweep/apply-mode | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/broadcasts/sweep/apply-mode | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/sweep/run-now | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/:id/cover/upload | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/live-alerts/events | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/live-alerts/events | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/:id/manifest | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/:id/preview | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/approvals | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/approvals | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| DELETE | /api/admin/broadcasts/approvals/:packageId | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/_meta/founder-approval-flag-name | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/saved-views | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broadcasts/saved-views | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/broadcasts/saved-views/:id | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/saved-view-schedule-audit | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| DELETE | /api/admin/broadcasts/saved-views/:id | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/fallback-default-preset | server/routes/broadcasts.ts | review required | AdminGovernanceService |
+| POST | /api/admin/broadcasts/fallback-default-preset-audit/force-rotate | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/fallback-default-preset-audit/archives/:archiveName/preview | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/fallback-default-preset-audit/archives/:archiveName | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/fallback-default-preset-audit/archives-bundle | server/routes/broadcasts.ts | auth/admin guard detected | EvidenceVerificationService |
+| DELETE | /api/admin/broadcasts/fallback-default-preset-audit/archives/:archiveName | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PUT | /api/admin/broadcasts/fallback-default-preset | server/routes/broadcasts.ts | review required | AdminGovernanceService |
+| DELETE | /api/admin/broadcasts/fallback-default-preset | server/routes/broadcasts.ts | review required | AdminGovernanceService |
+| GET | /api/admin/broadcasts/fallback-default-preset-audit | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broadcasts/fallback-default-preset-audit/retention | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/broadcasts/fallback-default-preset-audit/retention | server/routes/broadcasts.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broll/resolve | server/routes/broll.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broll/plans/:briefId | server/routes/broll.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broll/plans-by-id/:planId | server/routes/broll.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/broll/swap-clip | server/routes/broll.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broll/mapbox-proxy/:clipId | server/routes/broll.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/broll/clips | server/routes/broll.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/cinema/readiness | server/routes/cinema-control-routes.ts | auth/admin guard detected | VaultPermissionGateway |
+| GET | /api/projects | server/routes/cinema-control-routes.ts | auth/admin guard detected | VaultPermissionGateway |
+| POST | /api/projects | server/routes/cinema-control-routes.ts | auth/admin guard detected | VaultPermissionGateway |
+| GET | /api/projects/:id | server/routes/cinema-control-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/projects/:id/approval | server/routes/cinema-control-routes.ts | auth/admin guard detected | VaultPermissionGateway |
+| POST | /api/script/generate | server/routes/cinema-control-routes.ts | auth/admin guard detected | VaultPermissionGateway |
+| POST | /api/voice/generate | server/routes/cinema-control-routes.ts | auth/admin guard detected | VaultPermissionGateway |
+| POST | /api/assets/meshy | server/routes/cinema-control-routes.ts | auth/admin guard detected | VaultPermissionGateway |
+| POST | /api/video/runway | server/routes/cinema-control-routes.ts | auth/admin guard detected | VaultPermissionGateway |
+| POST | /api/scene-manifest | server/routes/cinema-control-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/4d-cue-manifest | server/routes/cinema-control-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/unreal/send-command | server/routes/cinema-control-routes.ts | auth/admin guard detected | VaultPermissionGateway |
+| POST | /api/4d/send-cue | server/routes/cinema-control-routes.ts | auth/admin guard detected | VaultPermissionGateway |
+| GET | /api/admin/cost/policy | server/routes/cost.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/cost/policy | server/routes/cost.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/cost/events | server/routes/cost.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/cost/preview | server/routes/cost.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/cost/pause-paid-apis | server/routes/cost.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/cost/resume-paid-apis | server/routes/cost.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/suppression-log | server/routes/founder-pto-mode-routes.ts | auth/admin guard detected | EvidenceVerificationService |
+| GET | ${base}/suppression-stats | server/routes/founder-pto-mode-routes.ts | auth/admin guard detected | EvidenceVerificationService |
+| GET | ${base}/suppression-log/export | server/routes/founder-pto-mode-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| DELETE | ${base}/suppression-log | server/routes/founder-pto-mode-routes.ts | auth/admin guard detected | EvidenceVerificationService |
+| POST | ${base}/snooze | server/routes/founder-pto-mode-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/apexload/decide | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/precognition/plan | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/flowstate | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/flowstate/transition | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/screen-director/anchor-intent | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/screen-director/robot-intent | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/screen-director/restore-default | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/kill-switch | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/take-plans | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/validations | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/presets | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/bus/history | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/apexload/recent | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/precognition/recent | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/overview | server/routes/neural-newsroom-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/news-sources | server/routes/news-sources.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/news-sources/preview | server/routes/news-sources.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/news-sources | server/routes/news-sources.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/news-sources/:id | server/routes/news-sources.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/news-sources/:id/check | server/routes/news-sources.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/news-sources/:id/disable | server/routes/news-sources.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/news-sources/public | server/routes/news-sources.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/newsroom-packages | server/routes/newsroom-packages.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | /api/admin/newsroom-packages/:id | server/routes/newsroom-packages.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/newsroom-packages/from-brief/:briefId | server/routes/newsroom-packages.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | /api/admin/newsroom-packages/:id | server/routes/newsroom-packages.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/newsroom-packages/:id/approve | server/routes/newsroom-packages.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | /api/admin/newsroom/cluster-preview | server/routes/newsroom-preview-routes.ts | auth/admin guard detected | EvidenceVerificationService |
+| POST | /api/admin/newsroom/claims-preview | server/routes/newsroom-preview-routes.ts | auth/admin guard detected | EvidenceVerificationService |
+| POST | /api/admin/newsroom/package-preview | server/routes/newsroom-preview-routes.ts | auth/admin guard detected | EvidenceVerificationService |
+| GET | ${base}/connectors | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/connectors | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| PATCH | ${base}/connectors/:connectorId/feature-flags | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/story-context | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/:platform/ingest | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/message/:messageId/evaluate | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/message/:messageId/simulate-moderation | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/message/:messageId/route-to-robot | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/message/:messageId/route-to-screen | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/export | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/export/count | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/email-schedule | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| PUT | ${base}/email-schedule | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/email-schedule/preview | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/email-schedule/preview/send-test | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/email-schedule/failure-alert | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/email-schedule/failure-alert/snooze-history | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/email-schedule/failure-alert/snooze | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/email-schedule/run-now | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/email-schedule-history | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| PUT | ${base}/email-schedule-history | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/email-schedule-history/preview | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| POST | ${base}/email-schedule-history/preview/send-test | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/email-schedule-history/failure-alert | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+| GET | ${base}/email-schedule-history/failure-alert/snooze-history | server/routes/omni-channel-audience-routes.ts | auth/admin guard detected | AdminGovernanceService |
+
+See [openapi-draft.yaml](api/openapi-draft.yaml).

@@ -1,0 +1,835 @@
+[
+  {
+    "name": "@google-cloud/storage",
+    "version": "7.19.0",
+    "license": "Apache-2.0",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@hookform/resolvers",
+    "version": "3.10.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@jridgewell/trace-mapping",
+    "version": "0.3.31",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-accordion",
+    "version": "1.2.12",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-alert-dialog",
+    "version": "1.1.15",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-aspect-ratio",
+    "version": "1.1.8",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-avatar",
+    "version": "1.1.11",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-checkbox",
+    "version": "1.3.3",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-collapsible",
+    "version": "1.1.12",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-context-menu",
+    "version": "2.2.16",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-dialog",
+    "version": "1.1.15",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-dropdown-menu",
+    "version": "2.1.16",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-hover-card",
+    "version": "1.1.15",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-label",
+    "version": "2.1.8",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-menubar",
+    "version": "1.1.16",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-navigation-menu",
+    "version": "1.2.14",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-popover",
+    "version": "1.1.15",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-progress",
+    "version": "1.1.8",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-radio-group",
+    "version": "1.3.8",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-scroll-area",
+    "version": "1.2.10",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-select",
+    "version": "2.2.6",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-separator",
+    "version": "1.1.8",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-slider",
+    "version": "1.3.6",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-slot",
+    "version": "1.2.4",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-switch",
+    "version": "1.2.6",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-tabs",
+    "version": "1.1.13",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-toast",
+    "version": "1.2.15",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-toggle",
+    "version": "1.1.10",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-toggle-group",
+    "version": "1.1.11",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@radix-ui/react-tooltip",
+    "version": "1.2.8",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@react-three/drei",
+    "version": "10.7.7",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@react-three/fiber",
+    "version": "9.6.1",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@replit/object-storage",
+    "version": "1.0.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@tanstack/react-query",
+    "version": "5.90.18",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@testing-library/dom",
+    "version": "10.4.1",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@testing-library/react",
+    "version": "16.3.2",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@types/archiver",
+    "version": "7.0.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@types/bcryptjs",
+    "version": "2.4.6",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@types/multer",
+    "version": "2.0.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@types/qrcode",
+    "version": "1.5.6",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@types/three",
+    "version": "0.183.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@uppy/aws-s3",
+    "version": "5.1.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@uppy/core",
+    "version": "5.2.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@uppy/dashboard",
+    "version": "5.1.1",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@uppy/react",
+    "version": "5.2.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "archiver",
+    "version": "8.0.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "bcryptjs",
+    "version": "3.0.3",
+    "license": "BSD-3-Clause",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "class-variance-authority",
+    "version": "0.7.1",
+    "license": "Apache-2.0",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "clsx",
+    "version": "2.1.1",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "cmdk",
+    "version": "1.1.1",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "connect-pg-simple",
+    "version": "10.0.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "date-fns",
+    "version": "3.6.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "drizzle-orm",
+    "version": "0.39.3",
+    "license": "Apache-2.0",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "drizzle-zod",
+    "version": "0.7.1",
+    "license": "Apache-2.0",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "embla-carousel-react",
+    "version": "8.6.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "express",
+    "version": "5.2.1",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "express-session",
+    "version": "1.18.2",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "framer-motion",
+    "version": "12.34.2",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "google-auth-library",
+    "version": "10.6.2",
+    "license": "Apache-2.0",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "gsap",
+    "version": "3.14.2",
+    "license": "Standard 'no charge' license: https://gsap.com/standard-license.",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "input-otp",
+    "version": "1.4.2",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "jsdom",
+    "version": "29.1.1",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "lucide-react",
+    "version": "0.545.0",
+    "license": "ISC",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "memorystore",
+    "version": "1.6.7",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "multer",
+    "version": "2.0.2",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "next-themes",
+    "version": "0.4.6",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "openai",
+    "version": "6.22.0",
+    "license": "Apache-2.0",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "p-limit",
+    "version": "7.3.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "p-retry",
+    "version": "7.1.1",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "passport",
+    "version": "0.7.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "passport-local",
+    "version": "1.0.0",
+    "license": "unknown",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "pdfkit",
+    "version": "0.17.2",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "pg",
+    "version": "8.17.1",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "qrcode",
+    "version": "1.5.4",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "razorpay",
+    "version": "2.9.6",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "react",
+    "version": "19.2.3",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "react-day-picker",
+    "version": "9.13.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "react-dom",
+    "version": "19.2.3",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "react-hook-form",
+    "version": "7.71.1",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "react-resizable-panels",
+    "version": "2.1.9",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "recharts",
+    "version": "2.15.4",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "resend",
+    "version": "4.0.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "rss-parser",
+    "version": "3.13.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "sonner",
+    "version": "2.0.7",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "tailwind-merge",
+    "version": "3.5.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "tailwindcss-animate",
+    "version": "1.0.7",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "three",
+    "version": "0.183.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "troika-three-text",
+    "version": "0.52.4",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "tw-animate-css",
+    "version": "1.4.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "vaul",
+    "version": "1.1.2",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "wouter",
+    "version": "3.9.0",
+    "license": "Unlicense",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "ws",
+    "version": "8.19.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "zod",
+    "version": "3.25.76",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "zod-validation-error",
+    "version": "3.5.4",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "zustand",
+    "version": "5.0.11",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "runtime"
+  },
+  {
+    "name": "@playwright/test",
+    "version": "1.59.1",
+    "license": "Apache-2.0",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@react-three/test-renderer",
+    "version": "9.1.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@replit/vite-plugin-cartographer",
+    "version": "0.4.4",
+    "license": "unknown",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@replit/vite-plugin-dev-banner",
+    "version": "0.1.1",
+    "license": "unknown",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@replit/vite-plugin-runtime-error-modal",
+    "version": "0.0.4",
+    "license": "unknown",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@tailwindcss/vite",
+    "version": "4.1.18",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@types/connect-pg-simple",
+    "version": "7.0.3",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@types/express",
+    "version": "5.0.6",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@types/express-session",
+    "version": "1.18.2",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@types/node",
+    "version": "20.19.30",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@types/passport",
+    "version": "1.0.17",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@types/passport-local",
+    "version": "1.0.38",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@types/react",
+    "version": "19.2.8",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@types/react-dom",
+    "version": "19.2.3",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@types/ws",
+    "version": "8.18.1",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "@vitejs/plugin-react",
+    "version": "5.1.2",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "autoprefixer",
+    "version": "10.4.23",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "drizzle-kit",
+    "version": "0.31.8",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "esbuild",
+    "version": "0.25.12",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "postcss",
+    "version": "8.5.6",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "tailwindcss",
+    "version": "4.1.18",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "tsx",
+    "version": "4.21.0",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "typescript",
+    "version": "5.6.3",
+    "license": "Apache-2.0",
+    "directness": "direct",
+    "scope": "development"
+  },
+  {
+    "name": "vite",
+    "version": "7.3.1",
+    "license": "MIT",
+    "directness": "direct",
+    "scope": "development"
+  }
+]

@@ -1,0 +1,23 @@
+erDiagram
+  Agent ||--|| AgentPassport : has
+  Agent ||--o{ AgentVaultPermission : receives
+  Agent ||--o{ AgentMemoryRecord : reads
+  Agent ||--o{ AgentMessage : sends
+  AgentRoom ||--o{ AgentMessage : contains
+  Agent ||--o{ AgentActionRequest : requests
+  AgentActionRequest ||--o{ AgentSimulationRun : simulates
+  Agent ||--|| AgentMicroPyramidState : maintains
+  SignalEvent ||--o{ SignalVector : encodes
+  SignalEvent ||--o{ SignalRoute : routes
+  Claim ||--o{ EvidenceBundle : supported_by
+  EvidenceBundle ||--o{ VerificationRun : verified_by
+  VerificationRun ||--o{ HardMeshCluster : analyzes
+  VerificationRun ||--o{ PurityScore : calibrates
+  PurityScore ||--o{ TruthScore : contributes_to
+  KnowledgePacket ||--o{ Claim : contains
+  Agent ||--o{ GluonLedgerEntry : contributes
+  Agent ||--o{ UESRecord : measured_by
+  Agent ||--o{ AgentRankRecord : ranked_by
+  CouncilSocketEvent ||--o{ PolicyDecision : governed_by
+  PolicyDecision ||--o{ AuditLog : records
+  TopologySnapshot ||--o{ PTEEVersion : versions

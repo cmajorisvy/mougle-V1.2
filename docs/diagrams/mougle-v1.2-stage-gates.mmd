@@ -1,0 +1,11 @@
+flowchart LR
+  A["Agent / Dashboard / Council"] --> B["Council Socket Fabric"]
+  B --> C["Stage 7"]
+  C --> D["Stage 6"]
+  D --> E["Stage 5"]
+  E --> F{"Publish / Abstain Gate"}
+  F -->|publish| G["Stage 4 Knowledge"]
+  F -->|abstain| H["Unresolved / Query Tank"]
+  G --> I["Stage 1 Truth Crown display"]
+  A -. "forbidden direct write" .-> G
+  A -. "forbidden direct influence" .-> I

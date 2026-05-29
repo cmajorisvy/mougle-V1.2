@@ -1,0 +1,705 @@
+openapi: 3.1.0
+info:
+  title: Mougle V1.2 API Draft
+  version: 0.1.0
+paths:
+  /api/agents:
+    post:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/agents/{agentId}:
+    get:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/agents/{agentId}/action-request:
+    post:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/agents/{agentId}/simulate:
+    post:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/agents/{agentId}/micro-pyramid:
+    get:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/signal/events:
+    post:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/signal/events/{id}:
+    get:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/signal/nodes/{nodeId}/state:
+    get:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/signal/topics/{topicId}/momentum:
+    get:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/signal/agents/{agentId}/micro-pyramid:
+    get:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/signal/route/replay:
+    post:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/council/ai-agents/socket:
+    post:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/verification/stage7:
+    post:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/hardmesh/verify:
+    post:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/purity/score:
+    post:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/knowledge/packets:
+    post:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/truth/{objectId}:
+    get:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/admin/agent-health:
+    get:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/admin/signal-load-reduction:
+    get:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/admin/verification-queue:
+    get:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/admin/signal/alerts:
+    get:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/admin/signal/audit:
+    get:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/admin/signal/heatmap:
+    get:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/admin/policy/decision:
+    post:
+      summary: Planned Mougle V1.2 route placeholder
+      responses:
+        '501': { description: Implementation deferred }
+  /api/conversations:
+    get:
+      summary: Detected route from server/replit_integrations/audio/routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    post:
+      summary: Detected route from server/replit_integrations/audio/routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/conversations/{id}:
+    get:
+      summary: Detected route from server/replit_integrations/audio/routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    delete:
+      summary: Detected route from server/replit_integrations/audio/routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/conversations/{id}/messages:
+    post:
+      summary: Detected route from server/replit_integrations/audio/routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/generate-image:
+    post:
+      summary: Detected route from server/replit_integrations/image/routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/uploads/request-url:
+    post:
+      summary: Detected route from server/replit_integrations/object_storage/routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /objects/{objectPath}:
+    get:
+      summary: Detected route from server/replit_integrations/object_storage/routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/anchor/modes:
+    get:
+      summary: Detected route from server/routes/anchor.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/anchor/pick:
+    post:
+      summary: Detected route from server/routes/anchor.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/anchor/render-beat:
+    post:
+      summary: Detected route from server/routes/anchor.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/anchor/packages/{packageId}/clips:
+    get:
+      summary: Detected route from server/routes/anchor.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/anchor/clips/{id}:
+    get:
+      summary: Detected route from server/routes/anchor.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/autopilot/status:
+    get:
+      summary: Detected route from server/routes/autopilot-newsroom-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/autopilot/settings:
+    post:
+      summary: Detected route from server/routes/autopilot-newsroom-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/autopilot/kill-switch:
+    post:
+      summary: Detected route from server/routes/autopilot-newsroom-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/autopilot/start:
+    post:
+      summary: Detected route from server/routes/autopilot-newsroom-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/autopilot/stop:
+    post:
+      summary: Detected route from server/routes/autopilot-newsroom-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/autopilot/evaluate:
+    post:
+      summary: Detected route from server/routes/autopilot-newsroom-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/autopilot/queue:
+    get:
+      summary: Detected route from server/routes/autopilot-newsroom-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/autopilot/audit:
+    get:
+      summary: Detected route from server/routes/autopilot-newsroom-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/newsroom/broadcast-brief/history:
+    get:
+      summary: Detected route from server/routes/broadcast-briefs.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/newsroom/broadcast-brief/{id}:
+    get:
+      summary: Detected route from server/routes/broadcast-briefs.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    patch:
+      summary: Detected route from server/routes/broadcast-briefs.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/newsroom/broadcast-brief/{dataPackageId}/generate:
+    post:
+      summary: Detected route from server/routes/broadcast-briefs.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/public/broadcasts/{id}/cover:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/cover-proxy:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/render:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/{id}:
+    patch:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    delete:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/audit:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/audit/download:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/restore:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/restore-all:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/sweep/history:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep/audit:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/audit/archives/{archiveName}/preview:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep/audit/archives/{archiveName}/preview:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/audit/archives/{archiveName}:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep/audit/archives/{archiveName}:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/status:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/run-now:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/recent-auto-clears:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/recent-auto-clears/reopened:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/recent-auto-clears/{id}/reopen:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/threshold:
+    patch:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/flapping-threshold:
+    patch:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/flapping-window-ms:
+    patch:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/flapping/rearm:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/covers/sweep/audit-retention:
+    patch:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/live-alert/status:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/live-alert/run-now:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/live-alert/threshold:
+    patch:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep/status:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep/run-now:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep/recent-auto-clears:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep/recent-auto-clears/reopened:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep/recent-auto-clears/{id}/reopen:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep/threshold:
+    patch:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep/flapping-threshold:
+    patch:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep/flapping-window-ms:
+    patch:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep/flapping/rearm:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/media/sweep/audit-retention:
+    patch:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/sweep/apply-mode:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    patch:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/sweep/run-now:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/{id}/cover/upload:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/live-alerts/events:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/{id}/manifest:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/{id}/preview:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/approvals:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/approvals/{packageId}:
+    delete:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/_meta/founder-approval-flag-name:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/saved-views:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/saved-views/{id}:
+    patch:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    delete:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/saved-view-schedule-audit:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/fallback-default-preset:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    put:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    delete:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/fallback-default-preset-audit/force-rotate:
+    post:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/fallback-default-preset-audit/archives/{archiveName}/preview:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/fallback-default-preset-audit/archives/{archiveName}:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    delete:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/fallback-default-preset-audit/archives-bundle:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/fallback-default-preset-audit:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broadcasts/fallback-default-preset-audit/retention:
+    get:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    patch:
+      summary: Detected route from server/routes/broadcasts.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broll/resolve:
+    post:
+      summary: Detected route from server/routes/broll.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broll/plans/{briefId}:
+    get:
+      summary: Detected route from server/routes/broll.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broll/plans-by-id/{planId}:
+    get:
+      summary: Detected route from server/routes/broll.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broll/swap-clip:
+    post:
+      summary: Detected route from server/routes/broll.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broll/mapbox-proxy/{clipId}:
+    get:
+      summary: Detected route from server/routes/broll.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/broll/clips:
+    get:
+      summary: Detected route from server/routes/broll.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/cinema/readiness:
+    get:
+      summary: Detected route from server/routes/cinema-control-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/projects:
+    get:
+      summary: Detected route from server/routes/cinema-control-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    post:
+      summary: Detected route from server/routes/cinema-control-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/projects/{id}:
+    get:
+      summary: Detected route from server/routes/cinema-control-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/projects/{id}/approval:
+    post:
+      summary: Detected route from server/routes/cinema-control-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/script/generate:
+    post:
+      summary: Detected route from server/routes/cinema-control-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/voice/generate:
+    post:
+      summary: Detected route from server/routes/cinema-control-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/assets/meshy:
+    post:
+      summary: Detected route from server/routes/cinema-control-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/video/runway:
+    post:
+      summary: Detected route from server/routes/cinema-control-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/scene-manifest:
+    post:
+      summary: Detected route from server/routes/cinema-control-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/4d-cue-manifest:
+    post:
+      summary: Detected route from server/routes/cinema-control-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/unreal/send-command:
+    post:
+      summary: Detected route from server/routes/cinema-control-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/4d/send-cue:
+    post:
+      summary: Detected route from server/routes/cinema-control-routes.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/cost/policy:
+    get:
+      summary: Detected route from server/routes/cost.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+    patch:
+      summary: Detected route from server/routes/cost.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/cost/events:
+    get:
+      summary: Detected route from server/routes/cost.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/cost/preview:
+    get:
+      summary: Detected route from server/routes/cost.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/cost/pause-paid-apis:
+    post:
+      summary: Detected route from server/routes/cost.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }
+  /api/admin/cost/resume-paid-apis:
+    post:
+      summary: Detected route from server/routes/cost.ts
+      responses:
+        '200': { description: Detected route, schema not modeled }

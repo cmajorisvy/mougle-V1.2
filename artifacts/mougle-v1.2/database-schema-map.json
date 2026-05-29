@@ -1,0 +1,2046 @@
+[
+  {
+    "name": "screen_presets",
+    "file": "shared/neural-newsroom-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "screen_take_plans",
+    "file": "shared/neural-newsroom-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "screen_safety_validations",
+    "file": "shared/neural-newsroom-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "verified_sources",
+    "file": "shared/newsroom-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "verified_knowledge",
+    "file": "shared/newsroom-schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "verified_claims",
+    "file": "shared/newsroom-schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "verified_timeline_events",
+    "file": "shared/newsroom-schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "verified_media_references",
+    "file": "shared/newsroom-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "verification_audit_events",
+    "file": "shared/newsroom-schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "broadcast_briefs",
+    "file": "shared/newsroom-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "newsroom_packages",
+    "file": "shared/newsroom-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_channel_connectors",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_connector_secrets",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": "privacy/secret boundary required"
+  },
+  {
+    "name": "audience_connector_secret_rotations",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": "privacy/secret boundary required"
+  },
+  {
+    "name": "audience_messages",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_safety_decisions",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_audit_exports",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_audit_export_notifications",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_audit_export_notifier_config_history",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_archive_notifier_snooze_log",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_audit_email_failure_alert_snoozes",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_audit_history_email_stale_snooze_log",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_connector_rotation_notifications",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_connector_rotation_dedup_state",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_legacy_token_dispatch_alerts",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_stale_rows_threshold_history",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_restore_log_rate_threshold_history",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_restore_log_rate_weakening_notifications",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_restore_log",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_moderation_commands",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_gateway_events",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_audit_email_schedules",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_audit_email_runs",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_archive_deletions",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "gateway_alert_settings_audit",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_legacy_token_kill_switch_audit",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_retention_stale_history",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "audience_archive_trash_purges",
+    "file": "shared/omni-channel-audience-schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "session",
+    "file": "shared/schema.ts",
+    "mapsToV12": "identity/auth",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "users",
+    "file": "shared/schema.ts",
+    "mapsToV12": "identity/auth",
+    "status": "maps directly",
+    "concern": ""
+  },
+  {
+    "name": "admin_staff",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "admin_staff_access_requests",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "external_agent_api_keys",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "provider_credentials",
+    "file": "shared/schema.ts",
+    "mapsToV12": "memory/vault",
+    "status": "needs review or legacy mapping",
+    "concern": "privacy/secret boundary required"
+  },
+  {
+    "name": "topics",
+    "file": "shared/schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "posts",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "comments",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "post_likes",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "claims",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "maps directly",
+    "concern": ""
+  },
+  {
+    "name": "evidence",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "maps directly",
+    "concern": ""
+  },
+  {
+    "name": "trust_scores",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_votes",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "reputation_history",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "expertise_tags",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "transactions",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_learning_profiles",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_societies",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "society_members",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "delegated_tasks",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_messages",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "maps directly",
+    "concern": ""
+  },
+  {
+    "name": "governance_proposals",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "governance_votes",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "alliances",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "alliance_members",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "institution_rules",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "task_contracts",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "task_bids",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "civilizations",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_identities",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_memory",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": "privacy/secret boundary required"
+  },
+  {
+    "name": "civilization_investments",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_genomes",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_lineage",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "cultural_memory",
+    "file": "shared/schema.ts",
+    "mapsToV12": "memory/vault",
+    "status": "needs review or legacy mapping",
+    "concern": "privacy/secret boundary required"
+  },
+  {
+    "name": "ethical_profiles",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "ethical_rules",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "ethical_events",
+    "file": "shared/schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "global_metrics",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "global_goal_field",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "global_insights",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_activity_log",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "live_debates",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "debate_participants",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "debate_turns",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "flywheel_jobs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "generated_clips",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "podcast_script_packages",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "podcast_audio_jobs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "youtube_publishing_packages",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "avatar_video_render_jobs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "social_distribution_packages",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "social_distribution_automation_settings",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "news_articles",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "news_comments",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "news_reactions",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "news_shares",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "news_sources",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "social_accounts",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "social_posts",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "promotion_scores",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "social_performance",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "growth_patterns",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "system_control_config",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "activity_metrics",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "anomaly_events",
+    "file": "shared/schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "automation_decisions",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "automation_policy",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "safe_mode_controls",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "subscription_plans",
+    "file": "shared/schema.ts",
+    "mapsToV12": "marketplace/finance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "user_subscriptions",
+    "file": "shared/schema.ts",
+    "mapsToV12": "marketplace/finance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "credit_packages",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "credit_purchases",
+    "file": "shared/schema.ts",
+    "mapsToV12": "marketplace/finance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "invoices",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "credit_usage_log",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "flywheel_metrics",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "moderation_logs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "topic_authority",
+    "file": "shared/schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "civilization_metrics",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "maps directly",
+    "concern": ""
+  },
+  {
+    "name": "network_gravity",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "maps directly",
+    "concern": ""
+  },
+  {
+    "name": "user_agents",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "maps directly",
+    "concern": ""
+  },
+  {
+    "name": "agent_knowledge_sources",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "maps directly",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "marketplace_listings",
+    "file": "shared/schema.ts",
+    "mapsToV12": "marketplace/finance",
+    "status": "maps directly",
+    "concern": ""
+  },
+  {
+    "name": "agent_marketplace_clone_packages",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "maps directly",
+    "concern": ""
+  },
+  {
+    "name": "knowledge_packets",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "maps directly",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "knowledge_packet_acceptances",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "maps directly",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "gluon_ledger_entries",
+    "file": "shared/schema.ts",
+    "mapsToV12": "marketplace/finance",
+    "status": "maps directly",
+    "concern": "financial policy gate required"
+  },
+  {
+    "name": "gluon_value_baselines",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "gluon_value_index_snapshots",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "gluon_redemption_eligibility_reviews",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_dna_mutation_history",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "maps directly",
+    "concern": ""
+  },
+  {
+    "name": "agent_purchases",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_usage_logs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_reviews",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_versions",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "industries",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "industry_categories",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_roles",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "knowledge_packs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "agent_specializations",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_cost_logs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_skill_nodes",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_unlocked_skills",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_xp_logs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_certifications",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_trust_profiles",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_trust_events",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_trust_history",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_teams",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "team_members",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "team_tasks",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "team_messages",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "team_workspaces",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_compute_budgets",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_visibility_scores",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "policy_rules",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "policy_violations",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "credit_sinks",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "civilization_health_snapshots",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "platform_events",
+    "file": "shared/schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_passports",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "maps directly",
+    "concern": ""
+  },
+  {
+    "name": "agent_passport_exports",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "flywheel_agents",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "flywheel_recommendations",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "flywheel_automation_config",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "flywheel_optimization_outcomes",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "personal_agent_profiles",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "personal_agent_memories",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "personal_agent_conversations",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "personal_agent_messages",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "personal_agent_tasks",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "personal_agent_devices",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "personal_agent_finance",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "personal_agent_usage",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "agent_privacy_vaults",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": "privacy/secret boundary required"
+  },
+  {
+    "name": "privacy_access_logs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "privacy_violations",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "privacy_gateway_rules",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "user_trust_vaults",
+    "file": "shared/schema.ts",
+    "mapsToV12": "memory/vault",
+    "status": "needs review or legacy mapping",
+    "concern": "privacy/secret boundary required"
+  },
+  {
+    "name": "trust_permission_tokens",
+    "file": "shared/schema.ts",
+    "mapsToV12": "identity/auth",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "trust_access_events",
+    "file": "shared/schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "trust_health_metrics",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "intelligence_xp_logs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "user_psychology_profiles",
+    "file": "shared/schema.ts",
+    "mapsToV12": "identity/auth",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "psychology_snapshots",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "monetization_events",
+    "file": "shared/schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "risk_audit_logs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "risk_snapshots",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "data_requests",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "truth_memories",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "truth_evolution_events",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "truth_alignment_snapshots",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "reality_claims",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "claim_evidence",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "consensus_records",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "knowledge_graph_nodes",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "knowledge_graph_edges",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "labs_opportunities",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "labs_apps",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "labs_favorites",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "labs_installations",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "labs_reviews",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "labs_flywheel_analytics",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "labs_referrals",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "labs_creator_rankings",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "labs_landing_pages",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "super_loop_cycles",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "super_loop_metrics",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "creator_payout_accounts",
+    "file": "shared/schema.ts",
+    "mapsToV12": "marketplace/finance",
+    "status": "needs review or legacy mapping",
+    "concern": "financial policy gate required"
+  },
+  {
+    "name": "marketplace_orders",
+    "file": "shared/schema.ts",
+    "mapsToV12": "marketplace/finance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "creator_earnings",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "creator_publisher_profiles",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "app_moderation_reports",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "app_risk_disclaimers",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "ai_usage_violations",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "daily_creation_limits",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "creator_promotion_declarations",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "trust_ladder_profiles",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "pricing_analyses",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "app_exports",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "system_settings",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "production_asset_sweep_flapping_config_changes",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "production_asset_orphan_sweep_threshold_changes",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "founder_pto_suppression_log",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "platform_alerts",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "compliance_rules",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "compliance_audit_log",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "compliance_notifications",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "eco_efficiency_metrics",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "policy_templates",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "policy_drafts",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "policy_versions",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "support_tickets",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "ticket_messages",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "knowledge_base_articles",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "ticket_solutions",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "ops_engine_snapshots",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "ops_actions",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "marketing_articles",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "seo_pages",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "referral_links",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "dev_orders",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "knowledge_pages",
+    "file": "shared/schema.ts",
+    "mapsToV12": "truth/knowledge",
+    "status": "needs review or legacy mapping",
+    "concern": "Stage 6 no-bypass gate required"
+  },
+  {
+    "name": "topic_clusters",
+    "file": "shared/schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "authority_flywheel_snapshots",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "bondscore_tests",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "bondscore_questions",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "bondscore_attempts",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "inevitable_platform_snapshots",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "sdh_accounts",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "sdh_posts",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "sdh_config",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "growth_autopilot_config",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "growth_email_triggers",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "growth_autopilot_logs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "growth_optimization_insights",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "projects",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "project_packages",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "project_agent_contributions",
+    "file": "shared/schema.ts",
+    "mapsToV12": "agent foundation",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "project_package_purchases",
+    "file": "shared/schema.ts",
+    "mapsToV12": "marketplace/finance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "project_validations",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "project_feedback",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "ai_jobs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "ai_job_events",
+    "file": "shared/schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "ai_workers",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "ai_retention_runs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "ai_ops_snapshots",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "ai_export_events",
+    "file": "shared/schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "broadcasts",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "broadcast_package_approvals",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "broadcast_live_alert_events",
+    "file": "shared/schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "admin_filter_views",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "broll_clips",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "broll_plans",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "social_drafts",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "anchor_clips",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "playout_queue",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "playout_history",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "playout_state",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "cost_policies",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "cost_events",
+    "file": "shared/schema.ts",
+    "mapsToV12": "signal/event",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "admin_broadcast_saved_view",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "admin_broadcast_fallback_default_preset",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "production_assets",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "production_asset_audit_log",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "production_asset_deletion_snapshots",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "production_rigs",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "production_rig_audit_log",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "permanent_avatars",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "permanent_avatar_audit_log",
+    "file": "shared/schema.ts",
+    "mapsToV12": "governance",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "permanent_avatar_tombstones",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "production_asset_orphan_sweep_flapping_snoozes",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  },
+  {
+    "name": "production_asset_orphan_sweep_flapping_config_history",
+    "file": "shared/schema.ts",
+    "mapsToV12": "legacy/needs review",
+    "status": "needs review or legacy mapping",
+    "concern": ""
+  }
+]
