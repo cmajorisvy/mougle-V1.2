@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -40,6 +41,7 @@ def test_cli_smoke_path(tmp_path: Path):
         ],
         check=True,
         capture_output=True,
+        env={**os.environ, "TRUTH_PYRAMID_DB_PATH": str(tmp_path / "truth_pyramid_cli.db")},
         text=True,
     )
     assert "Final verdict:" in result.stdout

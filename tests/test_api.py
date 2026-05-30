@@ -1,4 +1,12 @@
+import os
+import tempfile
+from pathlib import Path
+
 from fastapi.testclient import TestClient
+
+os.environ["TRUTH_PYRAMID_DB_PATH"] = str(
+    Path(tempfile.gettempdir()) / f"verified_truth_pyramid_api_tests_{os.getpid()}.db"
+)
 
 from app.api import app
 

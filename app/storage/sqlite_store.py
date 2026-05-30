@@ -14,6 +14,8 @@ class SQLiteStore:
     def __init__(self, path: str = "truth_pyramid.db") -> None:
         self.path = Path(path)
         self._memory_conn: Optional[sqlite3.Connection] = sqlite3.connect(path) if path == ":memory:" else None
+        if self._memory_conn is None:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
     def _connect(self) -> sqlite3.Connection:

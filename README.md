@@ -124,6 +124,12 @@ CLI smoke:
 verify-truth --query "What is the capital of France?" --answer "The capital of France is Paris." --corpus ./corpus.json
 ```
 
+If the repository directory is read-only, point SQLite at a writable local path:
+
+```bash
+TRUTH_PYRAMID_DB_PATH=/tmp/truth_pyramid.db verify-truth --query "What is the capital of France?" --answer "The capital of France is Paris." --corpus ./corpus.json
+```
+
 ## Safety Notes
 
 - ExternalJudgePlugin is a stub and performs no real API calls.

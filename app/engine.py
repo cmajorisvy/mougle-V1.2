@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -49,6 +50,7 @@ from app.topology import build_topology_snapshot
 class VerificationEngine:
     def __init__(self, db_path: str = "truth_pyramid.db") -> None:
         self.config = load_truth_config()
+        db_path = os.getenv("TRUTH_PYRAMID_DB_PATH", db_path)
         self.store = SQLiteStore(path=db_path)
         self._graph_by_answer: dict[str, ProvenanceGraph] = {}
 

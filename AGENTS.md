@@ -36,6 +36,8 @@ pytest -q
 verify-truth --query "What is the capital of France?" --answer "The capital of France is Paris." --corpus ./corpus.json --show-claims --show-graph-summary
 ```
 
+Use `TRUTH_PYRAMID_DB_PATH=/tmp/truth_pyramid.db` when the repository directory is read-only or when tests need isolated SQLite state.
+
 ## Engineering Rules
 
 - Keep TVS and TMI separate: TVS is answer-level `[0, 100]`; TMI is system-level `[0, 1]`.
