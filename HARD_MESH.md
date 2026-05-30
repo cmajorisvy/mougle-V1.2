@@ -56,3 +56,7 @@ Tiny corpora are expected in tests and local demos. Clusterers that need more sa
 ## Dependency Notes
 
 HDBSCAN uses `sklearn.cluster.HDBSCAN` when available. The external `hdbscan` package is not required. Persistent homology libraries are not required for core tests.
+
+## Final Integration Notes
+
+Stage 7 and Collapse modules submit candidates and risk packages toward Stage 6. HARD-MESH remains structural verification and anomaly discovery only; it does not declare final truth. Collapse and Stage 7 tests assert that Stage 6 is required before truth movement.

@@ -35,6 +35,33 @@ Report 46 adds a safe local agent-control slice before the council fabric:
 These layers reduce workload and structure events. They are not the Truth Engine, not the Knowledge Graph, not the final governance authority, and not a monetization engine.
 
 
+## Stage 7 and Agent Collapse Final Wiring
+
+The final integration adds Stage 7 External AI Memory & Uncertainty and the AI Agent Collapse Event module. Stage 7 stores candidate-only external records, unresolved/disputed records, fast-resolver placeholders, spike-layer placeholders, and deep-resolver candidate packages. It cannot publish truth or update Stage 1/Stage 4 directly.
+
+The Collapse module evaluates ACR, detects hard policy violations, applies restrictions, creates recovery plans, records reviews, and routes truth-impact/high-risk cases to Council Socket Fabric and Stage 6. Collapse restricts and reviews agents; it never deletes them.
+
+Additional endpoints:
+
+- `POST /stage7/external-records`
+- `GET /stage7/external-records`
+- `POST /stage7/query-tank/resolve`
+- `POST /stage7/stage6/submit`
+- `GET /admin/stage7/alerts`
+- `POST /agents/{agent_id}/collapse/evaluate`
+- `POST /agents/{agent_id}/collapse/events`
+- `GET /agents/{agent_id}/collapse/events`
+- `GET /agents/{agent_id}/collapse/state`
+- `POST /agents/{agent_id}/collapse/restrictions`
+- `POST /agents/{agent_id}/collapse/recovery-plan`
+- `POST /agents/{agent_id}/collapse/review`
+- `POST /agents/{agent_id}/collapse/restore`
+- `GET /admin/agents/collapse/events`
+- `GET /admin/agents/collapse/alerts`
+- `GET /admin/agents/collapse/metrics`
+- `POST /admin/agents/collapse/{event_id}/route-stage6`
+- `POST /admin/agents/collapse/{event_id}/route-truth-impact`
+
 ## Archive-Aware Reuse Foundation
 
 Reports 47-52 add a safe archive discovery layer. The confirmed legacy archive remains searchable under `archive/legacy-codebase/20260529-1150`, but active runtime does not import from archived source. `app/archive_reuse.py` reads generated manifests, recomputes a Micro-Pyramid compatibility score, blocks P0 secret-risk rows, maps candidates into Signal Culture, Stage 5 Micro-Pyramid, Stage 6, Stage 7, admin governance, reference-only, or archive-only buckets, and exposes read-only wiring endpoints.

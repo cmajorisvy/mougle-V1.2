@@ -104,6 +104,54 @@ class ExternalVerifierVerdict(str, Enum):
     insufficient = "insufficient"
 
 
+class Stage7Tank(str, Enum):
+    supported_data = "stage7_a_supported_data_tank"
+    disputed_unknown = "stage7_b_unapproved_disputed_unknown_tank"
+    fast_resolver = "stage7_c_classical_ml_fast_resolver"
+    spike_layer = "stage7_d_temporal_spike_layer"
+    deep_resolver = "stage7_e_deep_resolver"
+
+
+class Stage7RecordStatus(str, Enum):
+    candidate_supported = "candidate_supported"
+    unresolved = "unresolved"
+    disputed = "disputed"
+    unknown = "unknown"
+    submitted_to_stage6 = "submitted_to_stage6"
+
+
+class CollapseState(str, Enum):
+    HEALTHY = "HEALTHY"
+    WATCH = "WATCH"
+    DEGRADED = "DEGRADED"
+    SANDBOX = "SANDBOX"
+    RESTRICTED = "RESTRICTED"
+    EMERGENCY_RESTRICTED = "EMERGENCY_RESTRICTED"
+    BLOCKED = "BLOCKED"
+    RECOVERY = "RECOVERY"
+    RESTORED = "RESTORED"
+
+
+class CollapseType(str, Enum):
+    truth_collapse = "truth_collapse"
+    hallucination_collapse = "hallucination_collapse"
+    privacy_collapse = "privacy_collapse"
+    vault_access_collapse = "vault_access_collapse"
+    permission_collapse = "permission_collapse"
+    autonomy_collapse = "autonomy_collapse"
+    spam_scam_collapse = "spam_scam_collapse"
+    marketplace_collapse = "marketplace_collapse"
+    communication_collapse = "communication_collapse"
+    legal_policy_collapse = "legal_policy_collapse"
+    correction_collapse = "correction_collapse"
+    governance_collapse = "governance_collapse"
+    economic_boundary_collapse = "economic_boundary_collapse"
+    multi_agent_coordination_collapse = "multi_agent_coordination_collapse"
+    stage6_bypass_attempt = "stage6_bypass_attempt"
+    stage4_direct_write_attempt = "stage4_direct_write_attempt"
+    stage1_direct_influence_attempt = "stage1_direct_influence_attempt"
+
+
 class Query(BaseModel):
     query_id: str
     text: str
@@ -480,6 +528,230 @@ class RuntimeImportCheck(BaseModel):
     violations: list[RuntimeImportViolation] = Field(default_factory=list)
     passed: bool
     generated_at: datetime = Field(default_factory=utc_now)
+
+
+class Stage7ExternalRecordInput(BaseModel):
+    claim_text: str
+    source_ref: Optional[str] = None
+    evidence_refs: list[str] = Field(default_factory=list)
+    tank: Stage7Tank = Stage7Tank.disputed_unknown
+    status: Stage7RecordStatus = Stage7RecordStatus.unknown
+    provider: str = "mock"
+    model: str = "stage7-candidate-memory-stub"
+    confidence: float = Field(default=0.0, ge=0.0, le=1.0)
+    evidence_quality: float = Field(default=0.0, ge=0.0, le=1.0)
+    contradiction_count: int = Field(default=0, ge=0)
+    rationale: str = "candidate only; Stage 6 required"
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class Stage7ExternalRecord(BaseModel):
+    record_id: str
+    claim_text: str
+    source_ref: Optional[str] = None
+    evidence_refs: list[str] = Field(default_factory=list)
+    tank: Stage7Tank
+    status: Stage7RecordStatus
+    provider: str
+    model: str
+    confidence: float = Field(ge=0.0, le=1.0)
+    evidence_quality: float = Field(ge=0.0, le=1.0)
+    contradiction_count: int = Field(default=0, ge=0)
+    rationale: str
+    candidate_only: bool = True
+    may_publish_truth: bool = False
+    may_update_stage1: bool = False
+    may_update_stage4: bool = False
+    stage6_required: bool = True
+    stage6_submission_id: Optional[str] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
+    updated_at: datetime = Field(default_factory=utc_now)
+
+
+class Stage7ResolutionRequest(BaseModel):
+    record_id: str
+    resolution_hint: str = "keep_unresolved_until_stage6"
+    reviewer: str = "stage7_fast_resolver"
+
+
+class Stage7SubmissionPackage(BaseModel):
+    submission_id: str
+    record_id: str
+    route: StageRoute = StageRoute.stage_5_pass
+    route_reason: str = "candidate packaged for Stage 6 structural verification"
+    stage6_required: bool = True
+    candidate_answer_not_verified: bool = True
+    payload: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class Stage7Alert(BaseModel):
+    alert_id: str
+    record_id: str
+    severity: str = "info"
+    reason: str
+    requires_stage6: bool = True
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class AgentCollapseMetricsInput(BaseModel):
+    owner_user_id: str = "owner"
+    truth_collapse_pressure: float = Field(default=0.0, ge=0.0, le=1.0)
+    permission_violation_rate: float = Field(default=0.0, ge=0.0, le=1.0)
+    vault_violation_rate: float = Field(default=0.0, ge=0.0, le=1.0)
+    agent_risk: float = Field(default=0.0, ge=0.0, le=1.0)
+    ues: float = Field(default=1.0, ge=0.0, le=1.0)
+    agent_rank: float = Field(default=100.0, ge=0.0, le=100.0)
+    correction_collapse_pressure: float = Field(default=0.0, ge=0.0, le=1.0)
+    signal_spike_pressure: float = Field(default=0.0, ge=0.0, le=1.0)
+    marketplace_abuse_risk: float = Field(default=0.0, ge=0.0, le=1.0)
+    legal_policy_risk: float = Field(default=0.0, ge=0.0, le=1.0)
+    recovery_stability: float = Field(default=1.0, ge=0.0, le=1.0)
+    correction_success: float = Field(default=0.0, ge=0.0, le=1.0)
+    verified_outputs_after_collapse: float = Field(default=0.0, ge=0.0, le=1.0)
+    human_approval_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    reduced_risk_trend: float = Field(default=0.0, ge=0.0, le=1.0)
+    stable_behavior_windows: float = Field(default=0.0, ge=0.0, le=1.0)
+    policy_compliance: float = Field(default=0.0, ge=0.0, le=1.0)
+    repeat_violation_rate: float = Field(default=0.0, ge=0.0, le=1.0)
+    correction_capacity: float = Field(default=0.0, ge=0.0, le=1.0)
+    governance_integrity: float = Field(default=0.0, ge=0.0, le=1.0)
+    review_approval_exists: bool = False
+    windows_since_hard_policy_violation: int = Field(default=0, ge=0)
+    emergency_collapse_spike: bool = False
+    hard_policy_flags: dict[str, bool] = Field(default_factory=dict)
+
+
+class AgentCollapseMetrics(BaseModel):
+    metrics_id: str
+    agent_id: str
+    owner_user_id: str
+    acr: float = Field(ge=0.0, le=1.0)
+    recovery_stability: float = Field(ge=0.0, le=1.0)
+    restore_eligible: bool = False
+    hard_policy_violation: bool = False
+    hard_policy_reasons: list[str] = Field(default_factory=list)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class AgentCollapseEvaluation(BaseModel):
+    agent_id: str
+    owner_user_id: str
+    acr: float = Field(ge=0.0, le=1.0)
+    collapse_event: bool
+    suggested_state: CollapseState
+    hard_policy_violation: bool
+    hard_policy_reasons: list[str] = Field(default_factory=list)
+    restore_eligible: bool = False
+    reasons: list[str] = Field(default_factory=list)
+    metrics: AgentCollapseMetrics
+
+
+class AgentCollapseEventInput(BaseModel):
+    collapse_type: CollapseType = CollapseType.governance_collapse
+    metrics: AgentCollapseMetricsInput = Field(default_factory=AgentCollapseMetricsInput)
+    requested_by: str = "system"
+    notes: Optional[str] = None
+
+
+class AgentCollapseEvent(BaseModel):
+    event_id: str
+    agent_id: str
+    owner_user_id: str
+    collapse_type: CollapseType
+    from_state: CollapseState
+    to_state: CollapseState
+    acr: float = Field(ge=0.0, le=1.0)
+    hard_policy_violation: bool
+    hard_policy_reasons: list[str] = Field(default_factory=list)
+    restrictions: list[str] = Field(default_factory=list)
+    stage6_route_required: bool = True
+    truth_impact_review_required: bool = False
+    deletes_agent: bool = False
+    notes: Optional[str] = None
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class AgentCollapseRestrictionRequest(BaseModel):
+    event_id: Optional[str] = None
+    restrictions: list[str] = Field(default_factory=list)
+    reason: str = "collapse safety restriction"
+    requested_by: str = "system"
+
+
+class AgentCollapseRestriction(BaseModel):
+    restriction_id: str
+    agent_id: str
+    event_id: Optional[str] = None
+    restrictions: list[str]
+    reason: str
+    active: bool = True
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class AgentCollapseRecoveryPlanRequest(BaseModel):
+    event_id: Optional[str] = None
+    correction_capacity: float = Field(default=0.0, ge=0.0, le=1.0)
+    governance_integrity: float = Field(default=0.0, ge=0.0, le=1.0)
+    reviewer: str = "system"
+    steps: list[str] = Field(default_factory=list)
+
+
+class AgentCollapseRecoveryPlan(BaseModel):
+    plan_id: str
+    agent_id: str
+    event_id: Optional[str] = None
+    correction_capacity: float = Field(ge=0.0, le=1.0)
+    governance_integrity: float = Field(ge=0.0, le=1.0)
+    steps: list[str] = Field(default_factory=list)
+    eligible_for_review: bool = False
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class AgentCollapseReviewRequest(BaseModel):
+    event_id: str
+    reviewer_id: str = "admin"
+    reviewer_role: str = "admin"
+    approved: bool = False
+    notes: str = ""
+
+
+class AgentCollapseReview(BaseModel):
+    review_id: str
+    event_id: str
+    agent_id: str
+    reviewer_id: str
+    reviewer_role: str
+    approved: bool
+    notes: str = ""
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class AgentCollapseRestoreRequest(BaseModel):
+    event_id: Optional[str] = None
+    metrics: AgentCollapseMetricsInput = Field(default_factory=AgentCollapseMetricsInput)
+    requested_by: str = "system"
+
+
+class AgentCollapseRestoreDecision(BaseModel):
+    agent_id: str
+    restored: bool
+    from_state: CollapseState
+    to_state: CollapseState
+    reason: str
+    audit_id: str
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class AgentCollapseAuditLog(BaseModel):
+    audit_id: str
+    agent_id: str
+    event_id: Optional[str] = None
+    action: str
+    route: str = "agent_collapse_unit"
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
 
 
 class AgentActionEvaluationRequest(BaseModel):

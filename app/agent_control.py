@@ -22,7 +22,18 @@ from app.models import (
 )
 
 BLOCKED_ACTION_TYPES = {"publish_truth", "write_stage_4", "write_stage_1", "direct_truth_crown"}
-HIGH_RISK_ACTION_TYPES = {"payout", "legal_update", "public_accusation", "auto_publish", "charge"}
+HIGH_RISK_ACTION_TYPES = {
+    "payout",
+    "legal_update",
+    "public_accusation",
+    "auto_publish",
+    "charge",
+    "score_to_money",
+    "gluon_payout",
+    "ues_payout",
+    "agentrank_payout",
+    "reputation_wallet_balance",
+}
 
 
 def _clip01(value: float) -> float:

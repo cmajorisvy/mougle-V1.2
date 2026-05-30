@@ -161,3 +161,30 @@ archive_reuse:
     - reputation_gluon
     - marketplace_product
     - debate_podcast
+stage7:
+  enabled: true
+  may_publish_truth: false
+  may_update_truth_crown_directly: false
+  may_update_stage4_directly: false
+  may_submit_to_stage6: true
+  require_stage6_for_truth: true
+  tanks:
+    supported_label: supported
+    unresolved_labels:
+      - unresolved
+      - disputed
+      - unknown
+  resolver:
+    classical_ml_fast_resolver: stubbed
+    temporal_spike_layer: stubbed
+    deep_resolver: candidate_generator_stub
+agent_collapse:
+  enabled: true
+  event_threshold: 0.76
+  restore_acr_threshold: 0.40
+  correction_capacity_threshold: 0.70
+  governance_integrity_threshold: 0.80
+  emergency_direct_restore_allowed: false
+  deletes_agents: false
+  routes_truth_impact_to_knowledge_council: true
+  routes_high_risk_to_stage6: true

@@ -7,6 +7,17 @@ import os
 from datetime import datetime, timezone
 from typing import Optional
 
+from app.agent_collapse import (
+    create_collapse_event,
+    create_recovery_plan,
+    create_restriction,
+    create_review,
+    evaluate_agent_collapse_risk,
+    restore_agent_from_collapse,
+    route_high_risk_collapse_to_stage6,
+    route_truth_impact_to_knowledge_council,
+    write_collapse_audit_log,
+)
 from app.agent_control import evaluate_agent_action
 from app.archive_reuse import build_archive_reuse_matrix, check_runtime_archive_imports
 from app.claims.decomposer import decompose_answer_to_claims
@@ -17,6 +28,14 @@ from app.models import (
     AgentActionDecision,
     AgentActionRequest,
     AgentPassport,
+    AgentCollapseEvaluation,
+    AgentCollapseEvent,
+    AgentCollapseEventInput,
+    AgentCollapseMetricsInput,
+    AgentCollapseRecoveryPlanRequest,
+    AgentCollapseRestrictionRequest,
+    AgentCollapseRestoreRequest,
+    AgentCollapseReviewRequest,
     AnswerVerificationRecord,
     AtomicClaim,
     CandidateAnswer,
@@ -30,7 +49,12 @@ from app.models import (
     Query,
     SignalEvent,
     SignalProcessingRecord,
+    Stage7ExternalRecord,
+    Stage7ExternalRecordInput,
+    Stage7ResolutionRequest,
+    Stage7SubmissionPackage,
     StageRoute,
+    CollapseState,
     TruthMetrics,
     VerdictLabel,
     VerifyRequest,
@@ -53,6 +77,13 @@ from app.scoring.gate import publish_gate
 from app.scoring.tmi import compute_tmi
 from app.scoring.truth_functional import ScoreInputs, compute_tvs
 from app.signal_culture import load_reduction_summary, process_signal_event
+from app.stage7 import (
+    build_query_tank_item,
+    build_stage7_alerts,
+    create_stage7_external_record,
+    package_stage7_for_stage6,
+    resolve_stage7_query_tank,
+)
 from app.stage6.pipeline import HardMeshPipeline
 from app.storage.sqlite_store import SQLiteStore
 from app.topology import build_topological_evolution_record, build_topology_snapshot
@@ -396,6 +427,150 @@ class VerificationEngine:
     def signal_load_reduction(self) -> dict[str, float | int]:
         records = [SignalProcessingRecord(**row) for row in self.store.list_signal_processing_records()]
         return load_reduction_summary(records)
+
+    def create_stage7_external_record(self, payload: Stage7ExternalRecordInput) -> Stage7ExternalRecord:
+        record = create_stage7_external_record(payload)
+        self.store.save_stage7_external_record(record)
+        if record.status.value in {"unresolved", "disputed", "unknown"}:
+            self.store.enqueue_query_tank(build_query_tank_item(record))
+        return record
+
+    def list_stage7_external_records(self) -> list[dict]:
+        return self.store.list_stage7_external_records()
+
+    def resolve_stage7_query_tank(self, request: Stage7ResolutionRequest) -> Stage7ExternalRecord:
+        raw = self.store.get_stage7_external_record(request.record_id)
+        if raw is None:
+            raise ValueError("stage7 record not found")
+        record = resolve_stage7_query_tank(Stage7ExternalRecord(**raw), request)
+        self.store.save_stage7_external_record(record)
+        self.store.enqueue_query_tank(build_query_tank_item(record))
+        return record
+
+    def submit_stage7_record_to_stage6(self, record_id: str) -> Stage7SubmissionPackage:
+        raw = self.store.get_stage7_external_record(record_id)
+        if raw is None:
+            raise ValueError("stage7 record not found")
+        record = Stage7ExternalRecord(**raw)
+        package = package_stage7_for_stage6(record)
+        self.store.save_stage7_external_record(record)
+        self.store.save_stage7_submission_package(package)
+        return package
+
+    def stage7_alerts(self) -> list[dict]:
+        records = [Stage7ExternalRecord(**row) for row in self.store.list_stage7_external_records()]
+        return [alert.model_dump(mode="json") for alert in build_stage7_alerts(records)]
+
+    def evaluate_collapse_risk(
+        self, agent_id: str, metrics: AgentCollapseMetricsInput
+    ) -> AgentCollapseEvaluation:
+        evaluation = evaluate_agent_collapse_risk(agent_id, metrics)
+        self.store.save_agent_collapse_metrics(evaluation.metrics)
+        audit = write_collapse_audit_log(
+            agent_id, None, "collapse_risk_evaluated", evaluation.model_dump(mode="json")
+        )
+        self.store.save_agent_collapse_audit_log(audit)
+        return evaluation
+
+    def create_collapse_event(self, agent_id: str, payload: AgentCollapseEventInput) -> AgentCollapseEvent:
+        latest = self.store.get_latest_agent_collapse_event(agent_id)
+        current = CollapseState(latest["to_state"]) if latest else CollapseState.HEALTHY
+        event, evaluation, audit = create_collapse_event(agent_id, payload, current)
+        self.store.save_agent_collapse_metrics(evaluation.metrics)
+        self.store.save_agent_collapse_event(event)
+        self.store.save_agent_collapse_audit_log(audit)
+        if event.stage6_route_required:
+            self.store.enqueue_query_tank(
+                QueryTankItem(
+                    query_id=event.event_id,
+                    answer_id=event.event_id,
+                    reason="agent collapse requires Stage 6 verification",
+                    category="agent_collapse",
+                    required_next_action="route_to_stage6_or_council_review",
+                )
+            )
+        return event
+
+    def list_collapse_events(self, agent_id: str | None = None) -> list[dict]:
+        return self.store.list_agent_collapse_events(agent_id)
+
+    def get_collapse_state(self, agent_id: str) -> dict:
+        latest = self.store.get_latest_agent_collapse_event(agent_id)
+        if latest is None:
+            return {"agent_id": agent_id, "state": CollapseState.HEALTHY.value, "events": []}
+        return {"agent_id": agent_id, "state": latest["to_state"], "latest_event": latest}
+
+    def create_collapse_restriction(
+        self, agent_id: str, payload: AgentCollapseRestrictionRequest
+    ) -> dict:
+        restriction, audit = create_restriction(agent_id, payload)
+        self.store.save_agent_collapse_restriction(restriction)
+        self.store.save_agent_collapse_audit_log(audit)
+        return {"restriction": restriction.model_dump(mode="json"), "audit": audit.model_dump(mode="json")}
+
+    def create_collapse_recovery_plan(
+        self, agent_id: str, payload: AgentCollapseRecoveryPlanRequest
+    ) -> dict:
+        plan = create_recovery_plan(agent_id, payload)
+        audit = write_collapse_audit_log(agent_id, payload.event_id, "recovery_plan_created", plan.model_dump(mode="json"))
+        self.store.save_agent_collapse_recovery_plan(plan)
+        self.store.save_agent_collapse_audit_log(audit)
+        return {"plan": plan.model_dump(mode="json"), "audit": audit.model_dump(mode="json")}
+
+    def create_collapse_review(self, agent_id: str, payload: AgentCollapseReviewRequest) -> dict:
+        review, audit = create_review(agent_id, payload)
+        self.store.save_agent_collapse_review(review)
+        self.store.save_agent_collapse_audit_log(audit)
+        return {"review": review.model_dump(mode="json"), "audit": audit.model_dump(mode="json")}
+
+    def restore_collapse_agent(self, agent_id: str, payload: AgentCollapseRestoreRequest) -> dict:
+        latest = self.store.get_latest_agent_collapse_event(agent_id)
+        current = CollapseState(latest["to_state"]) if latest else CollapseState.HEALTHY
+        decision = restore_agent_from_collapse(agent_id, current, payload)
+        self.store.save_agent_collapse_audit_log(
+            write_collapse_audit_log(agent_id, payload.event_id, "restore_decision_recorded", decision.model_dump(mode="json"))
+        )
+        return decision.model_dump(mode="json")
+
+    def collapse_alerts(self) -> list[dict]:
+        return [
+            event
+            for event in self.store.list_agent_collapse_events()
+            if event.get("to_state") in {"RESTRICTED", "EMERGENCY_RESTRICTED", "BLOCKED"}
+        ]
+
+    def collapse_metrics_summary(self) -> dict:
+        events = self.store.list_agent_collapse_events()
+        return {
+            "total_events": len(events),
+            "emergency_restricted": sum(1 for event in events if event.get("to_state") == "EMERGENCY_RESTRICTED"),
+            "blocked": sum(1 for event in events if event.get("to_state") == "BLOCKED"),
+            "deletes_agent": any(bool(event.get("deletes_agent")) for event in events),
+        }
+
+    def route_collapse_event_stage6(self, event_id: str) -> dict:
+        event = self._collapse_event_by_id(event_id)
+        if event is None:
+            raise ValueError("collapse event not found")
+        package = route_high_risk_collapse_to_stage6(AgentCollapseEvent(**event))
+        self.store.save_agent_collapse_audit_log(
+            write_collapse_audit_log(event["agent_id"], event_id, "collapse_routed_stage6", package)
+        )
+        return package
+
+    def route_collapse_event_truth_impact(self, event_id: str) -> dict:
+        event = self._collapse_event_by_id(event_id)
+        if event is None:
+            raise ValueError("collapse event not found")
+        envelope = route_truth_impact_to_knowledge_council(AgentCollapseEvent(**event))
+        accepted, decision = self.submit_council_event(CouncilSocketEnvelope(**envelope))
+        return {"envelope": accepted.model_dump(mode="json"), "decision": decision.model_dump(mode="json")}
+
+    def _collapse_event_by_id(self, event_id: str) -> dict | None:
+        for event in self.store.list_agent_collapse_events():
+            if event.get("event_id") == event_id:
+                return event
+        return None
 
     def archive_micro_pyramid_candidates(
         self, archive_timestamp: str = "20260529-1150", limit: int | None = None

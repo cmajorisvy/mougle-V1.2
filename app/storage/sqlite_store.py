@@ -9,10 +9,18 @@ from typing import Optional
 
 from app.models import (
     AgentActionDecision,
+    AgentCollapseAuditLog,
+    AgentCollapseEvent,
+    AgentCollapseMetrics,
+    AgentCollapseRecoveryPlan,
+    AgentCollapseRestriction,
+    AgentCollapseReview,
     CouncilSocketDecision,
     CouncilSocketEnvelope,
     QueryTankItem,
     SignalProcessingRecord,
+    Stage7ExternalRecord,
+    Stage7SubmissionPackage,
     TopologicalEvolutionRecord,
 )
 
@@ -231,6 +239,160 @@ class SQLiteStore:
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS signal_vectors (
+                    event_id TEXT PRIMARY KEY,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS signal_routes (
+                    route_id TEXT PRIMARY KEY,
+                    event_id TEXT NOT NULL,
+                    destination_type TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS agent_simulation_runs (
+                    sim_run_id TEXT PRIMARY KEY,
+                    agent_id TEXT NOT NULL,
+                    request_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS agent_micro_pyramid_states (
+                    agent_id TEXT PRIMARY KEY,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS stage7_external_records (
+                    record_id TEXT PRIMARY KEY,
+                    tank TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS stage7_submission_packages (
+                    submission_id TEXT PRIMARY KEY,
+                    record_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS agent_collapse_metrics (
+                    metrics_id TEXT PRIMARY KEY,
+                    agent_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS agent_collapse_events (
+                    event_id TEXT PRIMARY KEY,
+                    agent_id TEXT NOT NULL,
+                    to_state TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS agent_collapse_triggers (
+                    trigger_id TEXT PRIMARY KEY,
+                    event_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS agent_collapse_state_history (
+                    history_id TEXT PRIMARY KEY,
+                    agent_id TEXT NOT NULL,
+                    from_state TEXT NOT NULL,
+                    to_state TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS agent_collapse_recovery_plans (
+                    plan_id TEXT PRIMARY KEY,
+                    agent_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS agent_collapse_reviews (
+                    review_id TEXT PRIMARY KEY,
+                    event_id TEXT NOT NULL,
+                    agent_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS agent_collapse_restrictions (
+                    restriction_id TEXT PRIMARY KEY,
+                    agent_id TEXT NOT NULL,
+                    active INTEGER NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS agent_collapse_audit_logs (
+                    audit_id TEXT PRIMARY KEY,
+                    agent_id TEXT NOT NULL,
+                    event_id TEXT,
+                    action TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
             for table in ["answer_records", "verification_records", "graphs", "hard_mesh_runs"]:
                 self._ensure_columns(
                     conn,
@@ -400,6 +562,26 @@ class SQLiteStore:
                     decision.model_dump_json(),
                 ),
             )
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO agent_simulation_runs(
+                    sim_run_id, agent_id, request_id, payload_json, updated_at
+                ) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """,
+                (
+                    decision.simulation.sim_run_id,
+                    decision.agent_id,
+                    decision.request_id,
+                    decision.simulation.model_dump_json(),
+                ),
+            )
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO agent_micro_pyramid_states(agent_id, payload_json, updated_at)
+                VALUES (?, ?, CURRENT_TIMESTAMP)
+                """,
+                (decision.agent_id, decision.micro_pyramid.model_dump_json()),
+            )
 
     def save_signal_processing_record(self, record: SignalProcessingRecord) -> None:
         with self._connect() as conn:
@@ -416,10 +598,186 @@ class SQLiteStore:
                     record.model_dump_json(),
                 ),
             )
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO signal_vectors(event_id, payload_json, updated_at)
+                VALUES (?, ?, CURRENT_TIMESTAMP)
+                """,
+                (record.event.event_id, record.vector.model_dump_json()),
+            )
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO signal_routes(
+                    route_id, event_id, destination_type, payload_json, updated_at
+                ) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """,
+                (
+                    record.route.route_id,
+                    record.event.event_id,
+                    record.route.destination_type.value,
+                    record.route.model_dump_json(),
+                ),
+            )
 
     def list_signal_processing_records(self) -> list[dict]:
         with self._connect() as conn:
             rows = conn.execute("SELECT payload_json FROM signal_events ORDER BY updated_at DESC").fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def save_stage7_external_record(self, record: Stage7ExternalRecord) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO stage7_external_records(
+                    record_id, tank, status, payload_json, updated_at
+                ) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """,
+                (record.record_id, record.tank.value, record.status.value, record.model_dump_json()),
+            )
+
+    def list_stage7_external_records(self) -> list[dict]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT payload_json FROM stage7_external_records ORDER BY updated_at DESC"
+            ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def get_stage7_external_record(self, record_id: str) -> Optional[dict]:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT payload_json FROM stage7_external_records WHERE record_id = ?", (record_id,)
+            ).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def save_stage7_submission_package(self, package: Stage7SubmissionPackage) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO stage7_submission_packages(submission_id, record_id, payload_json)
+                VALUES (?, ?, ?)
+                """,
+                (package.submission_id, package.record_id, package.model_dump_json()),
+            )
+
+    def save_agent_collapse_metrics(self, metrics: AgentCollapseMetrics) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO agent_collapse_metrics(metrics_id, agent_id, payload_json)
+                VALUES (?, ?, ?)
+                """,
+                (metrics.metrics_id, metrics.agent_id, metrics.model_dump_json()),
+            )
+
+    def save_agent_collapse_event(self, event: AgentCollapseEvent) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO agent_collapse_events(
+                    event_id, agent_id, to_state, payload_json, updated_at
+                ) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """,
+                (event.event_id, event.agent_id, event.to_state.value, event.model_dump_json()),
+            )
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO agent_collapse_state_history(
+                    history_id, agent_id, from_state, to_state, payload_json
+                ) VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    f"history_{event.event_id}",
+                    event.agent_id,
+                    event.from_state.value,
+                    event.to_state.value,
+                    event.model_dump_json(),
+                ),
+            )
+            for reason in event.hard_policy_reasons:
+                trigger_id = f"trigger_{event.event_id}_{abs(hash(reason))}"
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO agent_collapse_triggers(trigger_id, event_id, payload_json)
+                    VALUES (?, ?, ?)
+                    """,
+                    (trigger_id, event.event_id, json.dumps({"reason": reason})),
+                )
+
+    def list_agent_collapse_events(self, agent_id: str | None = None) -> list[dict]:
+        with self._connect() as conn:
+            if agent_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM agent_collapse_events WHERE agent_id = ? ORDER BY updated_at DESC",
+                    (agent_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM agent_collapse_events ORDER BY updated_at DESC"
+                ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def get_latest_agent_collapse_event(self, agent_id: str) -> Optional[dict]:
+        events = self.list_agent_collapse_events(agent_id)
+        return events[0] if events else None
+
+    def save_agent_collapse_restriction(self, restriction: AgentCollapseRestriction) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO agent_collapse_restrictions(
+                    restriction_id, agent_id, active, payload_json
+                ) VALUES (?, ?, ?, ?)
+                """,
+                (
+                    restriction.restriction_id,
+                    restriction.agent_id,
+                    1 if restriction.active else 0,
+                    restriction.model_dump_json(),
+                ),
+            )
+
+    def save_agent_collapse_recovery_plan(self, plan: AgentCollapseRecoveryPlan) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO agent_collapse_recovery_plans(plan_id, agent_id, payload_json)
+                VALUES (?, ?, ?)
+                """,
+                (plan.plan_id, plan.agent_id, plan.model_dump_json()),
+            )
+
+    def save_agent_collapse_review(self, review: AgentCollapseReview) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO agent_collapse_reviews(review_id, event_id, agent_id, payload_json)
+                VALUES (?, ?, ?, ?)
+                """,
+                (review.review_id, review.event_id, review.agent_id, review.model_dump_json()),
+            )
+
+    def save_agent_collapse_audit_log(self, audit: AgentCollapseAuditLog) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO agent_collapse_audit_logs(
+                    audit_id, agent_id, event_id, action, payload_json
+                ) VALUES (?, ?, ?, ?, ?)
+                """,
+                (audit.audit_id, audit.agent_id, audit.event_id, audit.action, audit.model_dump_json()),
+            )
+
+    def list_agent_collapse_audit_logs(self, agent_id: str | None = None) -> list[dict]:
+        with self._connect() as conn:
+            if agent_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM agent_collapse_audit_logs WHERE agent_id = ? ORDER BY created_at DESC",
+                    (agent_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM agent_collapse_audit_logs ORDER BY created_at DESC"
+                ).fetchall()
         return [json.loads(row[0]) for row in rows]
 
     def get_graph(self, answer_id: str) -> Optional[dict]:

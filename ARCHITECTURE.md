@@ -160,3 +160,9 @@ The fabric creates replayable envelopes, hashes payloads, emits policy decisions
 - Optional topology adapters such as gudhi behind feature flags.
 - Real external verifier adapters behind explicit credentials and configuration.
 - Production-grade database migrations.
+
+## Stage 7 Memory and Collapse Integration
+
+Stage 7 is now labeled External AI Memory & Uncertainty Engine. It stores supported/disputed/unknown candidate records and packages candidates for Stage 6. Stage 7 outputs are candidate-only and cannot publish truth or update Stage 1/Stage 4.
+
+The AI Agent Collapse Event module lives under the AI Agents Council conceptually. It computes ACR, detects hard policy violations, applies restrictions, records audit logs, creates recovery plans, and routes truth-impact cases to the Knowledge and Truth Council. Emergency states cannot restore directly to normal operation.

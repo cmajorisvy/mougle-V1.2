@@ -81,3 +81,18 @@ Use `TRUTH_PYRAMID_DB_PATH=/tmp/truth_pyramid.db` when the repository directory 
 - Stage 6 Omega and query tank routing are covered by tests.
 - README, ARCHITECTURE, HARD_MESH, and AGENTS are current.
 - Existing PR remains Draft until the full validation and final audit pass.
+
+## Final Integration Boundaries
+
+- No Stage 6 bypass.
+- No direct Stage 4 or Stage 1 writes.
+- Stage 7 is candidate-only and cannot publish truth.
+- Signal Culture is routing-only.
+- LocalReadiness is not TruthScore.
+- Gluon is not money.
+- AgentRank is not financial eligibility.
+- UES is not payout or legal approval.
+- Collapse restricts, reviews, and restores; it never deletes agents.
+- Archive source is not runtime source.
+- No real external provider calls in this prototype.
+- No fabricated evidence.
