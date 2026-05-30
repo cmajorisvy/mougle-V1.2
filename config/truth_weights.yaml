@@ -1,0 +1,23 @@
+base_bias: -0.1
+weights:
+  source_reliability: 0.9
+  provenance_completeness: 0.7
+  retrieval_support: 0.8
+  contradiction_pressure: 0.9
+  temporal_freshness: 0.6
+  numeric_consistency: 0.7
+  macro_consistency: 1.0
+  micro_evidence: 1.1
+  external_judge: 0.4
+pairwise:
+  source_reliability|provenance_completeness: 0.08
+  retrieval_support|micro_evidence: 0.10
+  contradiction_pressure|macro_consistency: -0.06
+lambda_graph: 0.35
+mu_contradiction: 0.8
+mu_uncertainty: 0.7
+mu_drift: 0.6
+publish:
+  tvs_threshold: 65.0
+  epsilon_disagreement: 0.3
+  uncertainty_max: 0.45

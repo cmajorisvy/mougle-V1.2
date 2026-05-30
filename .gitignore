@@ -19,3 +19,12 @@ temp_flywheel/
 # Production House file-based persistence (interim storage, see SKILL roadmap)
 data/production-house/
 .internal/
+
+# Python prototype artifacts
+.venv*/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.db
+
+*.egg-info/
