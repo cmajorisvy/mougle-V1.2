@@ -35,5 +35,8 @@
     "Non-blocking Starlette TestClient deprecation warning from installed dependency set.",
     "Local repository .venv is Python 3.9; validation used the Python 3.12 temp venv and wrapper enforces Python 3.11+."
   ],
-  "blockers": []
+  "blockers": [],
+  "scenario_notes": [
+    "Podcast room event flow covered: Signal Culture -> Agent Micro-Pyramid -> Podcast Forum Debate Council -> Council Socket -> Stage 7 -> Query Tank when unresolved -> Stage 6 -> Stage 5 -> Stage 4 -> Stage 3 -> Stage 2 -> Stage 1 only after accepted verification."
+  ]
 }

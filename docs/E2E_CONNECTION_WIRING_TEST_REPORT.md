@@ -60,6 +60,7 @@ Current route result:
 - Scenario F, Stage 7 candidate path: supported and disputed external records remain candidates and require Stage 6 before promotion.
 - Scenario G, collapse emergency path: hard policy violation enters emergency restriction, applies restrictions, rejects direct restore, routes to Stage 6 and Knowledge/Truth Council.
 - Scenario H, archive guard: runtime archive imports are absent and blocked/P0 candidates are not returned for direct adaptation.
+- Scenario I, podcast room event: podcast debate claim flows through Signal Culture, Agent Micro-Pyramid, Podcast Forum Debate Council, Council Socket Fabric, Stage 7 candidate memory, Query Tank when unresolved, Stage 6, Stage 5, Stage 4 graph, Stage 3 topology, Stage 2 rollup, and Stage 1 only after accepted verification.
 
 ## Safety Invariants
 

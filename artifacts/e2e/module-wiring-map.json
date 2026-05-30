@@ -47,5 +47,15 @@
     "signal load reduction",
     "stage7 alerts",
     "collapse events/alerts/metrics"
+  ],
+  "Podcast Room Event Flow": [
+    "POST /signal/events with debate_claim from podcast_room",
+    "POST /agents/action-request computes LocalReadiness, not TruthScore",
+    "POST /council/socket/events with podcast_forum_debates council_id",
+    "POST /stage7/external-records stores unresolved candidate only",
+    "GET /query-tank records unresolved Stage 7 candidate",
+    "POST /stage7/stage6/submit packages candidate for HARD-MESH",
+    "POST /verify runs Stage 6/5/4/3/2/1 acceptance path with evidence",
+    "GET /graph/{answer_id} and GET /topology/evolution confirm persisted graph/topology"
   ]
 }

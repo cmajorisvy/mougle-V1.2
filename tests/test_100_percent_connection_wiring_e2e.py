@@ -354,3 +354,125 @@ def test_100_percent_connection_wiring_all_routes_and_boundaries(tmp_path: Path)
     admin_dump = json.dumps(client.get("/admin/agents/collapse/events").json()).lower()
     assert "secret_token_should_not_survive" not in admin_dump
     assert "database_url" not in admin_dump
+
+
+def test_podcast_room_event_flows_bottom_up_to_truth_crown_only_after_acceptance(tmp_path: Path):
+    client = _client(tmp_path)
+
+    # Podcast room event -> Signal Culture Layer.
+    signal = client.post(
+        "/signal/events",
+        json={
+            "event": {
+                "event_id": "podcast_room_evt_1",
+                "cloudevent_id": "cloudevent_podcast_room_evt_1",
+                "event_type": "debate_claim",
+                "actor_id": "creator_1",
+                "actor_type": "creator_agent",
+                "topic_id": "france_capital_debate",
+                "privacy_level": "public",
+                "risk_level": "medium",
+                "source": "podcast_room",
+            },
+            "hints": {
+                "novelty": 0.95,
+                "evidence_strength": 0.8,
+                "debate_intensity": 0.9,
+                "newsworthiness": 0.8,
+                "user_reputation": 0.85,
+            },
+        },
+    )
+    assert signal.status_code == 200
+    signal_data = signal.json()
+    assert signal_data["route"]["destination_type"] in {"main_engine", "agent_wake"}
+    assert "truth" not in signal_data["route"]["route_reason"].lower()
+
+    # User / Creator / Expert Agent Micro-Pyramid computes LocalReadiness only.
+    agent = client.post(
+        "/agents/action-request",
+        json=_agent_payload(
+            "debate_claim_review",
+            "req_podcast_room_review",
+            local_risk=0.82,
+            uncertainty=0.8,
+        ),
+    )
+    assert agent.status_code == 200
+    agent_data = agent.json()
+    assert 0.0 <= agent_data["local_readiness"] <= 1.0
+    assert agent_data["action_class"] in {"escalate_to_council", "block"}
+    assert "truth_score" not in json.dumps(agent_data).lower()
+    assert "publish_truth" not in json.dumps(agent_data)
+
+    # Podcast Forum Debate Council -> Council Socket Fabric -> Stage 7/6 route.
+    podcast_envelope = build_council_socket_envelope(
+        bound_unit_id="debate_graph_moderation_unit",
+        origin_stage="podcast_forum_debate_council",
+        trace_id="trace_podcast_room_evt_1",
+        request_id="request_podcast_room_evt_1",
+        payload={
+            "object_id": "podcast_room_evt_1",
+            "object_type": "podcast_room_event",
+            "claim": "Paris is the capital of France.",
+            "source_event": signal_data["event"]["event_id"],
+        },
+        council_id=CouncilId.podcast_forum_debates,
+        action="debate_claim_review",
+        object_id="podcast_room_evt_1",
+        object_type="podcast_room_event",
+        provenance_ref="signal:podcast_room_evt_1",
+        lineage_ref="podcast-room-to-truth-pyramid",
+    )
+    council = client.post("/council/socket/events", json=podcast_envelope.model_dump(mode="json"))
+    assert council.status_code == 200
+    council_data = council.json()
+    assert council_data["envelope"]["council_id"] == "podcast_forum_debates"
+    assert council_data["decision"]["route"] == "stage_7_then_stage_6"
+    assert council_data["decision"]["blocked_stage_bypass"] is False
+
+    # Stage 7 External AI Memory & Uncertainty Engine -> Query Tank if unresolved.
+    stage7_unknown = client.post(
+        "/stage7/external-records",
+        json={
+            "claim_text": "Podcast debate participant claims Paris is not the capital of France.",
+            "tank": "stage7_b_unapproved_disputed_unknown_tank",
+            "status": "unknown",
+            "confidence": 0.4,
+            "evidence_quality": 0.2,
+            "contradiction_count": 1,
+            "metadata": {"source_event": "podcast_room_evt_1", "council_id": "podcast_forum_debates"},
+        },
+    )
+    assert stage7_unknown.status_code == 200
+    unknown_data = stage7_unknown.json()
+    assert unknown_data["candidate_only"] is True
+    assert unknown_data["may_publish_truth"] is False
+    assert unknown_data["may_update_stage1"] is False
+    assert unknown_data["may_update_stage4"] is False
+    tank = client.get("/query-tank")
+    assert any(item["answer_id"] == unknown_data["record_id"] for item in tank.json())
+
+    stage6_package = client.post("/stage7/stage6/submit", json={"record_id": unknown_data["record_id"]})
+    assert stage6_package.status_code == 200
+    assert stage6_package.json()["candidate_answer_not_verified"] is True
+    assert stage6_package.json()["stage6_required"] is True
+
+    # Stage 6 -> Stage 5 -> Stage 4 -> Stage 3 -> Stage 2 -> Stage 1 only after accepted verification.
+    accepted = client.post("/verify", json=_verify_payload())
+    assert accepted.status_code == 200
+    accepted_data = accepted.json()
+    assert accepted_data["publish"] is True
+    assert accepted_data["verdict"] == "supported"
+    assert accepted_data["hard_mesh"]["route"] == "stage_5_pass"
+    assert accepted_data["provenance"]["graph_snapshot_ref"].startswith("graph:")
+    assert accepted_data["provenance"]["topology_ref"]
+
+    graph = client.get(f"/graph/{accepted_data['answer_id']}")
+    assert graph.status_code == 200
+    graph_data = graph.json()
+    assert any(node["node_type"] == "evidence" for node in graph_data["nodes"])
+    assert any(node["node_type"] == "hard_mesh_run" for node in graph_data["nodes"])
+    topology = client.get("/topology/evolution")
+    assert topology.status_code == 200
+    assert topology.json()
