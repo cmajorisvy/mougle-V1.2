@@ -16,6 +16,15 @@ The visual pyramid is top-down, but runtime execution is bottom-up:
 6. HARD-MESH Verification Pipeline: structural verification, clustering, anomaly discovery, validation metrics, consensus scoring, and route decisions.
 7. External AI Verification: typed external verifier result schema and stubbed judge plugin only.
 
+## Council Socket Fabric and PTEE Core
+
+Reports 43-45 add two implementation-ready foundations:
+
+- Governed Council Socket Fabric: seven council domains submit typed, replayable envelopes beneath Stage 7/6. The fabric computes payload hashes, records route decisions, denies direct Stage 4/Stage 1 bypass attempts, sends low-risk events to Stage 6, and routes legal/financial/high-risk events to query-tank policy review.
+- Persistent Topological Evolution Engine scaffold: every verification can emit a lightweight versioned topology evolution record anchored at the Stage 4/5/6 core. The prototype records graph shape, stability, drift, event refs, and route hints without requiring heavy topology dependencies.
+
+The seven council domains are AI Agents, Knowledge & Truth, Podcast Forum Debates, Newsrooms, System Management, Legal Management, and Financial Management. None of them may write directly to Stage 4 or Stage 1.
+
 ## TVS vs TMI
 
 `TVS` is an answer-level calibrated True Value Score in `[0, 100]`.
@@ -73,6 +82,9 @@ Endpoints:
 - `GET /graph/{answer_id}`
 - `POST /hard-mesh/analyze`
 - `GET /query-tank`
+- `POST /council/socket/events`
+- `GET /council/socket/events`
+- `GET /topology/evolution`
 
 Example request:
 
@@ -97,6 +109,27 @@ Example request:
 ```
 
 Response includes `tvs`, `tmi`, `publish`, claim records, `macro_micro`, `hard_mesh`, provenance, and unresolved reason.
+
+Council socket example:
+
+```json
+{
+  "socket_id": "socket_example",
+  "event_id": "evt_example",
+  "spec_version": "1.0",
+  "council_id": "financial_management",
+  "bound_unit_id": "settlement_ledger_risk_unit",
+  "schema_id": "mougle.council_socket.v1",
+  "origin_stage": "council_socket_fabric",
+  "trace_id": "trace_example",
+  "request_id": "request_example",
+  "action": "payout",
+  "sensitivity": {"financial": true},
+  "request_payload": {"object_id": "ledger_123"}
+}
+```
+
+High-risk legal or financial events return `query_tank_pending` with `needs_review`. Direct Stage 4 or Stage 1 targets return `rejected`.
 
 ## CLI
 
@@ -148,5 +181,7 @@ TRUTH_PYRAMID_DB_PATH=/tmp/truth_pyramid.db verify-truth --query "What is the ca
 - Stage 6 uses deterministic local features rather than real embeddings.
 - SQLite persistence is prototype storage with create-if-not-exists schema setup.
 - SQLite includes bitemporal-ready metadata columns for future valid-time/system-time history.
+- Council socket persistence is a prototype in-process fabric, not production Kafka/gRPC/MCP infrastructure yet.
+- PTEE evolution records are lightweight topology deltas, not full persistent homology.
 - Thresholds are configurable defaults and require calibration on real datasets.
 - Persistent homology is scaffolded through topology contracts, not a full topology engine.

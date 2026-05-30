@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import FastAPI, HTTPException
 
 from app.engine import VerificationEngine
-from app.models import VerifyRequest, VerifyResponse
+from app.models import CouncilSocketEnvelope, VerifyRequest, VerifyResponse
 
 app = FastAPI(title="Verified Truth Pyramid API", version="0.1.0")
 engine = VerificationEngine()
@@ -62,3 +62,22 @@ def hard_mesh_analyze(payload: VerifyRequest) -> dict:
 @app.get("/query-tank")
 def query_tank() -> list[dict]:
     return engine.list_query_tank()
+
+
+@app.post("/council/socket/events")
+def council_socket_event(payload: CouncilSocketEnvelope) -> dict:
+    envelope, decision = engine.submit_council_event(payload)
+    return {
+        "envelope": envelope.model_dump(mode="json"),
+        "decision": decision.model_dump(mode="json"),
+    }
+
+
+@app.get("/council/socket/events")
+def council_socket_events() -> list[dict]:
+    return engine.list_council_events()
+
+
+@app.get("/topology/evolution")
+def topology_evolution() -> list[dict]:
+    return engine.list_topology_evolution()

@@ -29,6 +29,29 @@ class StageRoute(str, Enum):
     query_tank_pending = "query_tank_pending"
 
 
+class CouncilId(str, Enum):
+    ai_agents = "ai_agents"
+    knowledge_truth = "knowledge_truth"
+    podcast_forum_debates = "podcast_forum_debates"
+    newsrooms = "newsrooms"
+    system_management = "system_management"
+    legal_management = "legal_management"
+    financial_management = "financial_management"
+
+
+class CouncilSocketRoute(str, Enum):
+    stage_7_then_stage_6 = "stage_7_then_stage_6"
+    stage_6_hard_mesh = "stage_6_hard_mesh"
+    query_tank_pending = "query_tank_pending"
+    rejected = "rejected"
+
+
+class PolicyDecisionOutcome(str, Enum):
+    allow = "allow"
+    deny = "deny"
+    needs_review = "needs_review"
+
+
 class ExternalVerifierVerdict(str, Enum):
     support = "support"
     contradict = "contradict"
@@ -250,6 +273,9 @@ class PurityUpdate(BaseModel):
 
 class CouncilSocketEnvelope(BaseModel):
     socket_id: str
+    event_id: str = ""
+    spec_version: str = "1.0"
+    council_id: CouncilId = CouncilId.ai_agents
     bound_unit_id: str
     schema_id: str
     origin_stage: str
@@ -258,11 +284,54 @@ class CouncilSocketEnvelope(BaseModel):
     tenant_id: Optional[str] = None
     classification: Optional[str] = None
     deadline_ms: Optional[int] = None
+    content_type: str = "application/vnd.mougle.council-event+json"
+    action: str = "verify"
+    object_id: Optional[str] = None
+    object_type: Optional[str] = None
+    payload_ref: Optional[str] = None
+    policy_context: dict[str, Any] = Field(default_factory=dict)
+    provenance_ref: Optional[str] = None
+    lineage_ref: Optional[str] = None
+    trace_context: dict[str, Any] = Field(default_factory=dict)
+    sensitivity: dict[str, Any] = Field(default_factory=dict)
+    idempotency_key: Optional[str] = None
+    target_stage: Optional[str] = None
+    requires_human_review: bool = False
     payload_hash: Optional[str] = None
     signature: Optional[str] = None
     request_payload: dict[str, Any] = Field(default_factory=dict)
     response_payload: dict[str, Any] = Field(default_factory=dict)
     status: str = "pending"
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class CouncilSocketDecision(BaseModel):
+    decision_id: str
+    socket_id: str
+    council_id: CouncilId
+    unit_id: str
+    route: CouncilSocketRoute
+    policy_decision: PolicyDecisionOutcome
+    route_reason: str
+    blocked_stage_bypass: bool = False
+    requires_human_review: bool = False
+    provenance_ref: Optional[str] = None
+    lineage_ref: Optional[str] = None
+    trace_id: str
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class TopologicalEvolutionRecord(BaseModel):
+    evolution_id: str
+    state_version: str
+    answer_id: Optional[str] = None
+    previous_snapshot_id: Optional[str] = None
+    current_snapshot_id: str
+    stage_anchor: str = "stage_4_stage_5_stage_6_core"
+    stability_score: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    topology_drift: bool = False
+    event_refs: list[str] = Field(default_factory=list)
+    route_hint: Optional[str] = None
     created_at: datetime = Field(default_factory=utc_now)
 
 

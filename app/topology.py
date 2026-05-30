@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import hashlib
+from typing import Iterable
 
 import networkx as nx
 
-from app.models import TopologySnapshot
+from app.models import TopologicalEvolutionRecord, TopologySnapshot
 
 
 def build_topology_snapshot(
@@ -45,3 +46,33 @@ def build_topology_snapshot(
         topology_drift=drift,
     )
 
+
+def build_topological_evolution_record(
+    snapshot: TopologySnapshot,
+    previous: TopologySnapshot | None = None,
+    *,
+    answer_id: str | None = None,
+    event_refs: Iterable[str] = (),
+    route_hint: str | None = None,
+) -> TopologicalEvolutionRecord:
+    """Create a versioned PTEE evolution record from topology snapshots.
+
+    The prototype stores lightweight topology deltas only. Heavy persistent
+    homology remains an optional future sidecar, so this function is safe for
+    tests and local demos.
+    """
+    refs = list(event_refs)
+    previous_id = previous.snapshot_id if previous else None
+    version_body = f"{previous_id}:{snapshot.snapshot_id}:{refs}:{route_hint}"
+    digest = hashlib.sha1(version_body.encode("utf-8")).hexdigest()[:12]
+    return TopologicalEvolutionRecord(
+        evolution_id=f"evolution_{digest}",
+        state_version=f"ptee_v_{digest}",
+        answer_id=answer_id,
+        previous_snapshot_id=previous_id,
+        current_snapshot_id=snapshot.snapshot_id,
+        stability_score=snapshot.stability_score,
+        topology_drift=snapshot.topology_drift,
+        event_refs=refs,
+        route_hint=route_hint,
+    )

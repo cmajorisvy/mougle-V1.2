@@ -27,7 +27,7 @@ Runtime runs bottom-up:
 - `app/scoring/`: Equation of Purity, calibration interface, TMI, and publish gate.
 - `app/storage/sqlite_store.py`: local SQLite persistence and query tank.
 - `app/topology.py`: Persistent Topological Engine scaffold.
-- `app/council_sockets.py`: typed future council socket envelope.
+- `app/council_sockets.py`: governed seven-council socket fabric, no-bypass routing, and policy decision envelopes.
 - `app/api.py`: FastAPI endpoints.
 - `app/cli.py`: `verify-truth` CLI.
 
@@ -39,7 +39,7 @@ Stage 2 observes graph heat-map features: support count, refutation count, sourc
 
 Stage 3 separates macro and micro mechanics. Macro means graph-level consistency, source agreement, temporal coherence, and Stage 6 consensus. Micro means claim-level evidence, local contradiction, numeric consistency, freshness, and provenance completeness.
 
-Stage 4 persists the history of verification: answer records, claim records, evidence records, source records, graph snapshots, plugin results, HARD-MESH runs, lane results, stateful query tank items, external verifier records, and topology snapshots. SQLite tables are bitemporal-ready with valid-time metadata where the prototype writes or evolves verification history.
+Stage 4 persists the history of verification: answer records, claim records, evidence records, source records, graph snapshots, plugin results, HARD-MESH runs, lane results, stateful query tank items, council socket events, external verifier records, topology snapshots, and topology evolution records. SQLite tables are bitemporal-ready with valid-time metadata where the prototype writes or evolves verification history.
 
 Stage 5 computes:
 
@@ -99,11 +99,21 @@ The publish gate requires TVS threshold, macro/micro agreement, uncertainty boun
 
 ## Persistent Topology Scaffold
 
-`app/topology.py` provides PTE-ready graph metrics: node count, edge count, connected components, component sizes, cycle rank, density, average degree, clustering coefficient, stability score, and drift flag. Heavy persistent homology libraries are not required for core tests.
+`app/topology.py` provides PTEE-ready graph metrics: node count, edge count, connected components, component sizes, cycle rank, density, average degree, clustering coefficient, stability score, and drift flag. Each verification can also create a `TopologicalEvolutionRecord` with a state version, current snapshot, previous snapshot pointer, event refs, route hint, and Stage 4/5/6 core anchor. Heavy persistent homology libraries are not required for core tests.
 
-## Council Socket Scaffold
+## Governed Council Socket Fabric
 
-`app/council_sockets.py` defines typed envelopes for future seven-council units. Security principles: schema validation, no unmanaged code blobs, signed artifacts in future, replayable event logs, least privilege, and no untrusted pickle/joblib loading in production.
+`app/council_sockets.py` implements the prototype foundation bus for seven council domains:
+
+- AI Agents
+- Knowledge & Truth
+- Podcast Forum Debates
+- Newsrooms
+- System Management
+- Legal Management
+- Financial Management
+
+The fabric creates replayable envelopes, hashes payloads, emits policy decisions, rejects direct Stage 4/Stage 1 bypass attempts, routes ordinary upward events through Stage 7 then Stage 6, routes low-risk telemetry to Stage 6, and places high-risk legal/financial events into query-tank review. Security principles: schema validation, no unmanaged code blobs, signed artifacts in future, replayable event logs, least privilege, and no untrusted pickle/joblib loading in production.
 
 ## Future Extension Points
 

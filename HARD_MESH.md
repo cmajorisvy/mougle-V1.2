@@ -2,6 +2,8 @@
 
 HARD-MESH is the structural verification layer for the Verified Truth Pyramid. It does not decide truth by itself. It compresses, clusters, audits, validates, and routes claim/evidence structures so Stage 5 can score them with better context.
 
+Reports 43-45 add a governed council substrate in front of this layer. Council events enter through a socket fabric, receive a policy/routing decision, and then either reach Stage 6, go through Stage 7 before Stage 6, or wait in the query tank. No council socket may write directly to Stage 4 or Stage 1.
+
 ## Algorithm Portfolio
 
 - BIRCH: online-style compression and subcluster stability.
@@ -40,6 +42,8 @@ Hard failures override Omega.
 - Stale evidence: stale knowledge route.
 - Source conflict or hard contradiction: source conflict / hard contradiction route.
 - Out of domain: out-of-domain route.
+- Direct council bypass attempt: rejected before Stage 4 or Stage 1.
+- Legal/financial high-risk council event: query tank policy review.
 - Invalid clustering geometry: structured warning and neutral lane score.
 - Too little labeled data for calibration or stacking: structured warning and neutral readiness flags.
 

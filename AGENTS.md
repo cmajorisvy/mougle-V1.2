@@ -2,7 +2,7 @@
 
 ## Repo Layout
 
-- `app/models.py`: typed contracts for truth records, HARD-MESH, topology, query tank, and council sockets.
+- `app/models.py`: typed contracts for truth records, HARD-MESH, topology, query tank, council sockets, and PTEE evolution.
 - `app/claims/`: deterministic atomic claim decomposition.
 - `app/retrieval/`: retrieval interface and local in-memory retriever.
 - `app/graph/`: provenance-aware claim/evidence/source/time graph.
@@ -10,7 +10,9 @@
 - `app/stage6/`: HARD-MESH feature builder, preprocessing, clustering lanes, metrics, consensus, and routing.
 - `docs/prompts/`: reusable implementation prompts distilled from deep-research reports.
 - `app/scoring/`: Equation of Purity, TVS, TMI, calibration, and publish gate.
-- `app/storage/`: SQLite persistence and query tank.
+- `app/storage/`: SQLite persistence, query tank, council socket events, and topology evolution records.
+- `app/council_sockets.py`: governed seven-council socket fabric and no-bypass routing.
+- `app/topology.py`: lightweight Persistent Topological Evolution Engine metrics and versioned evolution records.
 - `app/api.py`: FastAPI endpoints.
 - `app/cli.py`: `verify-truth` CLI.
 - `tests/`: pytest coverage for claims, retrieval, plugins, graph, scoring, API, Stage 6, and persistence.
@@ -64,6 +66,7 @@ Use `TRUTH_PYRAMID_DB_PATH=/tmp/truth_pyramid.db` when the repository directory 
 - `pytest -q` passes.
 - CLI smoke test passes.
 - `/health`, `/verify`, `/graph/{answer_id}` are covered by tests.
+- `/council/socket/events` and `/topology/evolution` are covered when council/PTEE wiring changes.
 - Stage 6 Omega and query tank routing are covered by tests.
 - README, ARCHITECTURE, HARD_MESH, and AGENTS are current.
 - Existing PR remains Draft until the full validation and final audit pass.

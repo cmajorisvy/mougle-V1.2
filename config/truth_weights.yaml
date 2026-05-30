@@ -88,3 +88,27 @@ hard_mesh:
   classical_ml:
     min_samples: 4
     min_calibration_samples: 20
+council_socket_fabric:
+  enabled: true
+  no_bypass_targets:
+    - stage_1
+    - stage_4
+    - truth_crown
+    - knowledge_of_purity_and_wisdom
+  high_risk_councils:
+    - legal_management
+    - financial_management
+  high_risk_actions:
+    - publish
+    - legal_update
+    - charge
+    - payout
+    - score_to_money
+  default_route: stage_7_then_stage_6
+  low_risk_route: stage_6_hard_mesh
+persistent_topological_engine:
+  enabled: true
+  stage_anchor: stage_4_stage_5_stage_6_core
+  drift_threshold: 0.7
+  hot_path: lightweight_state_delta
+  cold_path: audit_replay_and_topology_recompute

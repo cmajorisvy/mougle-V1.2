@@ -16,6 +16,8 @@ from app.models import (
     CandidateAnswer,
     ClaimVerdict,
     ClaimVerificationRecord,
+    CouncilSocketDecision,
+    CouncilSocketEnvelope,
     MacroMicroAssessment,
     ProvenancePayload,
     QueryTankItem,
@@ -44,7 +46,8 @@ from app.scoring.tmi import compute_tmi
 from app.scoring.truth_functional import ScoreInputs, compute_tvs
 from app.stage6.pipeline import HardMeshPipeline
 from app.storage.sqlite_store import SQLiteStore
-from app.topology import build_topology_snapshot
+from app.topology import build_topological_evolution_record, build_topology_snapshot
+from app.council_sockets import CouncilSocketFabric
 
 
 class VerificationEngine:
@@ -53,6 +56,7 @@ class VerificationEngine:
         db_path = os.getenv("TRUTH_PYRAMID_DB_PATH", db_path)
         self.store = SQLiteStore(path=db_path)
         self._graph_by_answer: dict[str, ProvenanceGraph] = {}
+        self.council_fabric = CouncilSocketFabric()
 
     @staticmethod
     def _id(prefix: str, text: str) -> str:
@@ -317,6 +321,13 @@ class VerificationEngine:
             [lane.model_dump(mode="json") for lane in cluster_run.lane_results],
         )
         self.store.save_topology(answer.answer_id, topology.model_dump(mode="json"))
+        evolution = build_topological_evolution_record(
+            topology,
+            answer_id=answer.answer_id,
+            event_refs=[f"hard_mesh:{answer.answer_id}"],
+            route_hint=hard_mesh.route.value,
+        )
+        self.store.save_topology_evolution(evolution)
         if hard_mesh.query_tank_item:
             self.store.enqueue_query_tank(QueryTankItem(**hard_mesh.query_tank_item))
         if not decision.publish:
@@ -335,3 +346,26 @@ class VerificationEngine:
 
     def list_query_tank(self) -> list[dict]:
         return self.store.list_query_tank()
+
+    def submit_council_event(
+        self, envelope: CouncilSocketEnvelope
+    ) -> tuple[CouncilSocketEnvelope, CouncilSocketDecision]:
+        accepted_envelope, decision = self.council_fabric.submit(envelope)
+        self.store.save_council_socket_event(accepted_envelope, decision)
+        if decision.route.value == "query_tank_pending":
+            self.store.enqueue_query_tank(
+                QueryTankItem(
+                    query_id=envelope.request_id,
+                    answer_id=envelope.socket_id,
+                    reason=decision.route_reason,
+                    category="council_policy",
+                    required_next_action="policy_or_human_review",
+                )
+            )
+        return accepted_envelope, decision
+
+    def list_council_events(self) -> list[dict]:
+        return self.store.list_council_socket_events()
+
+    def list_topology_evolution(self) -> list[dict]:
+        return self.store.list_topology_evolution()

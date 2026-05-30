@@ -5,8 +5,12 @@ import sys
 from pathlib import Path
 
 from app.config import load_truth_config
-from app.council_sockets import SEVEN_COUNCIL_UNITS, build_council_socket_envelope
-from app.models import ExternalVerifierResult
+from app.council_sockets import (
+    SEVEN_COUNCIL_UNITS,
+    build_council_socket_envelope,
+    evaluate_council_socket_envelope,
+)
+from app.models import CouncilId, CouncilSocketRoute, ExternalVerifierResult, PolicyDecisionOutcome
 from app.plugins.implementations import ExternalJudgePlugin
 from app.topology import build_topology_snapshot
 
@@ -54,6 +58,8 @@ def test_config_loading_includes_hard_mesh():
     assert cfg["hard_mesh"]["enabled"] is True
     assert cfg["hard_mesh"]["classical_ml"]["min_samples"] == 4
     assert cfg["calibration"]["mode"] == "identity"
+    assert cfg["council_socket_fabric"]["default_route"] == "stage_7_then_stage_6"
+    assert cfg["persistent_topological_engine"]["stage_anchor"] == "stage_4_stage_5_stage_6_core"
 
 
 def test_external_judge_stub_has_no_provider_side_effects():
@@ -72,6 +78,7 @@ def test_council_socket_contract_and_topology_snapshot():
         payload={"answer_id": "a1"},
     )
     assert envelope.payload_hash
+    assert envelope.council_id == CouncilId.ai_agents
 
     import networkx as nx
 
@@ -80,3 +87,34 @@ def test_council_socket_contract_and_topology_snapshot():
     snapshot = build_topology_snapshot(graph)
     assert snapshot.node_count == 2
     assert 0.0 <= snapshot.graph_density <= 1.0
+
+
+def test_council_socket_denies_stage_bypass_and_gates_high_risk():
+    bypass = build_council_socket_envelope(
+        bound_unit_id="truth_credit_attribution_unit",
+        origin_stage="council_socket_fabric",
+        trace_id="trace_bypass",
+        request_id="request_bypass",
+        payload={"target_stage": "stage_4", "object_id": "claim_1"},
+        council_id=CouncilId.knowledge_truth,
+        action="publish",
+        target_stage="stage_4",
+    )
+    bypass_decision = evaluate_council_socket_envelope(bypass)
+    assert bypass_decision.blocked_stage_bypass is True
+    assert bypass_decision.route == CouncilSocketRoute.rejected
+    assert bypass_decision.policy_decision == PolicyDecisionOutcome.deny
+
+    payout = build_council_socket_envelope(
+        bound_unit_id="settlement_ledger_risk_unit",
+        origin_stage="council_socket_fabric",
+        trace_id="trace_financial",
+        request_id="request_financial",
+        payload={"object_id": "ledger_1", "sensitivity": {"financial": True}},
+        council_id=CouncilId.financial_management,
+        action="payout",
+        sensitivity={"financial": True},
+    )
+    payout_decision = evaluate_council_socket_envelope(payout)
+    assert payout_decision.route == CouncilSocketRoute.query_tank_pending
+    assert payout_decision.policy_decision == PolicyDecisionOutcome.needs_review

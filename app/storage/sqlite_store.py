@@ -7,7 +7,7 @@ import sqlite3
 from pathlib import Path
 from typing import Optional
 
-from app.models import QueryTankItem
+from app.models import CouncilSocketDecision, CouncilSocketEnvelope, QueryTankItem, TopologicalEvolutionRecord
 
 
 class SQLiteStore:
@@ -176,6 +176,30 @@ class SQLiteStore:
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS topology_evolution_records (
+                    evolution_id TEXT PRIMARY KEY,
+                    answer_id TEXT,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS council_socket_events (
+                    socket_id TEXT PRIMARY KEY,
+                    council_id TEXT NOT NULL,
+                    route TEXT NOT NULL,
+                    policy_decision TEXT NOT NULL,
+                    envelope_json TEXT NOT NULL,
+                    decision_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
             for table in ["answer_records", "verification_records", "graphs", "hard_mesh_runs"]:
                 self._ensure_columns(
                     conn,
@@ -276,6 +300,59 @@ class SQLiteStore:
                 "INSERT OR REPLACE INTO topology_snapshots(answer_id, payload_json) VALUES (?, ?)",
                 (answer_id, json.dumps(payload)),
             )
+
+    def save_topology_evolution(self, record: TopologicalEvolutionRecord) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO topology_evolution_records(evolution_id, answer_id, payload_json)
+                VALUES (?, ?, ?)
+                """,
+                (record.evolution_id, record.answer_id, record.model_dump_json()),
+            )
+
+    def list_topology_evolution(self) -> list[dict]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT payload_json FROM topology_evolution_records ORDER BY created_at DESC"
+            ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def save_council_socket_event(
+        self,
+        envelope: CouncilSocketEnvelope,
+        decision: CouncilSocketDecision,
+    ) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO council_socket_events(
+                    socket_id, council_id, route, policy_decision, envelope_json, decision_json, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """,
+                (
+                    envelope.socket_id,
+                    envelope.council_id.value,
+                    decision.route.value,
+                    decision.policy_decision.value,
+                    envelope.model_dump_json(),
+                    decision.model_dump_json(),
+                ),
+            )
+
+    def list_council_socket_events(self) -> list[dict]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT envelope_json, decision_json
+                FROM council_socket_events
+                ORDER BY updated_at DESC
+                """
+            ).fetchall()
+        return [
+            {"envelope": json.loads(envelope_json), "decision": json.loads(decision_json)}
+            for envelope_json, decision_json in rows
+        ]
 
     def get_graph(self, answer_id: str) -> Optional[dict]:
         with self._connect() as conn:
