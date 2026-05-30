@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 
 from app.engine import VerificationEngine
 from app.models import (
@@ -104,3 +104,16 @@ def signal_event(payload: SignalEventRequest) -> dict:
 @app.get("/admin/signal-load-reduction")
 def signal_load_reduction() -> dict:
     return engine.signal_load_reduction()
+
+
+@app.get("/archive/micro-pyramid/candidates")
+def archive_micro_pyramid_candidates(
+    archive_timestamp: str = Query(default="20260529-1150", pattern=r"^\d{8}-\d{4}$"),
+    limit: int | None = Query(default=None, ge=1, le=5000),
+) -> dict:
+    return engine.archive_micro_pyramid_candidates(archive_timestamp, limit)
+
+
+@app.get("/archive/runtime-imports/check")
+def archive_runtime_import_check() -> dict:
+    return engine.archive_runtime_import_check()

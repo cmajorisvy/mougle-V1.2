@@ -138,3 +138,26 @@ signal_culture:
   default_decay: 1.0
   load_reduction_formula: "1 - EventsSentToMainEngine / TotalEventsReceived"
   not_truth_engine: true
+archive_reuse:
+  enabled: true
+  default_archive_timestamp: "20260529-1150"
+  direct_archive_imports_allowed: false
+  block_secret_risk_levels:
+    - P0
+  target_layers:
+    - cross_cutting
+    - stage5_micro_pyramid
+    - stage6_boundary
+    - stage7_foundation
+    - admin_governance
+    - reference_only
+    - archive_only
+  micro_pyramid_bands:
+    - personal_context
+    - professional_business
+    - community
+    - knowledge_contribution
+    - risk_safety
+    - reputation_gluon
+    - marketplace_product
+    - debate_podcast

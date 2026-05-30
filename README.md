@@ -34,6 +34,24 @@ Report 46 adds a safe local agent-control slice before the council fabric:
 
 These layers reduce workload and structure events. They are not the Truth Engine, not the Knowledge Graph, not the final governance authority, and not a monetization engine.
 
+
+## Archive-Aware Reuse Foundation
+
+Reports 47-52 add a safe archive discovery layer. The confirmed legacy archive remains searchable under `archive/legacy-codebase/20260529-1150`, but active runtime does not import from archived source. `app/archive_reuse.py` reads generated manifests, recomputes a Micro-Pyramid compatibility score, blocks P0 secret-risk rows, maps candidates into Signal Culture, Stage 5 Micro-Pyramid, Stage 6, Stage 7, admin governance, reference-only, or archive-only buckets, and exposes read-only wiring endpoints.
+
+Use:
+
+```bash
+python - <<'PY'
+from app.archive_reuse import build_archive_reuse_matrix
+print(build_archive_reuse_matrix().classification_summary)
+PY
+```
+
+The API endpoint `GET /archive/micro-pyramid/candidates?limit=25` returns the matrix summary and selected candidates. `GET /archive/runtime-imports/check` verifies that app/test runtime code has not imported directly from `archive/`.
+
+No archived source is restored wholesale, and P0 rows require private human review before any future adapter work.
+
 ## TVS vs TMI
 
 `TVS` is an answer-level calibrated True Value Score in `[0, 100]`.
@@ -97,6 +115,8 @@ Endpoints:
 - `POST /agents/action-request`
 - `POST /signal/events`
 - `GET /admin/signal-load-reduction`
+- `GET /archive/micro-pyramid/candidates`
+- `GET /archive/runtime-imports/check`
 
 Example request:
 

@@ -21,6 +21,7 @@ Runtime runs bottom-up:
 - `app/models.py`: Pydantic contracts for truth records, HARD-MESH, topology, query tank, and council sockets.
 - `app/agent_control.py`: user agent micro-pyramid readiness, simulation, permission gate, and escalation.
 - `app/signal_culture.py`: signal vector scoring, routing, and load-reduction analytics.
+- `app/archive_reuse.py`: manifest-only archive reuse matrix, P0 blocking, pyramid fit mapping, and no-runtime-import checks.
 - `app/claims/decomposer.py`: deterministic atomic claim decomposition with stable IDs and spans.
 - `app/retrieval/`: retrieval interface and in-memory corpus retriever.
 - `app/graph/provenance_graph.py`: claim/evidence/source/time graph and graph feature export.
@@ -76,6 +77,20 @@ The code intentionally has no `publish_truth` action class.
 `GET /admin/signal-load-reduction` computes:
 
 `1 - EventsSentToMainEngine / TotalEventsReceived`
+
+
+## Archive-Aware Reuse Integration
+
+The confirmed legacy archive is treated as a structured asset library, not active application code. `app/archive_reuse.py` reads `reuse-candidates.json`, `file-manifest.json`, and `secret-findings.redacted.json` from the confirmed archive and produces a file-level matrix for future adapter work.
+
+Safety rules:
+
+- P0 secret-like findings are classified as `blocked_secret_risk`.
+- Active runtime must not import from `archive/legacy-codebase/**/source`.
+- Future extraction must cite a reuse-matrix row and use wrappers/adapters.
+- Signal Culture, Micro-Pyramid, Stage 6, Stage 7, and admin governance mappings are planning targets only, not automatic restoration.
+
+The read-only endpoints `/archive/micro-pyramid/candidates` and `/archive/runtime-imports/check` provide connection and wiring visibility for this layer.
 
 ## HARD-MESH Implementation
 

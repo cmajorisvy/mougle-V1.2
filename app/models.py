@@ -69,6 +69,35 @@ class SignalDestination(str, Enum):
     query_tank = "query_tank"
 
 
+class ArchiveReuseClassification(str, Enum):
+    reuse_candidate = "reuse_candidate"
+    adapt_candidate = "adapt_candidate"
+    reference_only = "reference_only"
+    archive_only = "archive_only"
+    blocked_secret_risk = "blocked_secret_risk"
+
+
+class ArchiveIntegrationLayer(str, Enum):
+    cross_cutting = "cross_cutting"
+    stage5_micro_pyramid = "stage5_micro_pyramid"
+    stage6_boundary = "stage6_boundary"
+    stage7_foundation = "stage7_foundation"
+    admin_governance = "admin_governance"
+    reference_only = "reference_only"
+    archive_only = "archive_only"
+
+
+class MicroPyramidSignalBand(str, Enum):
+    personal_context = "personal_context"
+    professional_business = "professional_business"
+    community = "community"
+    knowledge_contribution = "knowledge_contribution"
+    risk_safety = "risk_safety"
+    reputation_gluon = "reputation_gluon"
+    marketplace_product = "marketplace_product"
+    debate_podcast = "debate_podcast"
+
+
 class ExternalVerifierVerdict(str, Enum):
     support = "support"
     contradict = "contradict"
@@ -401,6 +430,56 @@ class SignalProcessingRecord(BaseModel):
     event: SignalEvent
     vector: SignalVector
     route: SignalRoute
+
+
+class ArchiveReuseCandidate(BaseModel):
+    original_path: str
+    archived_path: str
+    compatibility_score: float = Field(ge=0.0, le=1.0)
+    raw_classification: str
+    classification: ArchiveReuseClassification
+    secret_risk: str = "none"
+    target_layer: ArchiveIntegrationLayer
+    target_stage: str
+    micro_pyramid_band: Optional[MicroPyramidSignalBand] = None
+    required_adaptation: str
+    estimated_effort: str
+    risk_level: str
+    recommended_action: str
+    reason_for_match: str = ""
+    dependencies: list[str] = Field(default_factory=list)
+    security_concerns: list[str] = Field(default_factory=list)
+    architecture_concerns: list[str] = Field(default_factory=list)
+    blocked: bool = False
+    block_reason: Optional[str] = None
+
+
+class ArchiveReuseMatrix(BaseModel):
+    archive_timestamp: str
+    archive_path: str
+    source_manifest: str
+    files_scanned: int
+    candidates: list[ArchiveReuseCandidate]
+    classification_summary: dict[str, int]
+    target_layer_summary: dict[str, int]
+    blocked_by_secret_risk: int
+    warnings: list[str] = Field(default_factory=list)
+    generated_at: datetime = Field(default_factory=utc_now)
+
+
+class RuntimeImportViolation(BaseModel):
+    file_path: str
+    line_number: int
+    import_text: str
+    reason: str
+
+
+class RuntimeImportCheck(BaseModel):
+    scanned_files: int
+    violation_count: int
+    violations: list[RuntimeImportViolation] = Field(default_factory=list)
+    passed: bool
+    generated_at: datetime = Field(default_factory=utc_now)
 
 
 class AgentActionEvaluationRequest(BaseModel):

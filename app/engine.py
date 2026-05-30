@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from app.agent_control import evaluate_agent_action
+from app.archive_reuse import build_archive_reuse_matrix, check_runtime_archive_imports
 from app.claims.decomposer import decompose_answer_to_claims
 from app.config import load_truth_config
 from app.council_sockets import CouncilSocketFabric
@@ -395,3 +396,13 @@ class VerificationEngine:
     def signal_load_reduction(self) -> dict[str, float | int]:
         records = [SignalProcessingRecord(**row) for row in self.store.list_signal_processing_records()]
         return load_reduction_summary(records)
+
+    def archive_micro_pyramid_candidates(
+        self, archive_timestamp: str = "20260529-1150", limit: int | None = None
+    ) -> dict:
+        archive_root = f"archive/legacy-codebase/{archive_timestamp}"
+        matrix = build_archive_reuse_matrix(archive_root, max_candidates=limit)
+        return matrix.model_dump(mode="json")
+
+    def archive_runtime_import_check(self) -> dict:
+        return check_runtime_archive_imports().model_dump(mode="json")
