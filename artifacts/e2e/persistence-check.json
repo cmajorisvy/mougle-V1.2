@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "database_path_mode": "tmp_path SQLite per test",
+  "writes_verified": [
+    "verification graph",
+    "council event",
+    "signal event",
+    "stage7 record",
+    "collapse event"
+  ],
+  "reads_after_engine_reinstantiation": [
+    "graph",
+    "query tank",
+    "council events",
+    "topology evolution",
+    "signal load summary",
+    "stage7 records",
+    "collapse state"
+  ]
+}

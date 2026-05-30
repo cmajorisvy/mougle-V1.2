@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "boundaries_checked": [
+    "secret-like extra payload ignored by typed boundary",
+    "direct Stage 4 council target denied",
+    "direct Stage 1 council target denied",
+    "Stage 7 candidate cannot publish truth or update Stage 1/4",
+    "Micro-Pyramid publish_truth action blocked",
+    "collapse does not delete agents",
+    "emergency collapse cannot restore directly",
+    "Gluon/UES/AgentRank payout-like actions do not proceed locally",
+    "external provider URL stored as metadata only and no provider call is made",
+    "fabricated evidence is not accepted as verified evidence",
+    "archive runtime imports absent"
+  ],
+  "external_provider_calls_added": false,
+  "fabricated_evidence_introduced": false,
+  "production_database_touched": false
+}
