@@ -253,6 +253,30 @@
   },
   {
     "method": "GET",
+    "path": "/dashboard/podcast-council/cards",
+    "name": "podcast_council_dashboard_cards",
+    "module_owner": "podcast_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/podcast-council/pages",
+    "name": "podcast_council_dashboard_pages",
+    "module_owner": "podcast_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
     "path": "/graph/{answer_id}",
     "name": "graph",
     "module_owner": "truth_pipeline",
@@ -284,6 +308,186 @@
     "criticality": "P1",
     "tested_by": [
       "tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/podcast-council/audit-logs",
+    "name": "podcast_council_audit_logs",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/podcast-council/claims/{claim_id}/evidence",
+    "name": "podcast_evidence_submit",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/podcast-council/claims/{claim_id}/reviews",
+    "name": "podcast_claim_review",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/podcast-council/claims/{claim_id}/route-stage7",
+    "name": "podcast_claim_route_stage7",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/podcast-council/claims/{claim_id}/submit-stage6",
+    "name": "podcast_claim_submit_stage6",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/podcast-council/rooms",
+    "name": "podcast_rooms",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/podcast-council/rooms",
+    "name": "podcast_room_create",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/podcast-council/rooms/{room_id}",
+    "name": "podcast_room_detail",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/podcast-council/rooms/{room_id}/agent-invitations",
+    "name": "podcast_agent_invitation",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/podcast-council/rooms/{room_id}/call-for-experts",
+    "name": "podcast_call_for_experts",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/podcast-council/rooms/{room_id}/participants",
+    "name": "podcast_participant_add",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/podcast-council/rooms/{room_id}/risk-alerts",
+    "name": "podcast_room_risk_alerts",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/podcast-council/rooms/{room_id}/sessions",
+    "name": "podcast_session_create",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/podcast-council/sessions/{session_id}/claims",
+    "name": "podcast_debate_claim",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/podcast-council/sessions/{session_id}/turns",
+    "name": "podcast_debate_turn",
+    "module_owner": "podcast_forum_debate_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
     ],
     "status": "tested",
     "reason": null

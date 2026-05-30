@@ -3,15 +3,26 @@
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
+os.environ.setdefault(
+    "TRUTH_PYRAMID_DB_PATH",
+    str(Path(tempfile.gettempdir()) / "truth_pyramid_route_discovery.db"),
+)
+
 from app.api import app
 
 EXCLUDED_PATHS = {"/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect"}
 EXCLUDED_METHODS = {"HEAD", "OPTIONS"}
+PODCAST_COUNCIL_E2E = (
+    "tests/test_podcast_council.py::"
+    "test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+)
 
 TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/health"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
@@ -32,6 +43,23 @@ TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("POST", "/stage7/query-tank/resolve"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
     ("POST", "/stage7/stage6/submit"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
     ("GET", "/admin/stage7/alerts"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("POST", "/podcast-council/rooms"): [PODCAST_COUNCIL_E2E],
+    ("GET", "/podcast-council/rooms"): [PODCAST_COUNCIL_E2E],
+    ("GET", "/podcast-council/rooms/{room_id}"): [PODCAST_COUNCIL_E2E],
+    ("POST", "/podcast-council/rooms/{room_id}/sessions"): [PODCAST_COUNCIL_E2E],
+    ("POST", "/podcast-council/rooms/{room_id}/participants"): [PODCAST_COUNCIL_E2E],
+    ("POST", "/podcast-council/rooms/{room_id}/call-for-experts"): [PODCAST_COUNCIL_E2E],
+    ("POST", "/podcast-council/rooms/{room_id}/agent-invitations"): [PODCAST_COUNCIL_E2E],
+    ("POST", "/podcast-council/sessions/{session_id}/turns"): [PODCAST_COUNCIL_E2E],
+    ("POST", "/podcast-council/sessions/{session_id}/claims"): [PODCAST_COUNCIL_E2E],
+    ("POST", "/podcast-council/claims/{claim_id}/evidence"): [PODCAST_COUNCIL_E2E],
+    ("POST", "/podcast-council/claims/{claim_id}/reviews"): [PODCAST_COUNCIL_E2E],
+    ("POST", "/podcast-council/claims/{claim_id}/route-stage7"): [PODCAST_COUNCIL_E2E],
+    ("POST", "/podcast-council/claims/{claim_id}/submit-stage6"): [PODCAST_COUNCIL_E2E],
+    ("GET", "/podcast-council/rooms/{room_id}/risk-alerts"): [PODCAST_COUNCIL_E2E],
+    ("GET", "/podcast-council/audit-logs"): [PODCAST_COUNCIL_E2E],
+    ("GET", "/dashboard/podcast-council/cards"): [PODCAST_COUNCIL_E2E],
+    ("GET", "/dashboard/podcast-council/pages"): [PODCAST_COUNCIL_E2E],
     ("POST", "/agents/{agent_id}/collapse/evaluate"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_security_boundaries.py::test_security_and_no_bypass_boundaries"],
     ("POST", "/agents/{agent_id}/collapse/events"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_persistence_restart.py::test_persistence_survives_engine_reinstantiation"],
     ("GET", "/agents/{agent_id}/collapse/events"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_security_boundaries.py::test_security_and_no_bypass_boundaries"],
@@ -63,6 +91,10 @@ class RouteEntry:
 def route_owner(path: str) -> str:
     if path == "/health":
         return "api_health"
+    if path.startswith("/dashboard/podcast-council"):
+        return "podcast_council_dashboard"
+    if path.startswith("/podcast-council"):
+        return "podcast_forum_debate_council"
     if path.startswith("/verify") or path.startswith("/graph") or path.startswith("/query-tank"):
         return "truth_pipeline"
     if path.startswith("/hard-mesh"):
@@ -86,6 +118,8 @@ def route_owner(path: str) -> str:
 
 def route_criticality(path: str) -> str:
     if path in {"/health", "/admin/agents/collapse/metrics", "/admin/signal-load-reduction"}:
+        return "P1"
+    if path.startswith("/dashboard/podcast-council"):
         return "P1"
     if path.startswith("/admin/agents/collapse") or path.startswith("/admin/stage7"):
         return "P1"

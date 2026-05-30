@@ -14,6 +14,15 @@ from app.models import (
     AgentCollapseRestoreRequest,
     AgentCollapseReviewRequest,
     CouncilSocketEnvelope,
+    PodcastAgentInvitationInput,
+    PodcastClaimReviewInput,
+    PodcastDebateClaimInput,
+    PodcastDebateTurnInput,
+    PodcastEvidenceSubmissionInput,
+    PodcastExpertCallInput,
+    PodcastParticipantInput,
+    PodcastRoomInput,
+    PodcastSessionInput,
     Stage7ExternalRecordInput,
     Stage7ResolutionRequest,
     SignalEventRequest,
@@ -159,6 +168,128 @@ def stage7_stage6_submit(payload: Stage7ResolutionRequest) -> dict:
 @app.get("/admin/stage7/alerts")
 def stage7_alerts() -> list[dict]:
     return engine.stage7_alerts()
+
+
+@app.post("/podcast-council/rooms")
+def podcast_room_create(payload: PodcastRoomInput) -> dict:
+    return engine.create_podcast_room(payload).model_dump(mode="json")
+
+
+@app.get("/podcast-council/rooms")
+def podcast_rooms() -> list[dict]:
+    return engine.list_podcast_rooms()
+
+
+@app.get("/podcast-council/rooms/{room_id}")
+def podcast_room_detail(room_id: str) -> dict:
+    try:
+        return engine.get_podcast_room_detail(room_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/podcast-council/rooms/{room_id}/sessions")
+def podcast_session_create(room_id: str, payload: PodcastSessionInput) -> dict:
+    try:
+        return engine.create_podcast_session(room_id, payload).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/podcast-council/rooms/{room_id}/participants")
+def podcast_participant_add(room_id: str, payload: PodcastParticipantInput) -> dict:
+    try:
+        return engine.add_podcast_participant(room_id, payload).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/podcast-council/rooms/{room_id}/call-for-experts")
+def podcast_call_for_experts(room_id: str, payload: PodcastExpertCallInput) -> dict:
+    try:
+        return engine.create_podcast_expert_call(room_id, payload).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/podcast-council/rooms/{room_id}/agent-invitations")
+def podcast_agent_invitation(room_id: str, payload: PodcastAgentInvitationInput) -> dict:
+    try:
+        return engine.create_podcast_agent_invitation(room_id, payload).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/podcast-council/sessions/{session_id}/turns")
+def podcast_debate_turn(session_id: str, payload: PodcastDebateTurnInput) -> dict:
+    try:
+        return engine.create_podcast_debate_turn(session_id, payload).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/podcast-council/sessions/{session_id}/claims")
+def podcast_debate_claim(session_id: str, payload: PodcastDebateClaimInput) -> dict:
+    try:
+        return engine.create_podcast_debate_claim(session_id, payload).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/podcast-council/claims/{claim_id}/evidence")
+def podcast_evidence_submit(claim_id: str, payload: PodcastEvidenceSubmissionInput) -> dict:
+    try:
+        return engine.submit_podcast_evidence(claim_id, payload).model_dump(mode="json")
+    except ValueError as exc:
+        status = 400 if "rejected" in str(exc) else 404
+        raise HTTPException(status_code=status, detail=str(exc)) from exc
+
+
+@app.post("/podcast-council/claims/{claim_id}/reviews")
+def podcast_claim_review(claim_id: str, payload: PodcastClaimReviewInput) -> dict:
+    try:
+        return engine.review_podcast_claim(claim_id, payload).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/podcast-council/claims/{claim_id}/route-stage7")
+def podcast_claim_route_stage7(claim_id: str) -> dict:
+    try:
+        return engine.route_podcast_claim_stage7(claim_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/podcast-council/claims/{claim_id}/submit-stage6")
+def podcast_claim_submit_stage6(claim_id: str) -> dict:
+    try:
+        return engine.submit_podcast_claim_stage6(claim_id).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/podcast-council/rooms/{room_id}/risk-alerts")
+def podcast_room_risk_alerts(room_id: str) -> list[dict]:
+    try:
+        return engine.podcast_room_risk_alerts(room_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/podcast-council/audit-logs")
+def podcast_council_audit_logs(room_id: str | None = None) -> list[dict]:
+    return engine.list_podcast_audit_logs(room_id)
+
+
+@app.get("/dashboard/podcast-council/cards")
+def podcast_council_dashboard_cards() -> list[dict]:
+    return engine.podcast_dashboard_cards()
+
+
+@app.get("/dashboard/podcast-council/pages")
+def podcast_council_dashboard_pages() -> list[dict]:
+    return engine.podcast_dashboard_pages()
 
 
 @app.post("/agents/{agent_id}/collapse/evaluate")

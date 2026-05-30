@@ -17,6 +17,19 @@ from app.models import (
     AgentCollapseReview,
     CouncilSocketDecision,
     CouncilSocketEnvelope,
+    PodcastAgentInvitation,
+    PodcastClaimReview,
+    PodcastCouncilAuditLog,
+    PodcastDebateClaim,
+    PodcastDebateTurn,
+    PodcastEvidenceSubmission,
+    PodcastExpertCall,
+    PodcastParticipant,
+    PodcastRoom,
+    PodcastRoomRiskAlert,
+    PodcastSession,
+    PodcastStage6SubmissionPacket,
+    PodcastStage7CandidateRoute,
     QueryTankItem,
     SignalProcessingRecord,
     Stage7ExternalRecord,
@@ -300,6 +313,158 @@ class SQLiteStore:
                 CREATE TABLE IF NOT EXISTS stage7_submission_packages (
                     submission_id TEXT PRIMARY KEY,
                     record_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS podcast_rooms (
+                    room_id TEXT PRIMARY KEY,
+                    status TEXT NOT NULL,
+                    risk_score REAL NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS podcast_sessions (
+                    session_id TEXT PRIMARY KEY,
+                    room_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS podcast_participants (
+                    participant_entry_id TEXT PRIMARY KEY,
+                    room_id TEXT NOT NULL,
+                    participant_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS podcast_expert_calls (
+                    call_id TEXT PRIMARY KEY,
+                    room_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS podcast_agent_invitations (
+                    invitation_id TEXT PRIMARY KEY,
+                    room_id TEXT NOT NULL,
+                    agent_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS podcast_debate_turns (
+                    turn_id TEXT PRIMARY KEY,
+                    room_id TEXT NOT NULL,
+                    session_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS podcast_debate_claims (
+                    claim_id TEXT PRIMARY KEY,
+                    room_id TEXT NOT NULL,
+                    session_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS podcast_evidence_submissions (
+                    evidence_id TEXT PRIMARY KEY,
+                    claim_id TEXT NOT NULL,
+                    room_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS podcast_claim_reviews (
+                    review_id TEXT PRIMARY KEY,
+                    claim_id TEXT NOT NULL,
+                    room_id TEXT NOT NULL,
+                    verdict TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS podcast_stage7_routes (
+                    route_id TEXT PRIMARY KEY,
+                    claim_id TEXT NOT NULL,
+                    room_id TEXT NOT NULL,
+                    stage7_record_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS podcast_stage6_packets (
+                    packet_id TEXT PRIMARY KEY,
+                    claim_id TEXT NOT NULL,
+                    room_id TEXT NOT NULL,
+                    stage7_submission_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS podcast_room_risk_alerts (
+                    alert_id TEXT PRIMARY KEY,
+                    room_id TEXT NOT NULL,
+                    severity TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS podcast_council_audit_logs (
+                    audit_id TEXT PRIMARY KEY,
+                    room_id TEXT,
+                    claim_id TEXT,
+                    action TEXT NOT NULL,
                     payload_json TEXT NOT NULL,
                     created_at TEXT DEFAULT CURRENT_TIMESTAMP
                 )
@@ -658,6 +823,405 @@ class SQLiteStore:
                 """,
                 (package.submission_id, package.record_id, package.model_dump_json()),
             )
+
+    def save_podcast_room(self, room: PodcastRoom) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO podcast_rooms(
+                    room_id, status, risk_score, payload_json, updated_at
+                ) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """,
+                (
+                    room.room_id,
+                    room.status.value,
+                    room.reputation_metadata.risk_score,
+                    room.model_dump_json(),
+                ),
+            )
+
+    def list_podcast_rooms(self) -> list[dict]:
+        with self._connect() as conn:
+            rows = conn.execute("SELECT payload_json FROM podcast_rooms ORDER BY updated_at DESC").fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def get_podcast_room(self, room_id: str) -> Optional[dict]:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT payload_json FROM podcast_rooms WHERE room_id = ?", (room_id,)
+            ).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def save_podcast_session(self, session: PodcastSession) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO podcast_sessions(
+                    session_id, room_id, status, payload_json, updated_at
+                ) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """,
+                (session.session_id, session.room_id, session.status, session.model_dump_json()),
+            )
+
+    def list_podcast_sessions(self, room_id: str | None = None) -> list[dict]:
+        with self._connect() as conn:
+            if room_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_sessions WHERE room_id = ? ORDER BY updated_at DESC",
+                    (room_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_sessions ORDER BY updated_at DESC"
+                ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def get_podcast_session(self, session_id: str) -> Optional[dict]:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT payload_json FROM podcast_sessions WHERE session_id = ?", (session_id,)
+            ).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def save_podcast_participant(self, participant: PodcastParticipant) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO podcast_participants(
+                    participant_entry_id, room_id, participant_id, payload_json
+                ) VALUES (?, ?, ?, ?)
+                """,
+                (
+                    participant.participant_entry_id,
+                    participant.room_id,
+                    participant.participant_id,
+                    participant.model_dump_json(),
+                ),
+            )
+
+    def list_podcast_participants(self, room_id: str | None = None) -> list[dict]:
+        with self._connect() as conn:
+            if room_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_participants WHERE room_id = ? ORDER BY created_at DESC",
+                    (room_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_participants ORDER BY created_at DESC"
+                ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def save_podcast_expert_call(self, call: PodcastExpertCall) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO podcast_expert_calls(call_id, room_id, status, payload_json)
+                VALUES (?, ?, ?, ?)
+                """,
+                (call.call_id, call.room_id, call.status, call.model_dump_json()),
+            )
+
+    def list_podcast_expert_calls(self, room_id: str | None = None) -> list[dict]:
+        with self._connect() as conn:
+            if room_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_expert_calls WHERE room_id = ? ORDER BY created_at DESC",
+                    (room_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_expert_calls ORDER BY created_at DESC"
+                ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def save_podcast_agent_invitation(self, invitation: PodcastAgentInvitation) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO podcast_agent_invitations(
+                    invitation_id, room_id, agent_id, status, payload_json
+                ) VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    invitation.invitation_id,
+                    invitation.room_id,
+                    invitation.agent_id,
+                    invitation.status.value,
+                    invitation.model_dump_json(),
+                ),
+            )
+
+    def list_podcast_agent_invitations(self, room_id: str | None = None) -> list[dict]:
+        with self._connect() as conn:
+            if room_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_agent_invitations WHERE room_id = ? ORDER BY created_at DESC",
+                    (room_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_agent_invitations ORDER BY created_at DESC"
+                ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def save_podcast_debate_turn(self, turn: PodcastDebateTurn) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO podcast_debate_turns(turn_id, room_id, session_id, payload_json)
+                VALUES (?, ?, ?, ?)
+                """,
+                (turn.turn_id, turn.room_id, turn.session_id, turn.model_dump_json()),
+            )
+
+    def list_podcast_debate_turns(
+        self, room_id: str | None = None, session_id: str | None = None
+    ) -> list[dict]:
+        with self._connect() as conn:
+            if session_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_debate_turns WHERE session_id = ? ORDER BY created_at DESC",
+                    (session_id,),
+                ).fetchall()
+            elif room_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_debate_turns WHERE room_id = ? ORDER BY created_at DESC",
+                    (room_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_debate_turns ORDER BY created_at DESC"
+                ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def save_podcast_debate_claim(self, claim: PodcastDebateClaim) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO podcast_debate_claims(
+                    claim_id, room_id, session_id, status, payload_json, updated_at
+                ) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """,
+                (
+                    claim.claim_id,
+                    claim.room_id,
+                    claim.session_id,
+                    claim.status.value,
+                    claim.model_dump_json(),
+                ),
+            )
+
+    def list_podcast_debate_claims(
+        self, room_id: str | None = None, session_id: str | None = None
+    ) -> list[dict]:
+        with self._connect() as conn:
+            if session_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_debate_claims WHERE session_id = ? ORDER BY updated_at DESC",
+                    (session_id,),
+                ).fetchall()
+            elif room_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_debate_claims WHERE room_id = ? ORDER BY updated_at DESC",
+                    (room_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_debate_claims ORDER BY updated_at DESC"
+                ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def get_podcast_debate_claim(self, claim_id: str) -> Optional[dict]:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT payload_json FROM podcast_debate_claims WHERE claim_id = ?", (claim_id,)
+            ).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def save_podcast_evidence_submission(self, evidence: PodcastEvidenceSubmission) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO podcast_evidence_submissions(
+                    evidence_id, claim_id, room_id, payload_json
+                ) VALUES (?, ?, ?, ?)
+                """,
+                (evidence.evidence_id, evidence.claim_id, evidence.room_id, evidence.model_dump_json()),
+            )
+
+    def list_podcast_evidence_submissions(
+        self, room_id: str | None = None, claim_id: str | None = None
+    ) -> list[dict]:
+        with self._connect() as conn:
+            if claim_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_evidence_submissions WHERE claim_id = ? ORDER BY created_at DESC",
+                    (claim_id,),
+                ).fetchall()
+            elif room_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_evidence_submissions WHERE room_id = ? ORDER BY created_at DESC",
+                    (room_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_evidence_submissions ORDER BY created_at DESC"
+                ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def save_podcast_claim_review(self, review: PodcastClaimReview) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO podcast_claim_reviews(
+                    review_id, claim_id, room_id, verdict, payload_json
+                ) VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    review.review_id,
+                    review.claim_id,
+                    review.room_id,
+                    review.verdict.value,
+                    review.model_dump_json(),
+                ),
+            )
+
+    def list_podcast_claim_reviews(
+        self, room_id: str | None = None, claim_id: str | None = None
+    ) -> list[dict]:
+        with self._connect() as conn:
+            if claim_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_claim_reviews WHERE claim_id = ? ORDER BY created_at DESC",
+                    (claim_id,),
+                ).fetchall()
+            elif room_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_claim_reviews WHERE room_id = ? ORDER BY created_at DESC",
+                    (room_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_claim_reviews ORDER BY created_at DESC"
+                ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def save_podcast_stage7_route(self, route: PodcastStage7CandidateRoute) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO podcast_stage7_routes(
+                    route_id, claim_id, room_id, stage7_record_id, payload_json
+                ) VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    route.route_id,
+                    route.claim_id,
+                    route.room_id,
+                    route.stage7_record_id,
+                    route.model_dump_json(),
+                ),
+            )
+
+    def list_podcast_stage7_routes(self, room_id: str | None = None) -> list[dict]:
+        with self._connect() as conn:
+            if room_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_stage7_routes WHERE room_id = ? ORDER BY created_at DESC",
+                    (room_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_stage7_routes ORDER BY created_at DESC"
+                ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def get_podcast_stage7_route_for_claim(self, claim_id: str) -> Optional[dict]:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT payload_json FROM podcast_stage7_routes WHERE claim_id = ? ORDER BY created_at DESC",
+                (claim_id,),
+            ).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def save_podcast_stage6_packet(self, packet: PodcastStage6SubmissionPacket) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO podcast_stage6_packets(
+                    packet_id, claim_id, room_id, stage7_submission_id, payload_json
+                ) VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    packet.packet_id,
+                    packet.claim_id,
+                    packet.room_id,
+                    packet.stage7_submission_id,
+                    packet.model_dump_json(),
+                ),
+            )
+
+    def list_podcast_stage6_packets(self, room_id: str | None = None) -> list[dict]:
+        with self._connect() as conn:
+            if room_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_stage6_packets WHERE room_id = ? ORDER BY created_at DESC",
+                    (room_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_stage6_packets ORDER BY created_at DESC"
+                ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def save_podcast_room_risk_alert(self, alert: PodcastRoomRiskAlert) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO podcast_room_risk_alerts(
+                    alert_id, room_id, severity, payload_json
+                ) VALUES (?, ?, ?, ?)
+                """,
+                (alert.alert_id, alert.room_id, alert.severity.value, alert.model_dump_json()),
+            )
+
+    def list_podcast_room_risk_alerts(self, room_id: str | None = None) -> list[dict]:
+        with self._connect() as conn:
+            if room_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_room_risk_alerts WHERE room_id = ? ORDER BY created_at DESC",
+                    (room_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_room_risk_alerts ORDER BY created_at DESC"
+                ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def save_podcast_council_audit_log(self, audit: PodcastCouncilAuditLog) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO podcast_council_audit_logs(
+                    audit_id, room_id, claim_id, action, payload_json
+                ) VALUES (?, ?, ?, ?, ?)
+                """,
+                (audit.audit_id, audit.room_id, audit.claim_id, audit.action, audit.model_dump_json()),
+            )
+
+    def list_podcast_council_audit_logs(self, room_id: str | None = None) -> list[dict]:
+        with self._connect() as conn:
+            if room_id:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_council_audit_logs WHERE room_id = ? ORDER BY created_at DESC",
+                    (room_id,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT payload_json FROM podcast_council_audit_logs ORDER BY created_at DESC"
+                ).fetchall()
+        return [json.loads(row[0]) for row in rows]
 
     def save_agent_collapse_metrics(self, metrics: AgentCollapseMetrics) -> None:
         with self._connect() as conn:

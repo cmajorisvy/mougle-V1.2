@@ -44,6 +44,28 @@ from app.models import (
     CouncilSocketDecision,
     CouncilSocketEnvelope,
     MacroMicroAssessment,
+    PodcastAgentInvitation,
+    PodcastAgentInvitationInput,
+    PodcastClaimReview,
+    PodcastClaimReviewInput,
+    PodcastCouncilAuditLog,
+    PodcastDebateClaim,
+    PodcastDebateClaimInput,
+    PodcastDebateTurn,
+    PodcastDebateTurnInput,
+    PodcastEvidenceSubmission,
+    PodcastEvidenceSubmissionInput,
+    PodcastExpertCall,
+    PodcastExpertCallInput,
+    PodcastParticipant,
+    PodcastParticipantInput,
+    PodcastRoom,
+    PodcastRoomInput,
+    PodcastRoomRiskAlert,
+    PodcastSession,
+    PodcastSessionInput,
+    PodcastStage6SubmissionPacket,
+    PodcastStage7CandidateRoute,
     ProvenancePayload,
     QueryTankItem,
     Query,
@@ -71,6 +93,26 @@ from app.plugins.implementations import (
     RetrievalSupportPlugin,
     SourceReliabilityPlugin,
     TemporalFreshnessPlugin,
+)
+from app.podcast_council import (
+    add_participant as podcast_add_participant,
+    build_dashboard_cards as podcast_build_dashboard_cards,
+    build_dashboard_pages as podcast_build_dashboard_pages,
+    build_room_risk_alerts as podcast_build_room_risk_alerts,
+    build_stage6_packet as podcast_build_stage6_packet,
+    build_stage7_input_for_claim as podcast_build_stage7_input,
+    build_stage7_route as podcast_build_stage7_route,
+    compute_room_reputation as podcast_compute_room_reputation,
+    create_agent_invitation as podcast_create_agent_invitation,
+    create_claim as podcast_create_claim,
+    create_expert_call as podcast_create_expert_call,
+    create_room as podcast_create_room,
+    create_session as podcast_create_session,
+    create_turn as podcast_create_turn,
+    dedupe_alerts as podcast_dedupe_alerts,
+    review_claim as podcast_review_claim,
+    submit_evidence as podcast_submit_evidence,
+    write_audit_log as podcast_write_audit_log,
 )
 from app.retrieval.mock import InMemoryRetriever
 from app.scoring.gate import publish_gate
@@ -460,6 +502,364 @@ class VerificationEngine:
     def stage7_alerts(self) -> list[dict]:
         records = [Stage7ExternalRecord(**row) for row in self.store.list_stage7_external_records()]
         return [alert.model_dump(mode="json") for alert in build_stage7_alerts(records)]
+
+    def create_podcast_room(self, payload: PodcastRoomInput) -> PodcastRoom:
+        room = podcast_create_room(payload)
+        self.store.save_podcast_room(room)
+        self._save_podcast_audit(
+            podcast_write_audit_log(
+                "room_created",
+                room_id=room.room_id,
+                actor_id=payload.host_user_id,
+                metadata={"title": room.title, "candidate_only": True},
+            )
+        )
+        return room
+
+    def list_podcast_rooms(self) -> list[dict]:
+        return self.store.list_podcast_rooms()
+
+    def get_podcast_room_detail(self, room_id: str) -> dict:
+        room = self._podcast_room(room_id)
+        return {
+            "room": room.model_dump(mode="json"),
+            "sessions": self.store.list_podcast_sessions(room_id),
+            "participants": self.store.list_podcast_participants(room_id),
+            "expert_calls": self.store.list_podcast_expert_calls(room_id),
+            "agent_invitations": self.store.list_podcast_agent_invitations(room_id),
+            "claims": self.store.list_podcast_debate_claims(room_id=room_id),
+            "risk_alerts": self.podcast_room_risk_alerts(room_id),
+        }
+
+    def create_podcast_session(self, room_id: str, payload: PodcastSessionInput) -> PodcastSession:
+        room = self._podcast_room(room_id)
+        session = podcast_create_session(room, payload)
+        self.store.save_podcast_session(session)
+        self._save_podcast_audit(
+            podcast_write_audit_log(
+                "session_created",
+                room_id=room_id,
+                session_id=session.session_id,
+                actor_id=payload.created_by,
+                metadata={"objective": session.objective},
+            )
+        )
+        return session
+
+    def add_podcast_participant(
+        self, room_id: str, payload: PodcastParticipantInput
+    ) -> PodcastParticipant:
+        room = self._podcast_room(room_id)
+        participant = podcast_add_participant(room, payload)
+        self.store.save_podcast_participant(participant)
+        self._refresh_podcast_room(room_id)
+        self._save_podcast_audit(
+            podcast_write_audit_log(
+                "participant_added",
+                room_id=room_id,
+                actor_id=payload.invited_by or payload.participant_id,
+                metadata={
+                    "participant_id": payload.participant_id,
+                    "role": payload.role.value,
+                    "local_readiness_not_truth_score": True,
+                },
+            )
+        )
+        return participant
+
+    def create_podcast_expert_call(
+        self, room_id: str, payload: PodcastExpertCallInput
+    ) -> PodcastExpertCall:
+        room = self._podcast_room(room_id)
+        call = podcast_create_expert_call(room, payload)
+        self.store.save_podcast_expert_call(call)
+        self._save_podcast_audit(
+            podcast_write_audit_log(
+                "call_for_experts_created",
+                room_id=room_id,
+                actor_id=payload.requested_by,
+                metadata={
+                    "topic": call.topic,
+                    "expertise_required": call.expertise_required,
+                    "min_reputation": call.min_reputation,
+                },
+            )
+        )
+        return call
+
+    def create_podcast_agent_invitation(
+        self, room_id: str, payload: PodcastAgentInvitationInput
+    ) -> PodcastAgentInvitation:
+        room = self._podcast_room(room_id)
+        invitation = podcast_create_agent_invitation(room, payload)
+        self.store.save_podcast_agent_invitation(invitation)
+        self._save_podcast_audit(
+            podcast_write_audit_log(
+                "agent_invitation_created",
+                room_id=room_id,
+                actor_id=payload.requested_by,
+                metadata={
+                    "agent_id": invitation.agent_id,
+                    "status": invitation.status.value,
+                    "target_stage": invitation.target_stage,
+                    "local_readiness_not_truth_score": True,
+                    "may_publish_truth": False,
+                },
+            )
+        )
+        self.podcast_room_risk_alerts(room_id)
+        return invitation
+
+    def create_podcast_debate_turn(
+        self, session_id: str, payload: PodcastDebateTurnInput
+    ) -> PodcastDebateTurn:
+        session = self._podcast_session(session_id)
+        turn = podcast_create_turn(session, payload)
+        self.store.save_podcast_debate_turn(turn)
+        self._save_podcast_audit(
+            podcast_write_audit_log(
+                "debate_turn_recorded",
+                room_id=turn.room_id,
+                session_id=session_id,
+                actor_id=payload.speaker_id,
+                metadata={"turn_type": turn.turn_type},
+            )
+        )
+        return turn
+
+    def create_podcast_debate_claim(
+        self, session_id: str, payload: PodcastDebateClaimInput
+    ) -> PodcastDebateClaim:
+        session = self._podcast_session(session_id)
+        claim = podcast_create_claim(session, payload)
+        self.store.save_podcast_debate_claim(claim)
+        self._refresh_podcast_room(claim.room_id)
+        self._save_podcast_audit(
+            podcast_write_audit_log(
+                "debate_claim_recorded",
+                room_id=claim.room_id,
+                session_id=session_id,
+                claim_id=claim.claim_id,
+                actor_id=payload.claimant_id,
+                metadata={"candidate_only": True, "stage6_required": True},
+            )
+        )
+        return claim
+
+    def submit_podcast_evidence(
+        self, claim_id: str, payload: PodcastEvidenceSubmissionInput
+    ) -> PodcastEvidenceSubmission:
+        claim = self._podcast_claim(claim_id)
+        evidence = podcast_submit_evidence(claim, payload)
+        self.store.save_podcast_evidence_submission(evidence)
+        self._refresh_podcast_room(claim.room_id)
+        self._save_podcast_audit(
+            podcast_write_audit_log(
+                "evidence_submitted",
+                room_id=claim.room_id,
+                session_id=claim.session_id,
+                claim_id=claim.claim_id,
+                actor_id=payload.submitted_by,
+                metadata={
+                    "evidence_id": evidence.evidence_id,
+                    "no_fabricated_evidence_attestation": True,
+                },
+            )
+        )
+        return evidence
+
+    def review_podcast_claim(
+        self, claim_id: str, payload: PodcastClaimReviewInput
+    ) -> PodcastClaimReview:
+        claim = self._podcast_claim(claim_id)
+        review, updated_claim = podcast_review_claim(claim, payload)
+        self.store.save_podcast_claim_review(review)
+        self.store.save_podcast_debate_claim(updated_claim)
+        self._refresh_podcast_room(claim.room_id)
+        self._save_podcast_audit(
+            podcast_write_audit_log(
+                "claim_review_recorded",
+                room_id=claim.room_id,
+                session_id=claim.session_id,
+                claim_id=claim.claim_id,
+                actor_id=payload.reviewer_id,
+                metadata={
+                    "verdict": review.verdict.value,
+                    "stage6_required": True,
+                    "may_publish_truth": False,
+                },
+            )
+        )
+        return review
+
+    def route_podcast_claim_stage7(self, claim_id: str) -> dict:
+        claim = self._podcast_claim(claim_id)
+        evidence = self._podcast_evidence_for_claim(claim_id)
+        reviews = self._podcast_reviews_for_claim(claim_id)
+        stage7_input = podcast_build_stage7_input(claim, evidence, reviews)
+        record = create_stage7_external_record(stage7_input)
+        self.store.save_stage7_external_record(record)
+        if record.status.value in {"unresolved", "disputed", "unknown"}:
+            self.store.enqueue_query_tank(build_query_tank_item(record))
+        route, updated_claim = podcast_build_stage7_route(claim, record)
+        self.store.save_podcast_stage7_route(route)
+        self.store.save_podcast_debate_claim(updated_claim)
+        self._refresh_podcast_room(claim.room_id)
+        self._save_podcast_audit(
+            podcast_write_audit_log(
+                "claim_routed_stage7",
+                room_id=claim.room_id,
+                session_id=claim.session_id,
+                claim_id=claim.claim_id,
+                metadata={
+                    "stage7_record_id": record.record_id,
+                    "candidate_only": True,
+                    "stage6_required": True,
+                },
+            )
+        )
+        return {
+            "route": route.model_dump(mode="json"),
+            "stage7_record": record.model_dump(mode="json"),
+        }
+
+    def submit_podcast_claim_stage6(self, claim_id: str) -> PodcastStage6SubmissionPacket:
+        claim = self._podcast_claim(claim_id)
+        route_raw = self.store.get_podcast_stage7_route_for_claim(claim_id)
+        if route_raw is None:
+            route_payload = self.route_podcast_claim_stage7(claim_id)
+            route = PodcastStage7CandidateRoute(**route_payload["route"])
+            record = Stage7ExternalRecord(**route_payload["stage7_record"])
+            claim = self._podcast_claim(claim_id)
+        else:
+            route = PodcastStage7CandidateRoute(**route_raw)
+            raw_record = self.store.get_stage7_external_record(route.stage7_record_id)
+            if raw_record is None:
+                raise ValueError("stage7 record not found for podcast claim")
+            record = Stage7ExternalRecord(**raw_record)
+        package = package_stage7_for_stage6(record)
+        self.store.save_stage7_external_record(record)
+        self.store.save_stage7_submission_package(package)
+        evidence = self._podcast_evidence_for_claim(claim_id)
+        reviews = self._podcast_reviews_for_claim(claim_id)
+        packet, updated_claim = podcast_build_stage6_packet(claim, route, package, evidence, reviews)
+        self.store.save_podcast_stage6_packet(packet)
+        self.store.save_podcast_debate_claim(updated_claim)
+        self._refresh_podcast_room(claim.room_id)
+        self._save_podcast_audit(
+            podcast_write_audit_log(
+                "claim_submitted_stage6",
+                room_id=claim.room_id,
+                session_id=claim.session_id,
+                claim_id=claim.claim_id,
+                metadata={
+                    "packet_id": packet.packet_id,
+                    "stage7_submission_id": package.submission_id,
+                    "candidate_answer_not_verified": True,
+                },
+            )
+        )
+        return packet
+
+    def podcast_room_risk_alerts(self, room_id: str) -> list[dict]:
+        room = self._refresh_podcast_room(room_id)
+        claims = [PodcastDebateClaim(**row) for row in self.store.list_podcast_debate_claims(room_id=room_id)]
+        evidence = [
+            PodcastEvidenceSubmission(**row)
+            for row in self.store.list_podcast_evidence_submissions(room_id=room_id)
+        ]
+        reviews = [PodcastClaimReview(**row) for row in self.store.list_podcast_claim_reviews(room_id=room_id)]
+        invitations = [
+            PodcastAgentInvitation(**row)
+            for row in self.store.list_podcast_agent_invitations(room_id=room_id)
+        ]
+        existing = [
+            PodcastRoomRiskAlert(**row)
+            for row in self.store.list_podcast_room_risk_alerts(room_id)
+        ]
+        generated = podcast_build_room_risk_alerts(room, claims, evidence, reviews, invitations)
+        alerts = podcast_dedupe_alerts([*existing, *generated])
+        for alert in alerts:
+            self.store.save_podcast_room_risk_alert(alert)
+        return [alert.model_dump(mode="json") for alert in alerts]
+
+    def list_podcast_audit_logs(self, room_id: str | None = None) -> list[dict]:
+        return self.store.list_podcast_council_audit_logs(room_id)
+
+    def podcast_dashboard_cards(self) -> list[dict]:
+        cards = self._podcast_dashboard_cards()
+        return [card.model_dump(mode="json") for card in cards]
+
+    def podcast_dashboard_pages(self) -> list[dict]:
+        cards = self._podcast_dashboard_cards()
+        rooms = [PodcastRoom(**row) for row in self.store.list_podcast_rooms()]
+        alerts = [PodcastRoomRiskAlert(**row) for row in self.store.list_podcast_room_risk_alerts()]
+        audit_logs = [
+            PodcastCouncilAuditLog(**row) for row in self.store.list_podcast_council_audit_logs()
+        ]
+        pages = podcast_build_dashboard_pages(cards, rooms, alerts, audit_logs)
+        return [page.model_dump(mode="json") for page in pages]
+
+    def _podcast_dashboard_cards(self) -> list:
+        rooms = [PodcastRoom(**row) for row in self.store.list_podcast_rooms()]
+        sessions = [PodcastSession(**row) for row in self.store.list_podcast_sessions()]
+        claims = [PodcastDebateClaim(**row) for row in self.store.list_podcast_debate_claims()]
+        routes = [
+            PodcastStage7CandidateRoute(**row) for row in self.store.list_podcast_stage7_routes()
+        ]
+        packets = [
+            PodcastStage6SubmissionPacket(**row) for row in self.store.list_podcast_stage6_packets()
+        ]
+        alerts = [PodcastRoomRiskAlert(**row) for row in self.store.list_podcast_room_risk_alerts()]
+        return podcast_build_dashboard_cards(rooms, sessions, claims, routes, packets, alerts)
+
+    def _podcast_room(self, room_id: str) -> PodcastRoom:
+        raw = self.store.get_podcast_room(room_id)
+        if raw is None:
+            raise ValueError("podcast room not found")
+        return PodcastRoom(**raw)
+
+    def _podcast_session(self, session_id: str) -> PodcastSession:
+        raw = self.store.get_podcast_session(session_id)
+        if raw is None:
+            raise ValueError("podcast session not found")
+        return PodcastSession(**raw)
+
+    def _podcast_claim(self, claim_id: str) -> PodcastDebateClaim:
+        raw = self.store.get_podcast_debate_claim(claim_id)
+        if raw is None:
+            raise ValueError("podcast claim not found")
+        return PodcastDebateClaim(**raw)
+
+    def _podcast_evidence_for_claim(self, claim_id: str) -> list[PodcastEvidenceSubmission]:
+        return [
+            PodcastEvidenceSubmission(**row)
+            for row in self.store.list_podcast_evidence_submissions(claim_id=claim_id)
+        ]
+
+    def _podcast_reviews_for_claim(self, claim_id: str) -> list[PodcastClaimReview]:
+        return [
+            PodcastClaimReview(**row) for row in self.store.list_podcast_claim_reviews(claim_id=claim_id)
+        ]
+
+    def _refresh_podcast_room(self, room_id: str) -> PodcastRoom:
+        room = self._podcast_room(room_id)
+        participants = [
+            PodcastParticipant(**row) for row in self.store.list_podcast_participants(room_id)
+        ]
+        claims = [PodcastDebateClaim(**row) for row in self.store.list_podcast_debate_claims(room_id=room_id)]
+        evidence = [
+            PodcastEvidenceSubmission(**row)
+            for row in self.store.list_podcast_evidence_submissions(room_id=room_id)
+        ]
+        reviews = [PodcastClaimReview(**row) for row in self.store.list_podcast_claim_reviews(room_id=room_id)]
+        alerts = [PodcastRoomRiskAlert(**row) for row in self.store.list_podcast_room_risk_alerts(room_id)]
+        room = podcast_compute_room_reputation(room, participants, claims, evidence, reviews, alerts)
+        self.store.save_podcast_room(room)
+        return room
+
+    def _save_podcast_audit(self, audit: PodcastCouncilAuditLog) -> None:
+        self.store.save_podcast_council_audit_log(audit)
 
     def evaluate_collapse_risk(
         self, agent_id: str, metrics: AgentCollapseMetricsInput

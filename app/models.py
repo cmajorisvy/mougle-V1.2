@@ -595,6 +595,361 @@ class Stage7Alert(BaseModel):
     created_at: datetime = Field(default_factory=utc_now)
 
 
+class PodcastRoomStatus(str, Enum):
+    active = "active"
+    paused = "paused"
+    archived = "archived"
+
+
+class PodcastParticipantRole(str, Enum):
+    host = "host"
+    participant = "participant"
+    expert = "expert"
+    agent = "agent"
+    moderator = "moderator"
+
+
+class PodcastInvitationStatus(str, Enum):
+    pending = "pending"
+    accepted = "accepted"
+    declined = "declined"
+    blocked = "blocked"
+
+
+class PodcastClaimStatus(str, Enum):
+    open = "open"
+    needs_evidence = "needs_evidence"
+    under_review = "under_review"
+    disputed = "disputed"
+    candidate_routed_stage7 = "candidate_routed_stage7"
+    submitted_stage6 = "submitted_stage6"
+
+
+class PodcastClaimReviewVerdict(str, Enum):
+    support = "support"
+    refute = "refute"
+    needs_evidence = "needs_evidence"
+    disputed = "disputed"
+
+
+class PodcastRiskSeverity(str, Enum):
+    info = "info"
+    medium = "medium"
+    high = "high"
+    critical = "critical"
+
+
+class PodcastRoomReputationMetadata(BaseModel):
+    reputation_score: float = Field(default=0.5, ge=0.0, le=1.0)
+    reputation_band: str = "emerging"
+    expert_density: float = Field(default=0.0, ge=0.0, le=1.0)
+    evidence_acceptance_rate: float = Field(default=0.0, ge=0.0, le=1.0)
+    unresolved_claim_rate: float = Field(default=0.0, ge=0.0, le=1.0)
+    risk_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    signal_priority: float = Field(default=0.0, ge=0.0, le=1.0)
+    gluon_is_money: bool = False
+    ues_is_payout: bool = False
+    agentrank_is_financial_eligibility: bool = False
+    updated_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastRoomInput(BaseModel):
+    title: str
+    topic: str
+    host_user_id: str
+    description: Optional[str] = None
+    visibility: str = "public"
+    topic_tags: list[str] = Field(default_factory=list)
+    starting_reputation: float = Field(default=0.5, ge=0.0, le=1.0)
+
+
+class PodcastRoom(BaseModel):
+    room_id: str
+    title: str
+    topic: str
+    host_user_id: str
+    description: Optional[str] = None
+    visibility: str = "public"
+    topic_tags: list[str] = Field(default_factory=list)
+    status: PodcastRoomStatus = PodcastRoomStatus.active
+    reputation_metadata: PodcastRoomReputationMetadata = Field(default_factory=PodcastRoomReputationMetadata)
+    candidate_only: bool = True
+    may_publish_truth: bool = False
+    may_update_stage1: bool = False
+    may_update_stage4: bool = False
+    stage6_required_for_truth: bool = True
+    created_at: datetime = Field(default_factory=utc_now)
+    updated_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastSessionInput(BaseModel):
+    title: str
+    objective: str = "structured debate"
+    created_by: str
+    scheduled_for: Optional[datetime] = None
+
+
+class PodcastSession(BaseModel):
+    session_id: str
+    room_id: str
+    title: str
+    objective: str
+    created_by: str
+    status: str = "scheduled"
+    scheduled_for: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=utc_now)
+    updated_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastParticipantInput(BaseModel):
+    participant_id: str
+    display_name: str
+    role: PodcastParticipantRole = PodcastParticipantRole.participant
+    expertise_tags: list[str] = Field(default_factory=list)
+    reputation_score: float = Field(default=0.5, ge=0.0, le=1.0)
+    local_readiness: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    invited_by: Optional[str] = None
+
+
+class PodcastParticipant(BaseModel):
+    participant_entry_id: str
+    room_id: str
+    participant_id: str
+    display_name: str
+    role: PodcastParticipantRole
+    expertise_tags: list[str] = Field(default_factory=list)
+    reputation_score: float = Field(ge=0.0, le=1.0)
+    local_readiness: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    local_readiness_not_truth_score: bool = True
+    invited_by: Optional[str] = None
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastExpertCallInput(BaseModel):
+    topic: str
+    expertise_required: list[str] = Field(default_factory=list)
+    claim_scope: Optional[str] = None
+    min_reputation: float = Field(default=0.6, ge=0.0, le=1.0)
+    requested_by: str = "moderator"
+    deadline_at: Optional[datetime] = None
+
+
+class PodcastExpertCall(BaseModel):
+    call_id: str
+    room_id: str
+    topic: str
+    expertise_required: list[str] = Field(default_factory=list)
+    claim_scope: Optional[str] = None
+    min_reputation: float = Field(ge=0.0, le=1.0)
+    requested_by: str
+    status: str = "open"
+    deadline_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastAgentInvitationInput(BaseModel):
+    agent_id: str
+    purpose: str
+    requested_by: str = "moderator"
+    target_session_id: Optional[str] = None
+    local_readiness_required: float = Field(default=0.0, ge=0.0, le=1.0)
+    target_stage: Optional[str] = None
+
+
+class PodcastAgentInvitation(BaseModel):
+    invitation_id: str
+    room_id: str
+    agent_id: str
+    purpose: str
+    requested_by: str
+    target_session_id: Optional[str] = None
+    local_readiness_required: float = Field(default=0.0, ge=0.0, le=1.0)
+    target_stage: Optional[str] = None
+    status: PodcastInvitationStatus = PodcastInvitationStatus.pending
+    reason: str = "agent invited for local debate support only"
+    local_readiness_not_truth_score: bool = True
+    may_publish_truth: bool = False
+    may_update_stage1: bool = False
+    may_update_stage4: bool = False
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastDebateTurnInput(BaseModel):
+    speaker_id: str
+    text: str
+    turn_type: str = "argument"
+    cites_evidence_ids: list[str] = Field(default_factory=list)
+    occurred_at: Optional[datetime] = None
+
+
+class PodcastDebateTurn(BaseModel):
+    turn_id: str
+    room_id: str
+    session_id: str
+    speaker_id: str
+    text: str
+    turn_type: str = "argument"
+    cites_evidence_ids: list[str] = Field(default_factory=list)
+    occurred_at: datetime = Field(default_factory=utc_now)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastDebateClaimInput(BaseModel):
+    claim_text: str
+    claimant_id: str
+    turn_id: Optional[str] = None
+    topic_tags: list[str] = Field(default_factory=list)
+    confidence_signal: float = Field(default=0.0, ge=0.0, le=1.0)
+
+
+class PodcastDebateClaim(BaseModel):
+    claim_id: str
+    room_id: str
+    session_id: str
+    claim_text: str
+    claimant_id: str
+    turn_id: Optional[str] = None
+    topic_tags: list[str] = Field(default_factory=list)
+    confidence_signal: float = Field(default=0.0, ge=0.0, le=1.0)
+    status: PodcastClaimStatus = PodcastClaimStatus.open
+    stage7_record_id: Optional[str] = None
+    stage6_packet_id: Optional[str] = None
+    candidate_only: bool = True
+    may_publish_truth: bool = False
+    may_update_stage1: bool = False
+    may_update_stage4: bool = False
+    created_at: datetime = Field(default_factory=utc_now)
+    updated_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastEvidenceSubmissionInput(BaseModel):
+    source_id: str
+    source_name: str
+    text: str
+    submitted_by: str
+    url_or_path: Optional[str] = None
+    quote: Optional[str] = None
+    reliability: float = Field(default=0.5, ge=0.0, le=1.0)
+    retrieval_method: str = "podcast_local_submission"
+    no_fabricated_evidence_attestation: bool = True
+
+
+class PodcastEvidenceSubmission(BaseModel):
+    evidence_id: str
+    claim_id: str
+    room_id: str
+    session_id: str
+    source: EvidenceSource
+    text: str
+    submitted_by: str
+    url_or_path: Optional[str] = None
+    quote: Optional[str] = None
+    retrieval_method: str = "podcast_local_submission"
+    no_fabricated_evidence_attestation: bool = True
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastClaimReviewInput(BaseModel):
+    reviewer_id: str
+    reviewer_role: str = "expert"
+    verdict: PodcastClaimReviewVerdict = PodcastClaimReviewVerdict.needs_evidence
+    confidence: float = Field(default=0.0, ge=0.0, le=1.0)
+    rationale: str = "review recorded; Stage 6 required for truth"
+
+
+class PodcastClaimReview(BaseModel):
+    review_id: str
+    claim_id: str
+    room_id: str
+    session_id: str
+    reviewer_id: str
+    reviewer_role: str
+    verdict: PodcastClaimReviewVerdict
+    confidence: float = Field(default=0.0, ge=0.0, le=1.0)
+    rationale: str
+    candidate_only: bool = True
+    may_publish_truth: bool = False
+    may_update_stage1: bool = False
+    may_update_stage4: bool = False
+    stage6_required: bool = True
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastStage7CandidateRoute(BaseModel):
+    route_id: str
+    room_id: str
+    session_id: str
+    claim_id: str
+    stage7_record_id: str
+    route: str = "stage7_candidate_memory"
+    route_reason: str = "Podcast debate claim routed as Stage 7 candidate; not final truth"
+    candidate_only: bool = True
+    may_publish_truth: bool = False
+    may_update_stage1: bool = False
+    may_update_stage4: bool = False
+    stage6_required: bool = True
+    payload: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastStage6SubmissionPacket(BaseModel):
+    packet_id: str
+    room_id: str
+    session_id: str
+    claim_id: str
+    stage7_record_id: str
+    stage7_submission_id: str
+    route: str = "stage_6_hard_mesh"
+    route_reason: str = "Podcast Council submitted candidate packet to Stage 6 HARD-MESH"
+    stage6_required: bool = True
+    candidate_answer_not_verified: bool = True
+    may_publish_truth: bool = False
+    may_update_stage1: bool = False
+    may_update_stage4: bool = False
+    payload: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastRoomRiskAlert(BaseModel):
+    alert_id: str
+    room_id: str
+    severity: PodcastRiskSeverity = PodcastRiskSeverity.info
+    reason: str
+    risk_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    required_next_action: str = "moderator_review_or_stage6_route"
+    stage6_required: bool = True
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastCouncilAuditLog(BaseModel):
+    audit_id: str
+    action: str
+    room_id: Optional[str] = None
+    session_id: Optional[str] = None
+    claim_id: Optional[str] = None
+    actor_id: str = "system"
+    route: str = "podcast_forum_debate_council"
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class PodcastCouncilDashboardCard(BaseModel):
+    card_id: str
+    title: str
+    value: str
+    tone: str = "neutral"
+    route: str = "podcast_forum_debate_council"
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class PodcastCouncilDashboardPage(BaseModel):
+    page_id: str
+    title: str
+    cards: list[PodcastCouncilDashboardCard] = Field(default_factory=list)
+    sections: list[dict[str, Any]] = Field(default_factory=list)
+    safety_boundaries: dict[str, bool] = Field(default_factory=dict)
+
+
 class AgentCollapseMetricsInput(BaseModel):
     owner_user_id: str = "owner"
     truth_collapse_pressure: float = Field(default=0.0, ge=0.0, le=1.0)
