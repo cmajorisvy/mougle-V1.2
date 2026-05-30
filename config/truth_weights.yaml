@@ -112,3 +112,29 @@ persistent_topological_engine:
   drift_threshold: 0.7
   hot_path: lightweight_state_delta
   cold_path: audit_replay_and_topology_recompute
+agent_micro_pyramid:
+  enabled: true
+  allowed_action_classes:
+    - proceed_local
+    - ask_user
+    - simulate_more
+    - escalate_to_council
+    - block
+    - archive
+  forbidden_action_classes:
+    - publish_truth
+  readiness_thresholds:
+    proceed_local: 0.75
+    ask_user: 0.55
+    simulate_more: 0.35
+  high_risk_escalation:
+    legal: true
+    financial: true
+    public_truth: true
+signal_culture:
+  enabled: true
+  main_engine_priority_threshold: 0.18
+  agent_wake_priority_threshold: 0.12
+  default_decay: 1.0
+  load_reduction_formula: "1 - EventsSentToMainEngine / TotalEventsReceived"
+  not_truth_engine: true

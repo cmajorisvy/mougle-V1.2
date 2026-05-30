@@ -52,6 +52,23 @@ class PolicyDecisionOutcome(str, Enum):
     needs_review = "needs_review"
 
 
+class AgentActionClass(str, Enum):
+    proceed_local = "proceed_local"
+    ask_user = "ask_user"
+    simulate_more = "simulate_more"
+    escalate_to_council = "escalate_to_council"
+    block = "block"
+    archive = "archive"
+
+
+class SignalDestination(str, Enum):
+    local_archive = "local_archive"
+    agent_wake = "agent_wake"
+    main_engine = "main_engine"
+    admin_review = "admin_review"
+    query_tank = "query_tank"
+
+
 class ExternalVerifierVerdict(str, Enum):
     support = "support"
     contradict = "contradict"
@@ -235,6 +252,165 @@ class QueryTankItem(BaseModel):
     valid_to: Optional[datetime] = None
     created_at: datetime = Field(default_factory=utc_now)
     last_updated: datetime = Field(default_factory=utc_now)
+
+
+class Agent(BaseModel):
+    agent_id: str
+    owner_user_id: str
+    role: str = "assistant"
+    status: str = "active"
+    default_model: Optional[str] = None
+    created_at: datetime = Field(default_factory=utc_now)
+    updated_at: datetime = Field(default_factory=utc_now)
+
+
+class AgentPassport(BaseModel):
+    agent_id: str
+    owner: str
+    purpose: str
+    allowed_vaults: list[str] = Field(default_factory=list)
+    blocked_vaults: list[str] = Field(default_factory=list)
+    communication_scope: list[str] = Field(default_factory=list)
+    automation_level: str = "assisted"
+    marketplace_status: str = "private"
+    risk_limit: float = Field(default=0.5, ge=0.0, le=1.0)
+    trust_score: float = Field(default=0.5, ge=0.0, le=1.0)
+    ues_score: float = Field(default=0.5, ge=0.0, le=1.0)
+    audit_status: str = "enabled"
+    passport_version: str = "v1"
+
+
+class AgentActionRequest(BaseModel):
+    request_id: str
+    agent_id: str
+    action_type: str
+    context_ref: Optional[str] = None
+    owner_permission: bool = True
+    vault_permission: bool = True
+    action_permission: bool = True
+    risk_allowed: bool = True
+    safe_mode_allowed: bool = True
+    law_allowed: bool = True
+    audit_enabled: bool = True
+    permission_fit: float = Field(default=1.0, ge=0.0, le=1.0)
+    goal_alignment: float = Field(default=0.5, ge=0.0, le=1.0)
+    memory_relevance: float = Field(default=0.5, ge=0.0, le=1.0)
+    tool_safety: float = Field(default=0.5, ge=0.0, le=1.0)
+    simulation_success: float = Field(default=0.5, ge=0.0, le=1.0)
+    user_benefit: float = Field(default=0.5, ge=0.0, le=1.0)
+    local_risk: float = Field(default=0.0, ge=0.0, le=1.0)
+    uncertainty: float = Field(default=0.5, ge=0.0, le=1.0)
+    notification_fatigue: float = Field(default=0.0, ge=0.0, le=1.0)
+    legal_sensitivity: bool = False
+    financial_sensitivity: bool = False
+    target_stage: Optional[str] = None
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class AgentSimulationRun(BaseModel):
+    sim_run_id: str
+    agent_id: str
+    request_id: str
+    outcome_score: float = Field(ge=0.0, le=1.0)
+    risk_score: float = Field(ge=0.0, le=1.0)
+    goal_fit: float = Field(ge=0.0, le=1.0)
+    tool_success_probability: float = Field(ge=0.0, le=1.0)
+    escalation_need: float = Field(ge=0.0, le=1.0)
+    uncertainty: float = Field(ge=0.0, le=1.0)
+    explanation: str
+    provenance_ref: Optional[str] = None
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class AgentMicroPyramidState(BaseModel):
+    agent_id: str
+    local_readiness: float = Field(ge=0.0, le=1.0)
+    action_class: AgentActionClass
+    u1_action_crown: str = "not_final_truth"
+    u2_local_mesh_state: str = "observed"
+    u3_dual_local_view: str = "local_only"
+    u4_memory_state: str = "permission_checked"
+    u5_readiness_equation: str = "computed"
+    u6_local_fast_verification: str = "simulated"
+    u7_last_event_at: datetime = Field(default_factory=utc_now)
+    notification_fatigue: float = Field(default=0.0, ge=0.0, le=1.0)
+    updated_at: datetime = Field(default_factory=utc_now)
+
+
+class AgentActionDecision(BaseModel):
+    request_id: str
+    agent_id: str
+    can_act: bool
+    action_class: AgentActionClass
+    local_readiness: float = Field(ge=0.0, le=1.0)
+    reasons: list[str] = Field(default_factory=list)
+    simulation: AgentSimulationRun
+    micro_pyramid: AgentMicroPyramidState
+    council_socket: Optional[dict[str, Any]] = None
+
+
+class SignalEvent(BaseModel):
+    event_id: str
+    cloudevent_id: str
+    event_type: str
+    actor_id: str
+    actor_type: str
+    target_id: Optional[str] = None
+    topic_id: Optional[str] = None
+    privacy_level: str = "restricted"
+    risk_level: str = "low"
+    source: str = "local"
+    raw_payload_ref: Optional[str] = None
+    processing_status: str = "received"
+    occurred_at: datetime = Field(default_factory=utc_now)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class SignalVector(BaseModel):
+    event_id: str
+    novelty: float = Field(default=0.5, ge=0.0, le=1.0)
+    evidence_strength: float = Field(default=0.5, ge=0.0, le=1.0)
+    user_reputation: float = Field(default=0.5, ge=0.0, le=1.0)
+    expert_weight: float = Field(default=0.0, ge=0.0, le=1.0)
+    debate_intensity: float = Field(default=0.0, ge=0.0, le=1.0)
+    correction_frequency: float = Field(default=0.0, ge=0.0, le=1.0)
+    topic_momentum: float = Field(default=0.0, ge=0.0, le=1.0)
+    marketplace_value: float = Field(default=0.0, ge=0.0, le=1.0)
+    newsworthiness: float = Field(default=0.0, ge=0.0, le=1.0)
+    risk_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    spam_probability: float = Field(default=0.0, ge=0.0, le=1.0)
+    legal_sensitivity: float = Field(default=0.0, ge=0.0, le=1.0)
+    duplication_penalty: float = Field(default=0.0, ge=0.0, le=1.0)
+    time_decay: float = Field(default=1.0, ge=0.0, le=1.0)
+    signal_strength: float = Field(default=0.0, ge=0.0, le=1.0)
+    routing_priority: float = Field(default=0.0, ge=0.0, le=1.0)
+
+
+class SignalRoute(BaseModel):
+    route_id: str
+    event_id: str
+    destination_type: SignalDestination
+    priority_score: float = Field(ge=0.0, le=1.0)
+    route_reason: str
+    worker_queue: str
+    sent_to_main_engine: bool = False
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class SignalProcessingRecord(BaseModel):
+    event: SignalEvent
+    vector: SignalVector
+    route: SignalRoute
+
+
+class AgentActionEvaluationRequest(BaseModel):
+    request: AgentActionRequest
+    passport: AgentPassport
+
+
+class SignalEventRequest(BaseModel):
+    event: SignalEvent
+    hints: dict[str, Any] = Field(default_factory=dict)
 
 
 class PersistenceSignature(BaseModel):

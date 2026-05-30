@@ -25,6 +25,15 @@ Reports 43-45 add two implementation-ready foundations:
 
 The seven council domains are AI Agents, Knowledge & Truth, Podcast Forum Debates, Newsrooms, System Management, Legal Management, and Financial Management. None of them may write directly to Stage 4 or Stage 1.
 
+## AI Agent Micro-Pyramid and Signal Culture
+
+Report 46 adds a safe local agent-control slice before the council fabric:
+
+- User Agent Micro-Pyramid: evaluates a local action request with a hard permission gate, deterministic simulation bundle, and `LocalReadiness` score. It can only return `proceed_local`, `ask_user`, `simulate_more`, `escalate_to_council`, `block`, or `archive`; it never returns `publish_truth`.
+- Signal Culture Layer: converts events into signal vectors, applies prioritization/decay/risk penalties, routes to local archive, agent wake, main engine, or admin review, and reports load reduction.
+
+These layers reduce workload and structure events. They are not the Truth Engine, not the Knowledge Graph, not the final governance authority, and not a monetization engine.
+
 ## TVS vs TMI
 
 `TVS` is an answer-level calibrated True Value Score in `[0, 100]`.
@@ -85,6 +94,9 @@ Endpoints:
 - `POST /council/socket/events`
 - `GET /council/socket/events`
 - `GET /topology/evolution`
+- `POST /agents/action-request`
+- `POST /signal/events`
+- `GET /admin/signal-load-reduction`
 
 Example request:
 
@@ -130,6 +142,32 @@ Council socket example:
 ```
 
 High-risk legal or financial events return `query_tank_pending` with `needs_review`. Direct Stage 4 or Stage 1 targets return `rejected`.
+
+Agent action example:
+
+```json
+{
+  "passport": {
+    "agent_id": "agent_1",
+    "owner": "user_1",
+    "purpose": "local workload reduction",
+    "risk_limit": 0.7,
+    "automation_level": "assisted"
+  },
+  "request": {
+    "request_id": "req_1",
+    "agent_id": "agent_1",
+    "action_type": "payout",
+    "goal_alignment": 0.9,
+    "tool_safety": 0.8,
+    "simulation_success": 0.8,
+    "user_benefit": 0.9,
+    "financial_sensitivity": true
+  }
+}
+```
+
+High-risk requests escalate to a council socket envelope instead of acting locally.
 
 ## CLI
 
@@ -182,6 +220,8 @@ TRUTH_PYRAMID_DB_PATH=/tmp/truth_pyramid.db verify-truth --query "What is the ca
 - SQLite persistence is prototype storage with create-if-not-exists schema setup.
 - SQLite includes bitemporal-ready metadata columns for future valid-time/system-time history.
 - Council socket persistence is a prototype in-process fabric, not production Kafka/gRPC/MCP infrastructure yet.
+- Agent micro-pyramid logic is deterministic scaffolding, not autonomous production agency.
+- Signal Culture routing is deterministic local prioritization, not final truth verification.
 - PTEE evolution records are lightweight topology deltas, not full persistent homology.
 - Thresholds are configurable defaults and require calibration on real datasets.
 - Persistent homology is scaffolded through topology contracts, not a full topology engine.

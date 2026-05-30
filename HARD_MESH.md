@@ -4,6 +4,8 @@ HARD-MESH is the structural verification layer for the Verified Truth Pyramid. I
 
 Reports 43-45 add a governed council substrate in front of this layer. Council events enter through a socket fabric, receive a policy/routing decision, and then either reach Stage 6, go through Stage 7 before Stage 6, or wait in the query tank. No council socket may write directly to Stage 4 or Stage 1.
 
+Report 46 adds local agent and Signal Culture inputs before the socket fabric. Local agent readiness and signal routing are admissibility/routing hints only; neither can create Stage 4 knowledge or Stage 1 truth output.
+
 ## Algorithm Portfolio
 
 - BIRCH: online-style compression and subcluster stability.

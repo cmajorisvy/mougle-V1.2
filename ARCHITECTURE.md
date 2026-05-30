@@ -19,6 +19,8 @@ Runtime runs bottom-up:
 ## Module Map
 
 - `app/models.py`: Pydantic contracts for truth records, HARD-MESH, topology, query tank, and council sockets.
+- `app/agent_control.py`: user agent micro-pyramid readiness, simulation, permission gate, and escalation.
+- `app/signal_culture.py`: signal vector scoring, routing, and load-reduction analytics.
 - `app/claims/decomposer.py`: deterministic atomic claim decomposition with stable IDs and spans.
 - `app/retrieval/`: retrieval interface and in-memory corpus retriever.
 - `app/graph/provenance_graph.py`: claim/evidence/source/time graph and graph feature export.
@@ -54,6 +56,26 @@ Stage 6 computes Omega:
 `Omega(q) = sigmoid(alpha_hdb p_hdb + alpha_mbk m_mbk + alpha_graph s_graph + alpha_birch b_birch + alpha_cons c_cons + alpha_ext v_ext + alpha_rule r_rule - penalties - tau)`
 
 Stage 7 is a typed external verifier boundary. The current ExternalJudgePlugin is a deterministic stub and does not call real APIs.
+
+## User Agent Micro-Pyramid
+
+The local agent layer is a workload reducer and structured signal producer, not a truth authority. `app/agent_control.py` implements:
+
+- `CanAct`: owner, vault, action, risk, safe-mode, law, and audit gates.
+- deterministic simulation bundles with outcome, risk, goal fit, tool success, escalation need, uncertainty, explanation, and provenance.
+- `LocalReadiness` as a bounded local score, not `TruthScore`.
+- six allowed action classes: `proceed_local`, `ask_user`, `simulate_more`, `escalate_to_council`, `block`, and `archive`.
+- council socket escalation for legal, financial, or otherwise high-risk requests.
+
+The code intentionally has no `publish_truth` action class.
+
+## Signal Culture Layer
+
+`app/signal_culture.py` implements deterministic signal detection, prioritization, decay, thresholding, routing, and load-reduction analytics. It routes events to local archive, agent wake, main engine, or admin review. It does not write to Stage 4 or Stage 1 and does not decide truth.
+
+`GET /admin/signal-load-reduction` computes:
+
+`1 - EventsSentToMainEngine / TotalEventsReceived`
 
 ## HARD-MESH Implementation
 

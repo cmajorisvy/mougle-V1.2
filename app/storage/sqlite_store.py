@@ -7,7 +7,14 @@ import sqlite3
 from pathlib import Path
 from typing import Optional
 
-from app.models import CouncilSocketDecision, CouncilSocketEnvelope, QueryTankItem, TopologicalEvolutionRecord
+from app.models import (
+    AgentActionDecision,
+    CouncilSocketDecision,
+    CouncilSocketEnvelope,
+    QueryTankItem,
+    SignalProcessingRecord,
+    TopologicalEvolutionRecord,
+)
 
 
 class SQLiteStore:
@@ -200,6 +207,30 @@ class SQLiteStore:
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS agent_action_decisions (
+                    request_id TEXT PRIMARY KEY,
+                    agent_id TEXT NOT NULL,
+                    action_class TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS signal_events (
+                    event_id TEXT PRIMARY KEY,
+                    destination_type TEXT NOT NULL,
+                    sent_to_main_engine INTEGER NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
             for table in ["answer_records", "verification_records", "graphs", "hard_mesh_runs"]:
                 self._ensure_columns(
                     conn,
@@ -353,6 +384,43 @@ class SQLiteStore:
             {"envelope": json.loads(envelope_json), "decision": json.loads(decision_json)}
             for envelope_json, decision_json in rows
         ]
+
+    def save_agent_action_decision(self, decision: AgentActionDecision) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO agent_action_decisions(
+                    request_id, agent_id, action_class, payload_json, updated_at
+                ) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """,
+                (
+                    decision.request_id,
+                    decision.agent_id,
+                    decision.action_class.value,
+                    decision.model_dump_json(),
+                ),
+            )
+
+    def save_signal_processing_record(self, record: SignalProcessingRecord) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO signal_events(
+                    event_id, destination_type, sent_to_main_engine, payload_json, updated_at
+                ) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """,
+                (
+                    record.event.event_id,
+                    record.route.destination_type.value,
+                    1 if record.route.sent_to_main_engine else 0,
+                    record.model_dump_json(),
+                ),
+            )
+
+    def list_signal_processing_records(self) -> list[dict]:
+        with self._connect() as conn:
+            rows = conn.execute("SELECT payload_json FROM signal_events ORDER BY updated_at DESC").fetchall()
+        return [json.loads(row[0]) for row in rows]
 
     def get_graph(self, answer_id: str) -> Optional[dict]:
         with self._connect() as conn:

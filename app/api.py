@@ -5,7 +5,13 @@ from __future__ import annotations
 from fastapi import FastAPI, HTTPException
 
 from app.engine import VerificationEngine
-from app.models import CouncilSocketEnvelope, VerifyRequest, VerifyResponse
+from app.models import (
+    AgentActionEvaluationRequest,
+    CouncilSocketEnvelope,
+    SignalEventRequest,
+    VerifyRequest,
+    VerifyResponse,
+)
 
 app = FastAPI(title="Verified Truth Pyramid API", version="0.1.0")
 engine = VerificationEngine()
@@ -81,3 +87,20 @@ def council_socket_events() -> list[dict]:
 @app.get("/topology/evolution")
 def topology_evolution() -> list[dict]:
     return engine.list_topology_evolution()
+
+
+@app.post("/agents/action-request")
+def agent_action_request(payload: AgentActionEvaluationRequest) -> dict:
+    decision = engine.evaluate_agent_action_request(payload.request, payload.passport)
+    return decision.model_dump(mode="json")
+
+
+@app.post("/signal/events")
+def signal_event(payload: SignalEventRequest) -> dict:
+    record = engine.process_signal(payload.event, payload.hints)
+    return record.model_dump(mode="json")
+
+
+@app.get("/admin/signal-load-reduction")
+def signal_load_reduction() -> dict:
+    return engine.signal_load_reduction()

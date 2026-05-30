@@ -277,3 +277,64 @@ def test_topology_evolution_endpoint_is_wired_after_verification():
     records = topology_resp.json()
     assert any(record["answer_id"] == answer_id for record in records)
     assert any(record["stage_anchor"] == "stage_4_stage_5_stage_6_core" for record in records)
+
+
+def test_agent_and_signal_api_connection_wiring():
+    agent_payload = {
+        "passport": {
+            "agent_id": "agent_api_1",
+            "owner": "user_api_1",
+            "purpose": "local workload reduction",
+            "allowed_vaults": ["public"],
+            "risk_limit": 0.7,
+            "automation_level": "assisted",
+        },
+        "request": {
+            "request_id": "req_api_payout",
+            "agent_id": "agent_api_1",
+            "action_type": "payout",
+            "goal_alignment": 0.9,
+            "tool_safety": 0.8,
+            "simulation_success": 0.8,
+            "user_benefit": 0.9,
+            "local_risk": 0.3,
+            "uncertainty": 0.2,
+            "financial_sensitivity": True,
+        },
+    }
+    agent_resp = client.post("/agents/action-request", json=agent_payload)
+    assert agent_resp.status_code == 200
+    agent_data = agent_resp.json()
+    assert agent_data["action_class"] == "escalate_to_council"
+    assert agent_data["council_socket"]["origin_stage"] == "user_agent_micro_pyramid"
+
+    signal_payload = {
+        "event": {
+            "event_id": "sig_api_1",
+            "cloudevent_id": "evt_api_1",
+            "event_type": "public_claim",
+            "actor_id": "user_api_1",
+            "actor_type": "human",
+            "topic_id": "capital_france",
+            "privacy_level": "public",
+            "risk_level": "low",
+            "source": "api_test",
+        },
+        "hints": {
+            "novelty": 1.0,
+            "evidence_strength": 1.0,
+            "user_reputation": 1.0,
+            "newsworthiness": 1.0,
+        },
+    }
+    signal_resp = client.post("/signal/events", json=signal_payload)
+    assert signal_resp.status_code == 200
+    signal_data = signal_resp.json()
+    assert signal_data["route"]["destination_type"] == "main_engine"
+    assert signal_data["route"]["sent_to_main_engine"] is True
+
+    reduction_resp = client.get("/admin/signal-load-reduction")
+    assert reduction_resp.status_code == 200
+    reduction = reduction_resp.json()
+    assert reduction["totalEventsReceived"] >= 1
+    assert 0.0 <= reduction["loadReductionRatio"] <= 1.0

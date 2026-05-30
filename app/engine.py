@@ -7,10 +7,15 @@ import os
 from datetime import datetime, timezone
 from typing import Optional
 
+from app.agent_control import evaluate_agent_action
 from app.claims.decomposer import decompose_answer_to_claims
 from app.config import load_truth_config
+from app.council_sockets import CouncilSocketFabric
 from app.graph.provenance_graph import ProvenanceGraph
 from app.models import (
+    AgentActionDecision,
+    AgentActionRequest,
+    AgentPassport,
     AnswerVerificationRecord,
     AtomicClaim,
     CandidateAnswer,
@@ -22,6 +27,8 @@ from app.models import (
     ProvenancePayload,
     QueryTankItem,
     Query,
+    SignalEvent,
+    SignalProcessingRecord,
     StageRoute,
     TruthMetrics,
     VerdictLabel,
@@ -44,10 +51,10 @@ from app.retrieval.mock import InMemoryRetriever
 from app.scoring.gate import publish_gate
 from app.scoring.tmi import compute_tmi
 from app.scoring.truth_functional import ScoreInputs, compute_tvs
+from app.signal_culture import load_reduction_summary, process_signal_event
 from app.stage6.pipeline import HardMeshPipeline
 from app.storage.sqlite_store import SQLiteStore
 from app.topology import build_topological_evolution_record, build_topology_snapshot
-from app.council_sockets import CouncilSocketFabric
 
 
 class VerificationEngine:
@@ -369,3 +376,22 @@ class VerificationEngine:
 
     def list_topology_evolution(self) -> list[dict]:
         return self.store.list_topology_evolution()
+
+    def evaluate_agent_action_request(
+        self, request: AgentActionRequest, passport: AgentPassport
+    ) -> AgentActionDecision:
+        decision = evaluate_agent_action(request, passport)
+        self.store.save_agent_action_decision(decision)
+        if decision.council_socket:
+            envelope = CouncilSocketEnvelope(**decision.council_socket)
+            self.submit_council_event(envelope)
+        return decision
+
+    def process_signal(self, event: SignalEvent, hints: dict | None = None) -> SignalProcessingRecord:
+        record = process_signal_event(event, hints)
+        self.store.save_signal_processing_record(record)
+        return record
+
+    def signal_load_reduction(self) -> dict[str, float | int]:
+        records = [SignalProcessingRecord(**row) for row in self.store.list_signal_processing_records()]
+        return load_reduction_summary(records)
