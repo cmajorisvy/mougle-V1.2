@@ -123,6 +123,31 @@ python -m pip install --upgrade pip
 pip install -e ".[dev]"
 ```
 
+## Current Validation Model
+
+The active prototype is Python/FastAPI/SQLite. The legacy React/Vite/TypeScript application source is preserved under `archive/` for future review and adapter work, but it is not the authoritative runtime for the Verified Truth Pyramid prototype.
+
+Use Python validation as the main path:
+
+```bash
+npm run check
+npm run build
+npm run archive:verify
+```
+
+`npm run check` delegates to the Python prototype validation wrapper: install the editable Python package, run `ruff check app tests`, run `pytest -q`, verify archive integrity, and run `git diff --check`. The wrapper requires Python 3.11+ and honors `PYTHON=/path/to/python3.11` when a specific interpreter is needed.
+
+`npm run build` intentionally reports that no active Node build is required after archive cleanup. This is not hiding a failure; it reflects the current Python-first foundation. `npm run archive:verify` remains required so archived source integrity stays protected.
+
+Legacy Node validation remains available only when the archived TypeScript app is intentionally restored or reintroduced:
+
+```bash
+npm run check:legacy-node
+npm run build:legacy-node
+```
+
+No Node build should be required for the current prototype unless active Node application code is reintroduced in a later branch.
+
 ## Run API
 
 ```bash

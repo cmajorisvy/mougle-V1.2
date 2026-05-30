@@ -32,9 +32,17 @@ pip install -e ".[dev]"
 ## Test and Lint Commands
 
 ```bash
+python -m pip install -e ".[dev]" --no-build-isolation
+npm run check
+npm run build
+npm run archive:verify
 ruff check app tests
 pytest -q
 ```
+
+`npm run check` is the authoritative current validation wrapper for the Python/FastAPI prototype. It installs the editable Python package, runs Ruff, runs pytest, verifies the archive, and checks whitespace-safe diffs. The wrapper requires Python 3.11+ and honors `PYTHON=/path/to/python3.11` when a specific interpreter is needed.
+
+`npm run build` is intentionally a lightweight prototype build/no-op message because the active Node app source is archived. Use `npm run check:legacy-node` or `npm run build:legacy-node` only if the legacy TypeScript app is intentionally restored or reintroduced.
 
 ## CLI Smoke Command
 
@@ -96,3 +104,13 @@ Use `TRUTH_PYRAMID_DB_PATH=/tmp/truth_pyramid.db` when the repository directory 
 - Archive source is not runtime source.
 - No real external provider calls in this prototype.
 - No fabricated evidence.
+
+
+## Current Validation Model
+
+- The active application foundation is Python/FastAPI/SQLite.
+- Archived TypeScript/Node application code remains preserved under `archive/` and is searchable for future reuse.
+- Legacy Node app validation is not authoritative unless that app is intentionally restored.
+- Python validation is authoritative for the Verified Truth Pyramid prototype.
+- `npm run archive:verify` remains required to protect archive integrity.
+- No Node build is required unless active Node application code is reintroduced.

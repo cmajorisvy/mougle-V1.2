@@ -20,8 +20,18 @@
 - [x] API smoke: passed for health, verify, graph, Stage 7, Collapse, and archive import guard.
 - [x] `npm run archive:verify`: passed.
 - [x] `git diff --check`: passed.
-- [!] `npm run check`: failed because `node_modules/typescript/bin/tsc` is missing after archive cleanup.
-- [!] `npm run build`: failed because `tsx` is missing after archive cleanup.
+- [x] `npm run check`: now delegates to Python prototype validation and passes when the Python validation path passes.
+- [x] `npm run build`: now intentionally reports that no active Node build is required after archive cleanup.
+- [i] Legacy TypeScript checks remain available as `npm run check:legacy-node` and `npm run build:legacy-node` when the archived Node app is intentionally restored.
+
+## Current Validation Model
+
+- The active prototype is Python/FastAPI/SQLite.
+- Archived TypeScript/Node application code is preserved under `archive/`.
+- Legacy Node app validation is not authoritative unless restored intentionally.
+- Python validation is authoritative for the Verified Truth Pyramid prototype.
+- `archive:verify` remains required to protect archived source integrity.
+- No Node build should be required unless active Node app code is reintroduced.
 
 ## Safety
 
@@ -40,6 +50,5 @@
 
 ## Remaining TODOs
 
-- Decide in a separate PR whether to run `npm ci` for legacy Node validation or update stale Node scripts for the Python prototype foundation.
 - Complete private P0 archive secret review before any archive adapter extraction.
 - Keep any eventual PR draft until reviewers confirm Node-script policy.
