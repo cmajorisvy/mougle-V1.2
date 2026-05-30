@@ -1,0 +1,51 @@
+{
+  "Stage 6": [
+    "POST /verify",
+    "POST /hard-mesh/analyze",
+    "GET /graph/{answer_id}"
+  ],
+  "Stage 7": [
+    "POST /stage7/external-records",
+    "GET /stage7/external-records",
+    "POST /stage7/query-tank/resolve",
+    "POST /stage7/stage6/submit",
+    "GET /admin/stage7/alerts"
+  ],
+  "Council Socket": [
+    "POST /council/socket/events",
+    "GET /council/socket/events"
+  ],
+  "PTEE": [
+    "GET /topology/evolution",
+    "graph/topology snapshots from verification"
+  ],
+  "Micro-Pyramid": [
+    "POST /agents/action-request"
+  ],
+  "Signal Culture": [
+    "POST /signal/events",
+    "GET /admin/signal-load-reduction"
+  ],
+  "Archive Reuse": [
+    "GET /archive/micro-pyramid/candidates",
+    "GET /archive/runtime-imports/check"
+  ],
+  "Collapse": [
+    "all /agents/{agent_id}/collapse/* and /admin/agents/collapse/* routes"
+  ],
+  "Query Tank": [
+    "GET /query-tank",
+    "weak verification",
+    "Stage 7 unresolved records",
+    "collapse Stage 6 handoff"
+  ],
+  "Graph": [
+    "GET /graph/{answer_id}",
+    "persisted graph snapshot reconstruction"
+  ],
+  "Admin endpoints": [
+    "signal load reduction",
+    "stage7 alerts",
+    "collapse events/alerts/metrics"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "branch": "test/verified-truth-pyramid-100-e2e-wiring",
+  "base_commit": "01b285e0dd0085bc5c391c8e4feab89a1fbd949f",
+  "current_commit_at_generation": "01b285e0dd0085bc5c391c8e4feab89a1fbd949f",
+  "python_version": "Python 3.12.13",
+  "database_path_mode": "temporary SQLite only in E2E tests",
+  "route_count_discovered": 31,
+  "route_count_tested": 31,
+  "route_coverage_percentage": 100.0,
+  "missing_routes": [],
+  "intentionally_excluded_routes": [
+    "/docs",
+    "/docs/oauth2-redirect",
+    "/openapi.json",
+    "/redoc"
+  ],
+  "statement": "100% connection/wiring coverage for currently implemented routes and architecture invariants, not exhaustive formal verification of all future product states.",
+  "go_no_go": "go",
+  "validation_status": {
+    "python_install": "passed",
+    "ruff_check_app_tests": "passed",
+    "pytest_q": "passed (61 passed, 1 Starlette TestClient deprecation warning)",
+    "test_100_percent_connection_wiring_e2e": "passed",
+    "test_e2e_persistence_restart": "passed",
+    "test_e2e_security_boundaries": "passed",
+    "test_e2e_route_coverage": "passed",
+    "cli_smoke": "passed",
+    "api_smoke": "passed",
+    "npm_run_archive_verify": "passed",
+    "npm_run_check": "passed",
+    "npm_run_build": "passed",
+    "git_diff_check": "passed"
+  },
+  "warnings": [
+    "Non-blocking Starlette TestClient deprecation warning from installed dependency set.",
+    "Local repository .venv is Python 3.9; validation used the Python 3.12 temp venv and wrapper enforces Python 3.11+."
+  ],
+  "blockers": []
+}

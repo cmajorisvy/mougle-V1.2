@@ -1,0 +1,188 @@
+[
+  {
+    "method": "GET",
+    "path": "/admin/agents/collapse/alerts",
+    "name": "admin_agent_collapse_alerts",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/agents/collapse/events",
+    "name": "admin_agent_collapse_events",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/agents/collapse/metrics",
+    "name": "admin_agent_collapse_metrics",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "POST",
+    "path": "/admin/agents/collapse/{event_id}/route-stage6",
+    "name": "admin_route_collapse_stage6",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "POST",
+    "path": "/admin/agents/collapse/{event_id}/route-truth-impact",
+    "name": "admin_route_collapse_truth_impact",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/signal-load-reduction",
+    "name": "signal_load_reduction",
+    "module_owner": "signal_culture"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/stage7/alerts",
+    "name": "stage7_alerts",
+    "module_owner": "stage7_candidate_memory"
+  },
+  {
+    "method": "POST",
+    "path": "/agents/action-request",
+    "name": "agent_action_request",
+    "module_owner": "user_agent_micro_pyramid"
+  },
+  {
+    "method": "POST",
+    "path": "/agents/{agent_id}/collapse/evaluate",
+    "name": "agent_collapse_evaluate",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "GET",
+    "path": "/agents/{agent_id}/collapse/events",
+    "name": "agent_collapse_events",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "POST",
+    "path": "/agents/{agent_id}/collapse/events",
+    "name": "agent_collapse_event",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "POST",
+    "path": "/agents/{agent_id}/collapse/recovery-plan",
+    "name": "agent_collapse_recovery_plan",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "POST",
+    "path": "/agents/{agent_id}/collapse/restore",
+    "name": "agent_collapse_restore",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "POST",
+    "path": "/agents/{agent_id}/collapse/restrictions",
+    "name": "agent_collapse_restrictions",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "POST",
+    "path": "/agents/{agent_id}/collapse/review",
+    "name": "agent_collapse_review",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "GET",
+    "path": "/agents/{agent_id}/collapse/state",
+    "name": "agent_collapse_state",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "GET",
+    "path": "/archive/micro-pyramid/candidates",
+    "name": "archive_micro_pyramid_candidates",
+    "module_owner": "archive_reuse_guard"
+  },
+  {
+    "method": "GET",
+    "path": "/archive/runtime-imports/check",
+    "name": "archive_runtime_import_check",
+    "module_owner": "archive_reuse_guard"
+  },
+  {
+    "method": "GET",
+    "path": "/council/socket/events",
+    "name": "council_socket_events",
+    "module_owner": "council_socket_fabric"
+  },
+  {
+    "method": "POST",
+    "path": "/council/socket/events",
+    "name": "council_socket_event",
+    "module_owner": "council_socket_fabric"
+  },
+  {
+    "method": "GET",
+    "path": "/graph/{answer_id}",
+    "name": "graph",
+    "module_owner": "truth_pipeline"
+  },
+  {
+    "method": "POST",
+    "path": "/hard-mesh/analyze",
+    "name": "hard_mesh_analyze",
+    "module_owner": "stage6_hard_mesh"
+  },
+  {
+    "method": "GET",
+    "path": "/health",
+    "name": "health",
+    "module_owner": "api_health"
+  },
+  {
+    "method": "GET",
+    "path": "/query-tank",
+    "name": "query_tank",
+    "module_owner": "truth_pipeline"
+  },
+  {
+    "method": "POST",
+    "path": "/signal/events",
+    "name": "signal_event",
+    "module_owner": "signal_culture"
+  },
+  {
+    "method": "GET",
+    "path": "/stage7/external-records",
+    "name": "stage7_external_records",
+    "module_owner": "stage7_candidate_memory"
+  },
+  {
+    "method": "POST",
+    "path": "/stage7/external-records",
+    "name": "stage7_external_record",
+    "module_owner": "stage7_candidate_memory"
+  },
+  {
+    "method": "POST",
+    "path": "/stage7/query-tank/resolve",
+    "name": "stage7_query_tank_resolve",
+    "module_owner": "stage7_candidate_memory"
+  },
+  {
+    "method": "POST",
+    "path": "/stage7/stage6/submit",
+    "name": "stage7_stage6_submit",
+    "module_owner": "stage7_candidate_memory"
+  },
+  {
+    "method": "GET",
+    "path": "/topology/evolution",
+    "name": "topology_evolution",
+    "module_owner": "ptee_topology"
+  },
+  {
+    "method": "POST",
+    "path": "/verify",
+    "name": "verify",
+    "module_owner": "truth_pipeline"
+  }
+]

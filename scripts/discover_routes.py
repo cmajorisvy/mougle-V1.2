@@ -1,0 +1,151 @@
+"""Discover public FastAPI routes and write E2E route coverage artifacts."""
+
+from __future__ import annotations
+
+import json
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Iterable
+
+from app.api import app
+
+EXCLUDED_PATHS = {"/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect"}
+EXCLUDED_METHODS = {"HEAD", "OPTIONS"}
+
+TESTED_BY: dict[tuple[str, str], list[str]] = {
+    ("GET", "/health"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("POST", "/verify"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("GET", "/graph/{answer_id}"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_persistence_restart.py::test_persistence_survives_engine_reinstantiation"],
+    ("POST", "/hard-mesh/analyze"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("GET", "/query-tank"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_persistence_restart.py::test_persistence_survives_engine_reinstantiation"],
+    ("POST", "/council/socket/events"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_security_boundaries.py::test_security_and_no_bypass_boundaries"],
+    ("GET", "/council/socket/events"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_persistence_restart.py::test_persistence_survives_engine_reinstantiation"],
+    ("GET", "/topology/evolution"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_persistence_restart.py::test_persistence_survives_engine_reinstantiation"],
+    ("POST", "/agents/action-request"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_security_boundaries.py::test_security_and_no_bypass_boundaries"],
+    ("POST", "/signal/events"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("GET", "/admin/signal-load-reduction"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_persistence_restart.py::test_persistence_survives_engine_reinstantiation"],
+    ("GET", "/archive/micro-pyramid/candidates"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_security_boundaries.py::test_security_and_no_bypass_boundaries"],
+    ("GET", "/archive/runtime-imports/check"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_security_boundaries.py::test_security_and_no_bypass_boundaries"],
+    ("POST", "/stage7/external-records"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_security_boundaries.py::test_security_and_no_bypass_boundaries"],
+    ("GET", "/stage7/external-records"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_persistence_restart.py::test_persistence_survives_engine_reinstantiation"],
+    ("POST", "/stage7/query-tank/resolve"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("POST", "/stage7/stage6/submit"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("GET", "/admin/stage7/alerts"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("POST", "/agents/{agent_id}/collapse/evaluate"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_security_boundaries.py::test_security_and_no_bypass_boundaries"],
+    ("POST", "/agents/{agent_id}/collapse/events"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_persistence_restart.py::test_persistence_survives_engine_reinstantiation"],
+    ("GET", "/agents/{agent_id}/collapse/events"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_security_boundaries.py::test_security_and_no_bypass_boundaries"],
+    ("GET", "/agents/{agent_id}/collapse/state"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_persistence_restart.py::test_persistence_survives_engine_reinstantiation"],
+    ("POST", "/agents/{agent_id}/collapse/restrictions"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("POST", "/agents/{agent_id}/collapse/recovery-plan"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("POST", "/agents/{agent_id}/collapse/review"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_security_boundaries.py::test_security_and_no_bypass_boundaries"],
+    ("POST", "/agents/{agent_id}/collapse/restore"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_security_boundaries.py::test_security_and_no_bypass_boundaries"],
+    ("GET", "/admin/agents/collapse/events"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("GET", "/admin/agents/collapse/alerts"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("GET", "/admin/agents/collapse/metrics"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("POST", "/admin/agents/collapse/{event_id}/route-stage6"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+    ("POST", "/admin/agents/collapse/{event_id}/route-truth-impact"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
+}
+
+
+@dataclass(frozen=True)
+class RouteEntry:
+    method: str
+    path: str
+    name: str
+    module_owner: str
+    criticality: str
+    tested_by: list[str]
+    status: str
+    reason: str | None = None
+
+
+def route_owner(path: str) -> str:
+    if path == "/health":
+        return "api_health"
+    if path.startswith("/verify") or path.startswith("/graph") or path.startswith("/query-tank"):
+        return "truth_pipeline"
+    if path.startswith("/hard-mesh"):
+        return "stage6_hard_mesh"
+    if path.startswith("/council"):
+        return "council_socket_fabric"
+    if path.startswith("/topology"):
+        return "ptee_topology"
+    if path.startswith("/agents/action"):
+        return "user_agent_micro_pyramid"
+    if path.startswith("/signal") or path.startswith("/admin/signal"):
+        return "signal_culture"
+    if path.startswith("/archive"):
+        return "archive_reuse_guard"
+    if path.startswith("/stage7") or path.startswith("/admin/stage7"):
+        return "stage7_candidate_memory"
+    if "/collapse" in path:
+        return "agent_collapse"
+    return "unknown"
+
+
+def route_criticality(path: str) -> str:
+    if path in {"/health", "/admin/agents/collapse/metrics", "/admin/signal-load-reduction"}:
+        return "P1"
+    if path.startswith("/admin/agents/collapse") or path.startswith("/admin/stage7"):
+        return "P1"
+    return "P0"
+
+
+def iter_public_routes() -> Iterable[tuple[str, str, str]]:
+    for route in app.routes:
+        path = getattr(route, "path", "")
+        if not path or path in EXCLUDED_PATHS or path.startswith("/static"):
+            continue
+        for method in sorted(getattr(route, "methods", set()) - EXCLUDED_METHODS):
+            yield method, path, getattr(route, "name", "")
+
+
+def build_route_matrix() -> list[RouteEntry]:
+    rows: list[RouteEntry] = []
+    for method, path, name in sorted(iter_public_routes(), key=lambda item: (item[1], item[0])):
+        tests = TESTED_BY.get((method, path), [])
+        status = "tested" if tests else "missing_test"
+        reason = None if tests else "No E2E test registered for implemented public route."
+        rows.append(
+            RouteEntry(
+                method=method,
+                path=path,
+                name=name,
+                module_owner=route_owner(path),
+                criticality=route_criticality(path),
+                tested_by=tests,
+                status=status,
+                reason=reason,
+            )
+        )
+    return rows
+
+
+def write_route_artifacts(root: Path = Path(".")) -> dict[str, object]:
+    artifact_dir = root / "artifacts" / "e2e"
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+    matrix = build_route_matrix()
+    implemented = [
+        {"method": row.method, "path": row.path, "name": row.name, "module_owner": row.module_owner}
+        for row in matrix
+    ]
+    matrix_payload = [asdict(row) for row in matrix]
+    missing = [row for row in matrix if row.status == "missing_test" and row.criticality in {"P0", "P1"}]
+    summary = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "route_count_discovered": len(matrix),
+        "route_count_tested": sum(1 for row in matrix if row.status == "tested"),
+        "route_coverage_percentage": round(
+            100.0 * sum(1 for row in matrix if row.status == "tested") / max(1, len(matrix)), 2
+        ),
+        "missing_p0_p1_routes": [asdict(row) for row in missing],
+        "intentionally_excluded_routes": sorted(EXCLUDED_PATHS),
+    }
+    (artifact_dir / "implemented-routes.json").write_text(json.dumps(implemented, indent=2) + "\n")
+    (artifact_dir / "route-coverage-matrix.json").write_text(json.dumps(matrix_payload, indent=2) + "\n")
+    return summary
+
+
+if __name__ == "__main__":
+    print(json.dumps(write_route_artifacts(), indent=2))
