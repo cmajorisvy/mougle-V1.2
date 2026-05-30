@@ -159,6 +159,17 @@ class AgreementMetricResult(BaseModel):
     warnings: list[str] = Field(default_factory=list)
 
 
+class ClassicalMLVerificationResult(BaseModel):
+    anomaly_score: float = Field(default=0.5, ge=0.0, le=1.0)
+    novelty_score: float = Field(default=0.5, ge=0.0, le=1.0)
+    ensemble_score: float = Field(default=0.5, ge=0.0, le=1.0)
+    calibration_ready: bool = False
+    stacking_ready: bool = False
+    tuning_ready: bool = False
+    warnings: list[str] = Field(default_factory=list)
+    details: dict[str, Any] = Field(default_factory=dict)
+
+
 class HardMeshGateResult(BaseModel):
     route: StageRoute
     route_reason: str
@@ -174,6 +185,7 @@ class HardMeshConsensusResult(BaseModel):
     lane_warnings: list[str] = Field(default_factory=list)
     validation_metrics: dict[str, Any] = Field(default_factory=dict)
     agreement_metrics: dict[str, Any] = Field(default_factory=dict)
+    classical_ml: Optional[ClassicalMLVerificationResult] = None
     unresolved_reason: Optional[str] = None
     feature_payload: dict[str, float] = Field(default_factory=dict)
     query_tank_item: Optional[dict[str, Any]] = None
@@ -193,7 +205,11 @@ class QueryTankItem(BaseModel):
     answer_id: str
     claim_id: Optional[str] = None
     reason: str
+    category: str = "uncertainty"
+    status: str = "open"
     required_next_action: str
+    valid_from: datetime = Field(default_factory=utc_now)
+    valid_to: Optional[datetime] = None
     created_at: datetime = Field(default_factory=utc_now)
     last_updated: datetime = Field(default_factory=utc_now)
 
@@ -279,6 +295,8 @@ class AnswerVerificationRecord(BaseModel):
     truth_metrics: TruthMetrics
     publish_decision: PublishDecision
     final_verdict: VerdictLabel
+    confidence_explanation: str = ""
+    claim_rollup: dict[str, int] = Field(default_factory=dict)
     hard_mesh: Optional[HardMeshConsensusResult] = None
     topology: Optional[TopologySnapshot] = None
 
@@ -310,6 +328,8 @@ class VerifyResponse(BaseModel):
     hard_mesh: Optional[HardMeshConsensusResult] = None
     provenance: ProvenancePayload
     unresolved_reason: Optional[str]
+    confidence_explanation: str = ""
+    claim_rollup: dict[str, int] = Field(default_factory=dict)
 
 
 RawVerificationInput.model_rebuild()

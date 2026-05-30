@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
+import numpy as np
+
 from app.models import (
     AnswerVerificationRecord,
     CandidateAnswer,
@@ -24,6 +26,7 @@ from app.stage6.lanes import (
     SpectralLane,
 )
 from app.stage6.metrics import compute_agreement_metrics, compute_validation_metrics
+from app.stage6.ml_bus import ClassicalMLVerificationBus
 from app.stage6.preprocessing import Stage6Preprocessor
 
 
@@ -34,6 +37,7 @@ class HardMeshPipeline:
         self.cfg = cfg
         self.builder = Stage6FeatureBuilder()
         self.preprocessor = Stage6Preprocessor()
+        self.ml_bus = ClassicalMLVerificationBus()
         self.lanes = [
             BirchLane(),
             MiniBatchKMeansLane(),
@@ -60,6 +64,7 @@ class HardMeshPipeline:
                 lane_warnings=["HARD-MESH disabled by request/config"],
                 validation=compute_validation_metrics(empty_bundle.matrix, []),
                 agreement=compute_agreement_metrics([]),
+                classical_ml=self.ml_bus.run(np.zeros((1, 1)), hard_cfg),
                 cfg=self.cfg,
                 query_id=query.query_id,
                 answer_id=answer.answer_id,
@@ -75,12 +80,17 @@ class HardMeshPipeline:
         lane_warnings = preprocessing_warnings + [warning for lane in lane_results for warning in lane.warnings]
         validation = compute_validation_metrics(matrix, lane_results)
         agreement = compute_agreement_metrics(lane_results)
+        classical_ml = self.ml_bus.run(matrix, hard_cfg)
+        lane_scores["classical_ml"] = classical_ml.ensemble_score
+        lane_scores["anomaly_score"] = classical_ml.anomaly_score
+        lane_scores["novelty_score"] = classical_ml.novelty_score
         consensus = build_hard_mesh_consensus(
             claim_records=claim_records,
             lane_scores=lane_scores,
             lane_warnings=lane_warnings,
             validation=validation,
             agreement=agreement,
+            classical_ml=classical_ml,
             cfg=self.cfg,
             query_id=query.query_id,
             answer_id=answer.answer_id,

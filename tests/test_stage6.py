@@ -16,6 +16,7 @@ from app.stage6.lanes import (
     SpectralLane,
 )
 from app.stage6.metrics import compute_agreement_metrics, compute_validation_metrics
+from app.stage6.ml_bus import ClassicalMLVerificationBus
 from app.stage6.pipeline import HardMeshPipeline
 from app.stage6.preprocessing import Stage6Preprocessor
 
@@ -101,6 +102,18 @@ def test_validation_and_agreement_metrics_are_structured():
     assert isinstance(agreement.raw_metrics, dict)
 
 
+def test_classical_ml_bus_returns_bounded_structural_signals():
+    records, _ = _record_set()
+    cfg = load_truth_config()["hard_mesh"]
+    bundle = Stage6FeatureBuilder().build(records * 4, {"coverage": 1.0}, datetime.now(timezone.utc).replace(tzinfo=None))
+    matrix, _ = Stage6Preprocessor().transform(bundle)
+    result = ClassicalMLVerificationBus().run(matrix, cfg)
+    assert 0.0 <= result.anomaly_score <= 1.0
+    assert 0.0 <= result.novelty_score <= 1.0
+    assert 0.0 <= result.ensemble_score <= 1.0
+    assert "supported_future_estimators" in result.details
+
+
 def test_hard_mesh_routes_and_query_tank_persistence():
     engine = VerificationEngine(db_path=":memory:")
     result = engine.verify(
@@ -108,9 +121,11 @@ def test_hard_mesh_routes_and_query_tank_persistence():
     )
     assert result.hard_mesh is not None
     assert result.hard_mesh.route == StageRoute.query_tank_pending
+    assert result.hard_mesh.classical_ml is not None
     tank = engine.list_query_tank()
     assert tank
-    QueryTankItem(**tank[0])
+    item = QueryTankItem(**tank[0])
+    assert item.status == "open"
 
 
 def test_tvs_tmi_separation_with_evidence_changes():

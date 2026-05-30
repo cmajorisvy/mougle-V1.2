@@ -58,6 +58,7 @@ hard_mesh:
     birch: 0.6
     graph_refinement: 0.9
     consensus: 1.0
+    classical_ml: 0.8
     external: 0.5
     rules: 1.0
   penalties:
@@ -84,3 +85,6 @@ hard_mesh:
       n_neighbors: 5
     agglomerative:
       n_neighbors: 5
+  classical_ml:
+    min_samples: 4
+    min_calibration_samples: 20

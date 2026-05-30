@@ -35,6 +35,7 @@ Implemented lanes:
 - HDBSCAN Purification: density/noise separation when available in scikit-learn, otherwise structured skip.
 - OPTICS Audit: variable-density audit lane with reachability/noise signals.
 - Spectral/Agglomerative Refinement: graph and hierarchy views with safe small-data skips.
+- Classical ML Verification Bus: IsolationForest and OneClassSVM structural cleanliness signals plus calibration/stacking/tuning readiness metadata.
 - Validation Metrics: silhouette, Calinski-Harabasz, and Davies-Bouldin when valid.
 - Agreement Metrics: adjusted Rand and adjusted mutual information across lane labels.
 - Consensus Engine: computes Omega and routes to Stage 5, Stage 7, or Query Tank.
@@ -48,7 +49,7 @@ Default route bands are configurable in [truth_weights.yaml](config/truth_weight
 
 ## Abstention
 
-The system abstains when evidence is missing, stale, contradictory, source-conflicted, out of domain, requires human review, or fails HARD-MESH routing. Missing evidence is never fabricated; it is routed to the unresolved queue or query tank.
+The system abstains when evidence is missing, stale, contradictory, source-conflicted, out of domain, requires human review, or fails HARD-MESH routing. Missing evidence is never fabricated; it is routed to the unresolved queue or stateful query tank with a reason, status, required next action, and temporal metadata.
 
 ## Setup
 
@@ -136,6 +137,7 @@ TRUTH_PYRAMID_DB_PATH=/tmp/truth_pyramid.db verify-truth --query "What is the ca
 - External AI platforms are weighted judges, not oracles.
 - Identity calibration is the prototype default until real calibration data exists.
 - Clustering signals are structural verification signals, not final truth.
+- Classical anomaly and novelty signals are structural cleanliness hints, not truth verdicts.
 - No evidence is fabricated.
 - Tests do not require network calls.
 
@@ -145,5 +147,6 @@ TRUTH_PYRAMID_DB_PATH=/tmp/truth_pyramid.db verify-truth --query "What is the ca
 - Claim decomposition is conservative heuristic splitting.
 - Stage 6 uses deterministic local features rather than real embeddings.
 - SQLite persistence is prototype storage with create-if-not-exists schema setup.
+- SQLite includes bitemporal-ready metadata columns for future valid-time/system-time history.
 - Thresholds are configurable defaults and require calibration on real datasets.
 - Persistent homology is scaffolded through topology contracts, not a full topology engine.

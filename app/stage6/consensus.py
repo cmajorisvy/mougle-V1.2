@@ -6,6 +6,7 @@ from statistics import mean
 
 from app.models import (
     AgreementMetricResult,
+    ClassicalMLVerificationResult,
     ClaimVerificationRecord,
     HardMeshConsensusResult,
     QueryTankItem,
@@ -40,6 +41,7 @@ def build_hard_mesh_consensus(
     lane_warnings: list[str],
     validation: ValidationMetricResult,
     agreement: AgreementMetricResult,
+    classical_ml: ClassicalMLVerificationResult | None,
     cfg: dict,
     query_id: str,
     answer_id: str,
@@ -60,6 +62,7 @@ def build_hard_mesh_consensus(
             [lane_scores.get("spectral", 0.5), lane_scores.get("agglomerative", 0.5)]
         ),
         "consensus": agreement_score,
+        "classical_ml": classical_ml.ensemble_score if classical_ml else 0.5,
         "external": 0.5,
         "rules": 1.0,
     }
@@ -120,6 +123,9 @@ def build_hard_mesh_consensus(
         "omega": omega,
         "validation_score": clip01(validation_score),
         "agreement_score": clip01(agreement_score),
+        "classical_ml_score": classical_ml.ensemble_score if classical_ml else 0.5,
+        "anomaly_score": classical_ml.anomaly_score if classical_ml else 0.5,
+        "novelty_score": classical_ml.novelty_score if classical_ml else 0.5,
         "graph_refinement_score": clip01(lane_payload["graph_refinement"]),
         "structural_purity": clip01(mean(lane_payload.values())),
         "out_of_domain_penalty": out_of_domain_penalty,
@@ -133,11 +139,16 @@ def build_hard_mesh_consensus(
         route=route,
         route_reason=route_reason,
         lane_scores={**lane_scores, **lane_payload},
-        lane_warnings=lane_warnings + validation.warnings + agreement.warnings,
+        lane_warnings=(
+            lane_warnings
+            + validation.warnings
+            + agreement.warnings
+            + (classical_ml.warnings if classical_ml else [])
+        ),
         validation_metrics=validation.model_dump(mode="json"),
         agreement_metrics=agreement.model_dump(mode="json"),
+        classical_ml=classical_ml,
         unresolved_reason=unresolved_reason,
         feature_payload=feature_payload,
         query_tank_item=query_tank_item,
     )
-

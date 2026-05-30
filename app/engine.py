@@ -270,6 +270,16 @@ class VerificationEngine:
         else:
             final = VerdictLabel.pending_human_review if not decision.publish else VerdictLabel.supported
 
+        claim_rollup: dict[str, int] = {}
+        for record in claim_records:
+            label = record.verdict.label.value
+            claim_rollup[label] = claim_rollup.get(label, 0) + 1
+        confidence_explanation = (
+            f"TVS {tvs:.2f} with HARD-MESH omega {hard_mesh.omega:.3f}; "
+            f"macro={mm.macro_score:.2f}, micro={mm.micro_score:.2f}, "
+            f"route={hard_mesh.route.value}."
+        )
+
         provenance = ProvenancePayload(
             query_id=query.query_id,
             answer_id=answer.answer_id,
@@ -292,6 +302,8 @@ class VerificationEngine:
             truth_metrics=TruthMetrics(tvs=tvs, tmi=tmi),
             publish_decision=decision,
             final_verdict=final,
+            confidence_explanation=confidence_explanation,
+            claim_rollup=claim_rollup,
             hard_mesh=hard_mesh,
             topology=topology,
         )

@@ -34,7 +34,10 @@ def test_verify_happy_path():
     assert "answer_id" in data
     assert 0.0 <= data["tvs"] <= 100.0
     assert data["publish"] is True
+    assert data["confidence_explanation"]
+    assert data["claim_rollup"]["supported"] >= 1
     assert data["hard_mesh"]["omega"] >= 0.0
+    assert data["hard_mesh"]["classical_ml"] is not None
     assert data["hard_mesh"]["route"] == "stage_5_pass"
 
 

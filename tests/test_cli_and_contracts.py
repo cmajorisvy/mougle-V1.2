@@ -52,6 +52,7 @@ def test_cli_smoke_path(tmp_path: Path):
 def test_config_loading_includes_hard_mesh():
     cfg = load_truth_config()
     assert cfg["hard_mesh"]["enabled"] is True
+    assert cfg["hard_mesh"]["classical_ml"]["min_samples"] == 4
     assert cfg["calibration"]["mode"] == "identity"
 
 

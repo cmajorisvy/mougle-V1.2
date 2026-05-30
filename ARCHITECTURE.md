@@ -23,7 +23,7 @@ Runtime runs bottom-up:
 - `app/retrieval/`: retrieval interface and in-memory corpus retriever.
 - `app/graph/provenance_graph.py`: claim/evidence/source/time graph and graph feature export.
 - `app/plugins/`: verification plugin interface and deterministic plugins.
-- `app/stage6/`: HARD-MESH feature builder, preprocessing, lanes, metrics, consensus, and pipeline.
+- `app/stage6/`: HARD-MESH feature builder, preprocessing, clustering lanes, classical ML verification bus, metrics, consensus, and pipeline.
 - `app/scoring/`: Equation of Purity, calibration interface, TMI, and publish gate.
 - `app/storage/sqlite_store.py`: local SQLite persistence and query tank.
 - `app/topology.py`: Persistent Topological Engine scaffold.
@@ -39,7 +39,7 @@ Stage 2 observes graph heat-map features: support count, refutation count, sourc
 
 Stage 3 separates macro and micro mechanics. Macro means graph-level consistency, source agreement, temporal coherence, and Stage 6 consensus. Micro means claim-level evidence, local contradiction, numeric consistency, freshness, and provenance completeness.
 
-Stage 4 persists the history of verification: answer records, claim records, evidence records, source records, graph snapshots, plugin results, HARD-MESH runs, lane results, query tank items, external verifier records, and topology snapshots.
+Stage 4 persists the history of verification: answer records, claim records, evidence records, source records, graph snapshots, plugin results, HARD-MESH runs, lane results, stateful query tank items, external verifier records, and topology snapshots. SQLite tables are bitemporal-ready with valid-time metadata where the prototype writes or evolves verification history.
 
 Stage 5 computes:
 
@@ -69,6 +69,7 @@ Implemented lanes:
 - OPTICS Audit: variable-density audit lane.
 - Spectral Refinement: graph-native clustering using nearest-neighbor affinity where valid.
 - Agglomerative Refinement: human-auditable hierarchy signal.
+- Classical ML Verification Bus: anomaly, novelty, ensemble, calibration-readiness, stacking-readiness, and tuning-readiness metadata using deterministic local feature matrices.
 
 Validation metrics are computed only when label geometry is valid. Metrics are evidence, not oracles.
 

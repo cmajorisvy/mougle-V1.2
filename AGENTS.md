@@ -8,6 +8,7 @@
 - `app/graph/`: provenance-aware claim/evidence/source/time graph.
 - `app/plugins/`: verification plugin interface and built-in deterministic plugins.
 - `app/stage6/`: HARD-MESH feature builder, preprocessing, clustering lanes, metrics, consensus, and routing.
+- `docs/prompts/`: reusable implementation prompts distilled from deep-research reports.
 - `app/scoring/`: Equation of Purity, TVS, TMI, calibration, and publish gate.
 - `app/storage/`: SQLite persistence and query tank.
 - `app/api.py`: FastAPI endpoints.

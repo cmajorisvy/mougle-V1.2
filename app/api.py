@@ -36,6 +36,8 @@ def verify(payload: VerifyRequest) -> VerifyResponse:
         hard_mesh=result.hard_mesh,
         provenance=result.provenance,
         unresolved_reason=result.publish_decision.unresolved_reason,
+        confidence_explanation=result.confidence_explanation,
+        claim_rollup=result.claim_rollup,
     )
 
 

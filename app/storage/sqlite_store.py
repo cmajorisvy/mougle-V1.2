@@ -36,6 +36,8 @@ class SQLiteStore:
                 CREATE TABLE IF NOT EXISTS answer_records (
                     answer_id TEXT PRIMARY KEY,
                     payload_json TEXT NOT NULL,
+                    valid_from TEXT DEFAULT CURRENT_TIMESTAMP,
+                    valid_to TEXT,
                     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
                     updated_at TEXT DEFAULT CURRENT_TIMESTAMP
                 )
@@ -46,6 +48,8 @@ class SQLiteStore:
                 CREATE TABLE IF NOT EXISTS verification_records (
                     answer_id TEXT PRIMARY KEY,
                     payload_json TEXT NOT NULL,
+                    valid_from TEXT DEFAULT CURRENT_TIMESTAMP,
+                    valid_to TEXT,
                     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
                     updated_at TEXT DEFAULT CURRENT_TIMESTAMP
                 )
@@ -142,7 +146,11 @@ class SQLiteStore:
                 CREATE TABLE IF NOT EXISTS query_tank_items (
                     answer_id TEXT PRIMARY KEY,
                     reason TEXT NOT NULL,
+                    category TEXT DEFAULT 'uncertainty',
+                    status TEXT DEFAULT 'open',
                     payload_json TEXT NOT NULL,
+                    valid_from TEXT DEFAULT CURRENT_TIMESTAMP,
+                    valid_to TEXT,
                     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
                     last_updated TEXT DEFAULT CURRENT_TIMESTAMP
                 )
@@ -175,6 +183,8 @@ class SQLiteStore:
                     {
                         "created_at": "TEXT",
                         "updated_at": "TEXT",
+                        "valid_from": "TEXT",
+                        "valid_to": "TEXT",
                     },
                 )
             for table in ["claim_records", "evidence_records", "source_records"]:
@@ -193,6 +203,10 @@ class SQLiteStore:
                     {
                         "created_at": "TEXT",
                         "last_updated": "TEXT",
+                        "category": "TEXT",
+                        "status": "TEXT",
+                        "valid_from": "TEXT",
+                        "valid_to": "TEXT",
                     },
                 )
 
@@ -282,8 +296,20 @@ class SQLiteStore:
     def enqueue_query_tank(self, item: QueryTankItem) -> None:
         with self._connect() as conn:
             conn.execute(
-                "INSERT OR REPLACE INTO query_tank_items(answer_id, reason, payload_json, last_updated) VALUES (?, ?, ?, CURRENT_TIMESTAMP)",
-                (item.answer_id, item.reason, item.model_dump_json()),
+                """
+                INSERT OR REPLACE INTO query_tank_items(
+                    answer_id, reason, category, status, payload_json, valid_from, valid_to, last_updated
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """,
+                (
+                    item.answer_id,
+                    item.reason,
+                    item.category,
+                    item.status,
+                    item.model_dump_json(),
+                    item.valid_from.isoformat(),
+                    item.valid_to.isoformat() if item.valid_to else None,
+                ),
             )
 
     def list_query_tank(self) -> list[dict]:

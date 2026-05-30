@@ -10,6 +10,7 @@ HARD-MESH is the structural verification layer for the Verified Truth Pyramid. I
 - OPTICS: variable-density audit and reachability inspection.
 - SpectralClustering: graph-native refinement.
 - AgglomerativeClustering: interpretable hierarchy and local refinement.
+- Classical ML Verification Bus: IsolationForest anomaly screening, OneClassSVM novelty screening, ensemble cleanliness score, and calibration/stacking/tuning readiness metadata.
 
 ## Online vs Batch/Audit Lanes
 
@@ -22,6 +23,8 @@ Batch/audit lanes are HDBSCAN, OPTICS, Spectral, and Agglomerative. They run saf
 Inputs include claim records, evidence metadata, source reliability, timestamps, plugin scores, uncertainty, and graph features.
 
 Outputs include labels, confidence, score, lane details, warnings, validation metrics, agreement metrics, Omega, route, and route reason.
+
+The classical ML bus outputs anomaly, novelty, and ensemble scores in `[0, 1]`. It also records whether there is enough labeled evaluation data to graduate into `CalibratedClassifierCV`, `VotingClassifier`, `StackingClassifier`, or `RandomizedSearchCV` workflows later.
 
 ## Route Thresholds
 
@@ -38,6 +41,7 @@ Hard failures override Omega.
 - Source conflict or hard contradiction: source conflict / hard contradiction route.
 - Out of domain: out-of-domain route.
 - Invalid clustering geometry: structured warning and neutral lane score.
+- Too little labeled data for calibration or stacking: structured warning and neutral readiness flags.
 
 ## Small-Data Behavior
 
@@ -46,4 +50,3 @@ Tiny corpora are expected in tests and local demos. Clusterers that need more sa
 ## Dependency Notes
 
 HDBSCAN uses `sklearn.cluster.HDBSCAN` when available. The external `hdbscan` package is not required. Persistent homology libraries are not required for core tests.
-
