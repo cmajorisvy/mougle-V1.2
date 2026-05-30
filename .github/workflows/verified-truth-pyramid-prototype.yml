@@ -1,0 +1,50 @@
+name: Verified Truth Pyramid Prototype Validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - feat/verified-truth-pyramid-prototype
+      - chore/reconcile-node-validation-python-prototype
+
+permissions:
+  contents: read
+
+jobs:
+  validate-python-prototype:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python prototype dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]" --no-build-isolation
+
+      - name: Lint Python prototype
+        run: ruff check app tests
+
+      - name: Test Python prototype
+        run: pytest -q
+
+      - name: Set up Node for archive verification only
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install Node metadata dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Verify archived source integrity
+        run: npm run archive:verify
+
+      - name: Check whitespace-safe diff
+        run: git diff --check
