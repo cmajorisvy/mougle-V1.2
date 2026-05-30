@@ -26,6 +26,8 @@ def test_verify_happy_path():
     assert "answer_id" in data
     assert 0.0 <= data["tvs"] <= 100.0
     assert data["publish"] is True
+    assert data["hard_mesh"]["omega"] >= 0.0
+    assert data["hard_mesh"]["route"] == "stage_5_pass"
 
 
 def test_verify_abstention_path():
@@ -62,6 +64,15 @@ def test_verify_graph_endpoint_after_verification():
     graph = graph_resp.json()
     assert graph["nodes"]
     assert graph["edges"]
+    assert any(node["node_type"] == "hard_mesh_run" for node in graph["nodes"])
+
+
+def test_health_reports_stage6_and_storage():
+    resp = client.get("/health")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["stage6_available"] is True
+    assert data["storage_available"] is True
 
 
 def test_verify_contradictory_evidence_abstains():
@@ -132,3 +143,16 @@ def test_verify_out_of_domain_abstains():
     data = resp.json()
     assert data["publish"] is False
     assert data["unresolved_reason"] == "out of domain"
+
+
+def test_query_tank_endpoint_returns_pending_records():
+    payload = {
+        "query": "What is the capital of France?",
+        "answer": "Paris is the capital of France.",
+        "corpus": [],
+    }
+    verify_resp = client.post("/verify", json=payload)
+    assert verify_resp.status_code == 200
+    tank_resp = client.get("/query-tank")
+    assert tank_resp.status_code == 200
+    assert isinstance(tank_resp.json(), list)

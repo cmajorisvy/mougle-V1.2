@@ -13,7 +13,13 @@ engine = VerificationEngine()
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "service": "verified-truth-pyramid"}
+    return {
+        "status": "ok",
+        "service": "verified-truth-pyramid",
+        "version": app.version,
+        "stage6_available": True,
+        "storage_available": True,
+    }
 
 
 @app.post("/verify", response_model=VerifyResponse)
@@ -27,6 +33,7 @@ def verify(payload: VerifyRequest) -> VerifyResponse:
         verdict=result.final_verdict,
         claims=result.claim_records,
         macro_micro=result.macro_micro,
+        hard_mesh=result.hard_mesh,
         provenance=result.provenance,
         unresolved_reason=result.publish_decision.unresolved_reason,
     )
@@ -38,3 +45,18 @@ def graph(answer_id: str) -> dict:
     if snapshot is None:
         raise HTTPException(status_code=404, detail="answer graph not found")
     return snapshot
+
+
+@app.post("/hard-mesh/analyze")
+def hard_mesh_analyze(payload: VerifyRequest) -> dict:
+    result = engine.verify(payload)
+    return {
+        "answer_id": result.answer.answer_id,
+        "hard_mesh": result.hard_mesh.model_dump(mode="json") if result.hard_mesh else None,
+        "topology": result.topology.model_dump(mode="json") if result.topology else None,
+    }
+
+
+@app.get("/query-tank")
+def query_tank() -> list[dict]:
+    return engine.list_query_tank()

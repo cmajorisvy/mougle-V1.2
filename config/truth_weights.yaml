@@ -9,15 +9,78 @@ weights:
   macro_consistency: 1.0
   micro_evidence: 1.1
   external_judge: 0.4
+  hard_mesh_structural: 1.0
 pairwise:
   source_reliability|provenance_completeness: 0.08
   retrieval_support|micro_evidence: 0.10
   contradiction_pressure|macro_consistency: -0.06
 lambda_graph: 0.35
+lambda_hard_mesh: 0.8
 mu_contradiction: 0.8
 mu_uncertainty: 0.7
 mu_drift: 0.6
+mu_out_of_domain: 1.0
 publish:
   tvs_threshold: 65.0
   epsilon_disagreement: 0.3
   uncertainty_max: 0.45
+  allow_stage7_provisional_publish: false
+tmi:
+  alpha: 0.25
+  beta: 0.2
+  gamma: 0.2
+  delta: 0.2
+  eta: 0.15
+calibration:
+  mode: identity
+freshness:
+  default_window_days: 365
+source_reliability:
+  default: 0.5
+external_verifier:
+  enabled: false
+  stub_provider: mock
+query_tank:
+  enabled: true
+hard_mesh:
+  enabled: true
+  tau: 1.4
+  min_samples_for_clustering: 3
+  thresholds:
+    pass_to_stage_5: 0.85
+    send_to_stage_7: 0.60
+    query_tank_below: 0.60
+    hdbscan_high_purity_probability: 0.85
+    hdbscan_borderline_probability: 0.60
+  weights:
+    hdbscan: 1.0
+    mini_batch_kmeans: 0.7
+    birch: 0.6
+    graph_refinement: 0.9
+    consensus: 1.0
+    external: 0.5
+    rules: 1.0
+  penalties:
+    contradiction: 1.0
+    noise: 0.8
+    stale: 0.8
+    source_conflict: 1.0
+    out_of_domain: 1.0
+    uncertainty: 0.7
+  algorithms:
+    birch:
+      threshold: 0.5
+      branching_factor: 50
+    mini_batch_kmeans:
+      n_clusters_default: 8
+      batch_size: 1024
+    hdbscan:
+      min_cluster_size: 5
+      min_samples: 5
+    optics:
+      min_samples: 5
+      xi: 0.05
+    spectral:
+      n_neighbors: 5
+    agglomerative:
+      n_neighbors: 5

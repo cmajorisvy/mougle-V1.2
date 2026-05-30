@@ -15,8 +15,10 @@ class ScoreInputs:
     plugin_scores: dict[str, float]
     plugin_uncertainties: dict[str, float]
     graph_features: dict[str, float]
+    hard_mesh_features: dict[str, float]
     contradiction_penalty: float
     drift_or_staleness_penalty: float
+    out_of_domain_penalty: float = 0.0
 
 
 def sigmoid(x: float) -> float:
@@ -32,9 +34,11 @@ def compute_j(inputs: ScoreInputs, cfg: dict) -> float:
     pairwise = cfg.get("pairwise", {})
     b = float(cfg.get("base_bias", 0.0))
     lam_g = float(cfg.get("lambda_graph", 0.2))
+    lam_h = float(cfg.get("lambda_hard_mesh", 0.0))
     mu_c = float(cfg.get("mu_contradiction", 0.5))
     mu_u = float(cfg.get("mu_uncertainty", 0.5))
     mu_d = float(cfg.get("mu_drift", 0.3))
+    mu_o = float(cfg.get("mu_out_of_domain", 0.5))
 
     linear = sum(float(weights.get(k, 0.0)) * v for k, v in inputs.plugin_scores.items())
 
@@ -50,6 +54,7 @@ def compute_j(inputs: ScoreInputs, cfg: dict) -> float:
         float(inputs.graph_features.get("coverage", 0.0))
         + (1.0 - float(inputs.graph_features.get("contradiction_rate", 1.0)))
     ) / 2.0
+    hard_mesh_signal = float(inputs.hard_mesh_features.get("omega", 0.0))
 
     mean_uncertainty = (
         sum(inputs.plugin_uncertainties.values()) / max(1, len(inputs.plugin_uncertainties))
@@ -60,9 +65,11 @@ def compute_j(inputs: ScoreInputs, cfg: dict) -> float:
         + linear
         + inter
         + lam_g * graph_signal
+        + lam_h * hard_mesh_signal
         - mu_c * inputs.contradiction_penalty
         - mu_u * mean_uncertainty
         - mu_d * inputs.drift_or_staleness_penalty
+        - mu_o * inputs.out_of_domain_penalty
     )
 
 

@@ -23,6 +23,18 @@ class VerdictLabel(str, Enum):
     pending_human_review = "pending_human_review"
 
 
+class StageRoute(str, Enum):
+    stage_5_pass = "stage_5_pass"
+    stage_7_verify = "stage_7_verify"
+    query_tank_pending = "query_tank_pending"
+
+
+class ExternalVerifierVerdict(str, Enum):
+    support = "support"
+    contradict = "contradict"
+    insufficient = "insufficient"
+
+
 class Query(BaseModel):
     query_id: str
     text: str
@@ -72,6 +84,18 @@ class VerificationPluginResult(BaseModel):
     feature_vector: dict[str, float] = Field(default_factory=dict)
 
 
+class ExternalVerifierResult(BaseModel):
+    provider: str = "mock"
+    model: str = "external-judge-stub"
+    verdict: ExternalVerifierVerdict = ExternalVerifierVerdict.insufficient
+    confidence: float = Field(default=0.0, ge=0.0, le=1.0)
+    evidence_quality: float = Field(default=0.0, ge=0.0, le=1.0)
+    contradiction_count: int = Field(default=0, ge=0)
+    schema_valid: bool = True
+    rationale: str = "stubbed external verifier result"
+    citations: list[str] = Field(default_factory=list)
+
+
 class ClaimVerdict(BaseModel):
     claim_id: str
     label: VerdictLabel
@@ -90,6 +114,140 @@ class MacroMicroAssessment(BaseModel):
     macro_score: float = Field(ge=0.0, le=1.0)
     micro_score: float = Field(ge=0.0, le=1.0)
     disagreement: float = Field(ge=0.0, le=1.0)
+    disagreement_reason: Optional[str] = None
+
+
+class FeatureRowMetadata(BaseModel):
+    row_id: str
+    claim_id: str
+    evidence_ids: list[str] = Field(default_factory=list)
+    source_ids: list[str] = Field(default_factory=list)
+
+
+class FeatureBundle(BaseModel):
+    matrix: list[list[float]]
+    feature_names: list[str]
+    row_metadata: list[FeatureRowMetadata]
+    graph_features: dict[str, float] = Field(default_factory=dict)
+    warnings: list[str] = Field(default_factory=list)
+
+
+class ClusterLaneResult(BaseModel):
+    lane_name: str
+    labels: list[int] = Field(default_factory=list)
+    confidence: float = Field(default=0.0, ge=0.0, le=1.0)
+    score: float = Field(default=0.0, ge=0.0, le=1.0)
+    skipped: bool = False
+    warnings: list[str] = Field(default_factory=list)
+    details: dict[str, Any] = Field(default_factory=dict)
+
+
+class ClusterRunResult(BaseModel):
+    lane_results: list[ClusterLaneResult]
+    warnings: list[str] = Field(default_factory=list)
+
+
+class ValidationMetricResult(BaseModel):
+    raw_metrics: dict[str, float] = Field(default_factory=dict)
+    normalized_metrics: dict[str, float] = Field(default_factory=dict)
+    warnings: list[str] = Field(default_factory=list)
+
+
+class AgreementMetricResult(BaseModel):
+    raw_metrics: dict[str, float] = Field(default_factory=dict)
+    normalized_metrics: dict[str, float] = Field(default_factory=dict)
+    warnings: list[str] = Field(default_factory=list)
+
+
+class HardMeshGateResult(BaseModel):
+    route: StageRoute
+    route_reason: str
+    unresolved_reason: Optional[str] = None
+    hard_failures: list[str] = Field(default_factory=list)
+
+
+class HardMeshConsensusResult(BaseModel):
+    omega: float = Field(ge=0.0, le=1.0)
+    route: StageRoute
+    route_reason: str
+    lane_scores: dict[str, float] = Field(default_factory=dict)
+    lane_warnings: list[str] = Field(default_factory=list)
+    validation_metrics: dict[str, Any] = Field(default_factory=dict)
+    agreement_metrics: dict[str, Any] = Field(default_factory=dict)
+    unresolved_reason: Optional[str] = None
+    feature_payload: dict[str, float] = Field(default_factory=dict)
+    query_tank_item: Optional[dict[str, Any]] = None
+
+
+class RawVerificationInput(BaseModel):
+    query: Query
+    answer: CandidateAnswer
+    claims: list[AtomicClaim]
+    claim_records: list["ClaimVerificationRecord"] = Field(default_factory=list)
+    graph_features: dict[str, float] = Field(default_factory=dict)
+    external_verifier_results: list[ExternalVerifierResult] = Field(default_factory=list)
+
+
+class QueryTankItem(BaseModel):
+    query_id: str
+    answer_id: str
+    claim_id: Optional[str] = None
+    reason: str
+    required_next_action: str
+    created_at: datetime = Field(default_factory=utc_now)
+    last_updated: datetime = Field(default_factory=utc_now)
+
+
+class PersistenceSignature(BaseModel):
+    signature_id: str
+    graph_hash: str
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class TopologySnapshot(BaseModel):
+    snapshot_id: str
+    node_count: int
+    edge_count: int
+    connected_components: int
+    component_sizes: list[int]
+    cycle_rank: int
+    graph_density: float = Field(ge=0.0, le=1.0)
+    average_degree: float
+    clustering_coefficient: float = Field(ge=0.0, le=1.0)
+    stability_score: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    topology_drift: bool = False
+
+
+class PurityFeatureSet(BaseModel):
+    omega: float = Field(ge=0.0, le=1.0)
+    structural_purity: float = Field(ge=0.0, le=1.0)
+    graph_refinement_score: float = Field(ge=0.0, le=1.0)
+    validation_score: float = Field(ge=0.0, le=1.0)
+    agreement_score: float = Field(ge=0.0, le=1.0)
+
+
+class PurityUpdate(BaseModel):
+    answer_id: str
+    feature_set: PurityFeatureSet
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class CouncilSocketEnvelope(BaseModel):
+    socket_id: str
+    bound_unit_id: str
+    schema_id: str
+    origin_stage: str
+    trace_id: str
+    request_id: str
+    tenant_id: Optional[str] = None
+    classification: Optional[str] = None
+    deadline_ms: Optional[int] = None
+    payload_hash: Optional[str] = None
+    signature: Optional[str] = None
+    request_payload: dict[str, Any] = Field(default_factory=dict)
+    response_payload: dict[str, Any] = Field(default_factory=dict)
+    status: str = "pending"
+    created_at: datetime = Field(default_factory=utc_now)
 
 
 class ProvenancePayload(BaseModel):
@@ -98,6 +256,8 @@ class ProvenancePayload(BaseModel):
     claim_ids: list[str]
     graph_snapshot_ref: str
     plugin_provenance: dict[str, Any]
+    hard_mesh_ref: Optional[str] = None
+    topology_ref: Optional[str] = None
 
 
 class PublishDecision(BaseModel):
@@ -119,6 +279,8 @@ class AnswerVerificationRecord(BaseModel):
     truth_metrics: TruthMetrics
     publish_decision: PublishDecision
     final_verdict: VerdictLabel
+    hard_mesh: Optional[HardMeshConsensusResult] = None
+    topology: Optional[TopologySnapshot] = None
 
 
 class CorpusItemInput(BaseModel):
@@ -134,6 +296,7 @@ class VerifyRequest(BaseModel):
     query: str
     answer: str
     corpus: list[CorpusItemInput]
+    options: dict[str, Any] = Field(default_factory=dict)
 
 
 class VerifyResponse(BaseModel):
@@ -144,5 +307,9 @@ class VerifyResponse(BaseModel):
     verdict: VerdictLabel
     claims: list[ClaimVerificationRecord]
     macro_micro: MacroMicroAssessment
+    hard_mesh: Optional[HardMeshConsensusResult] = None
     provenance: ProvenancePayload
     unresolved_reason: Optional[str]
+
+
+RawVerificationInput.model_rebuild()

@@ -9,6 +9,7 @@ def test_tvs_computation_bounds():
             plugin_scores={"a": 0.9, "b": 0.7},
             plugin_uncertainties={"a": 0.1, "b": 0.2},
             graph_features={"coverage": 1.0, "contradiction_rate": 0.0},
+            hard_mesh_features={"omega": 0.9},
             contradiction_penalty=0.0,
             drift_or_staleness_penalty=0.1,
         ),

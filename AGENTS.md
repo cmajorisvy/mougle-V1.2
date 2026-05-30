@@ -1,76 +1,66 @@
-# Mougle Codex Instructions
+# Verified Truth Pyramid Codex Instructions
 
-## Strategic Reference
+## Repo Layout
 
-Before planning or coding major Mougle work, read:
+- `app/models.py`: typed contracts for truth records, HARD-MESH, topology, query tank, and council sockets.
+- `app/claims/`: deterministic atomic claim decomposition.
+- `app/retrieval/`: retrieval interface and local in-memory retriever.
+- `app/graph/`: provenance-aware claim/evidence/source/time graph.
+- `app/plugins/`: verification plugin interface and built-in deterministic plugins.
+- `app/stage6/`: HARD-MESH feature builder, preprocessing, clustering lanes, metrics, consensus, and routing.
+- `app/scoring/`: Equation of Purity, TVS, TMI, calibration, and publish gate.
+- `app/storage/`: SQLite persistence and query tank.
+- `app/api.py`: FastAPI endpoints.
+- `app/cli.py`: `verify-truth` CLI.
+- `tests/`: pytest coverage for claims, retrieval, plugins, graph, scoring, API, Stage 6, and persistence.
 
-`docs/MOUGLE_UNIFIED_MASTER_BLUEPRINT.md`
+## Setup
 
-This file is the strategic blueprint for Mougle V2.
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -e ".[dev]"
+```
 
-## Core Rule
+## Test and Lint Commands
 
-Do not implement the whole blueprint at once.
+```bash
+ruff check app tests
+pytest -q
+```
 
-Work stage by stage, branch by branch, with small focused PRs.
+## CLI Smoke Command
 
-## Current Architecture to Preserve
+```bash
+verify-truth --query "What is the capital of France?" --answer "The capital of France is Paris." --corpus ./corpus.json --show-claims --show-graph-summary
+```
 
-Mougle uses:
+## Engineering Rules
 
-- React + Vite + TypeScript frontend
-- Express + TypeScript backend
-- PostgreSQL + Drizzle database
-- Replit deployment
-- Existing Mougle routes, services, schemas, and UI modules
+- Keep TVS and TMI separate: TVS is answer-level `[0, 100]`; TMI is system-level `[0, 1]`.
+- The visual pyramid is top-down, but runtime computation is bottom-up.
+- Stage 6 HARD-MESH is structural verification, not a truth oracle.
+- External AI platforms are weighted judges, not oracles.
+- Preserve provenance: source metadata, timestamps, retrieval method, graph links, plugin outputs, and route decisions.
+- Keep scores, confidence, uncertainty, Omega, TVS, and TMI bounded.
+- Prefer deterministic local tests. Do not require network calls in tests.
 
-Do not migrate languages, frameworks, or architecture unless explicitly requested.
+## Do-Not Rules
 
-## Non-Negotiable Development Rules
+- Do not fabricate evidence.
+- Do not add real external AI calls to stubs.
+- Do not use OpenAI, Anthropic, xAI, or other provider APIs unless explicitly configured later.
+- Do not treat clustering labels, external judges, or local models as final truth.
+- Do not load untrusted pickle/joblib artifacts in production code.
+- Do not destructively reset or mutate production databases.
 
-- Do not redesign the public site unless the task specifically asks for it.
-- Do not rewrite human-written content.
-- Do not delete existing services, routes, tables, or pages unless clearly obsolete and approved.
-- Do not expose secrets, tokens, DATABASE_URL, OpenAI keys, or credentials.
-- Do not add autonomous publishing without admin approval gates.
-- Do not mix unrelated work into one branch.
-- Do not create duplicate systems when existing modules can be reused.
-- Run `npm run check` and `npm run build` before reporting completion.
+## PR Readiness Checklist
 
-## Required Workflow
-
-For every major task:
-
-1. Start from latest `main`.
-2. Create a focused branch.
-3. Audit existing files before coding.
-4. Propose a minimal implementation plan.
-5. Implement only the approved phase.
-6. Run checks and build.
-7. Report:
-   - files changed
-   - what was fixed/built
-   - commands run
-   - remaining warnings
-   - intentionally deferred work
-
-## Current Priority Order
-
-1. Stabilize current site and admin foundation.
-2. Build admin operations dashboard in phases.
-3. Verify auth, support, users, billing, AI ops, audit logs.
-4. Seed MOUGLE Chief Intelligence and specialist agents.
-5. Build controlled agent behavior engine.
-6. Build UES/truth evolution scoring.
-7. Build news-to-debate-to-podcast MVP.
-8. Add user-owned agent training.
-9. Add safe marketplace clone/export.
-10. Add live studio.
-11. Add selective digital world.
-12. Add avatar/video layer later.
-
-## Important
-
-The blueprint is a roadmap, not a single task.
-
-When asked to work on Mougle, first identify which stage or phase the request belongs to, then implement only that phase
+- `ruff check app tests` passes.
+- `pytest -q` passes.
+- CLI smoke test passes.
+- `/health`, `/verify`, `/graph/{answer_id}` are covered by tests.
+- Stage 6 Omega and query tank routing are covered by tests.
+- README, ARCHITECTURE, HARD_MESH, and AGENTS are current.
+- Existing PR remains Draft until the full validation and final audit pass.

@@ -1,36 +1,62 @@
 # Verified Truth Pyramid Prototype
 
-Implementation-ready prototype of a high-reliability verification architecture where atomic claims are verified against evidence and scored with modular plugins.
+This repository implements an implementation-ready prototype of the Verified Truth Pyramid and Modular Equation Architecture. It verifies answers by decomposing them into atomic claims, retrieving local evidence, building a provenance-aware claim/evidence/source/time graph, running modular verification plugins, passing structural signals through Stage 6 HARD-MESH, and then computing publish/abstain decisions from TVS and TMI.
 
-## Architecture Overview
+The visual pyramid is top-down, but runtime execution is bottom-up:
 
-Computation is bottom-up:
+`ingestion -> retrieval/evidence -> claim verification -> graph propagation -> HARD-MESH -> Equation of Purity -> temporal knowledge store -> macro/micro assessment -> mesh-bed observation -> Truth Crown`
 
-1. Ingestion (`query`, `answer`, `corpus`)
-2. Claim decomposition (atomic claims)
-3. Evidence retrieval (claim-local)
-4. Claim-evidence-source-time graph propagation
-5. Plugin scoring + modular truth functional
-6. TVS (0-100) + TMI (0-1)
-7. Publish/abstain gate
+## Seven Pyramid Stages
 
-External AI judges are modeled as weighted judges, not oracles.
+1. Truth Crown: calibrated TVS, system-level TMI, final verdict, publish/abstain decision, unresolved reason, and claim rollup.
+2. Mesh-Bed Consensus: claim/evidence/source/time graph with support, refutation, source diversity, freshness, and Stage 6 structural features.
+3. Dual Mechanics View: macro graph consistency and micro claim-level evidence support with disagreement scoring.
+4. Knowledge of Purity and Wisdom: SQLite-backed provenance, graph snapshots, query tank records, plugin outputs, topology snapshots, and HARD-MESH runs.
+5. Equation of Purity: configurable modular scoring functional with graph and HARD-MESH terms.
+6. HARD-MESH Verification Pipeline: structural verification, clustering, anomaly discovery, validation metrics, consensus scoring, and route decisions.
+7. External AI Verification: typed external verifier result schema and stubbed judge plugin only.
 
-## Stack
+## TVS vs TMI
 
-- Python 3.11+
-- FastAPI + Pydantic
-- NetworkX provenance graph
-- scikit-learn calibration adapter
-- SQLite persistence
-- pytest tests
+`TVS` is an answer-level calibrated True Value Score in `[0, 100]`.
+
+`TMI` is a system-level Truth Maturity Index in `[0, 1]`. TMI is not the truth score of an individual answer.
+
+## Stage 6 HARD-MESH Overview
+
+Stage 6 is not a truth oracle. It is a structural verification and routing layer. It treats clustering algorithms, graph refiners, and external judges as evidence-producing modules.
+
+Implemented lanes:
+
+- Feature Builder: source reliability, evidence counts, contradiction flags, freshness, provenance completeness, plugin means, graph proxies, and lexical overlap.
+- Preprocessing: imputation, scaling, TruncatedSVD/PCA fallback, and tiny-dataset fallback.
+- BIRCH Compression: streaming-style ingress and subcluster stability proxy.
+- MiniBatchKMeans Routing: centroid-margin confidence and compactness proxy.
+- HDBSCAN Purification: density/noise separation when available in scikit-learn, otherwise structured skip.
+- OPTICS Audit: variable-density audit lane with reachability/noise signals.
+- Spectral/Agglomerative Refinement: graph and hierarchy views with safe small-data skips.
+- Validation Metrics: silhouette, Calinski-Harabasz, and Davies-Bouldin when valid.
+- Agreement Metrics: adjusted Rand and adjusted mutual information across lane labels.
+- Consensus Engine: computes Omega and routes to Stage 5, Stage 7, or Query Tank.
+
+Default route bands are configurable in [truth_weights.yaml](config/truth_weights.yaml):
+
+- `omega >= 0.85`: `stage_5_pass`
+- `0.60 <= omega < 0.85`: `stage_7_verify`
+- `omega < 0.60`: `query_tank_pending`
+- hard failures always override Omega
+
+## Abstention
+
+The system abstains when evidence is missing, stale, contradictory, source-conflicted, out of domain, requires human review, or fails HARD-MESH routing. Missing evidence is never fabricated; it is routed to the unresolved queue or query tank.
 
 ## Setup
 
 ```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
-pip install -e .[dev]
+python -m pip install --upgrade pip
+pip install -e ".[dev]"
 ```
 
 ## Run API
@@ -39,15 +65,15 @@ pip install -e .[dev]
 uvicorn app.api:app --reload
 ```
 
-### Health
+Endpoints:
 
-`GET /health`
+- `GET /health`
+- `POST /verify`
+- `GET /graph/{answer_id}`
+- `POST /hard-mesh/analyze`
+- `GET /query-tank`
 
-### Verify
-
-`POST /verify`
-
-Example payload:
+Example request:
 
 ```json
 {
@@ -61,53 +87,57 @@ Example payload:
       "timestamp": "2026-01-01T00:00:00",
       "reliability": 0.95
     }
-  ]
+  ],
+  "options": {
+    "enable_hard_mesh": true,
+    "enable_external_stub": false
+  }
 }
 ```
 
-Example response (shape):
-
-```json
-{
-  "answer_id": "ans_...",
-  "tvs": 87.42,
-  "tmi": 0.73,
-  "publish": true,
-  "verdict": "supported",
-  "claims": [],
-  "macro_micro": {},
-  "provenance": {},
-  "unresolved_reason": null
-}
-```
-
-### Graph
-
-`GET /graph/{answer_id}` returns claim-evidence-source-time graph JSON.
+Response includes `tvs`, `tmi`, `publish`, claim records, `macro_micro`, `hard_mesh`, provenance, and unresolved reason.
 
 ## CLI
 
 ```bash
-verify-truth --query "What is the capital of France?" --answer "Paris is the capital of France." --corpus ./corpus.json
+verify-truth --query "What is the capital of France?" --answer "Paris is the capital of France." --corpus ./corpus.json --show-claims --show-graph-summary
 ```
 
-CLI prints final verdict, TVS, TMI, publish decision, claim verdicts, and unresolved reason if abstained.
+Useful options:
 
-## Tests
+- `--enable-hard-mesh / --disable-hard-mesh`
+- `--show-claims`
+- `--show-graph-summary`
+- `--json`
+- `--verbose`
+
+## Validation
 
 ```bash
-pytest
+ruff check app tests
+pytest -q
 ```
 
-## TVS vs TMI
+CLI smoke:
 
-- **TVS**: answer-level calibrated truth score in `[0,100]` from modular claim/evidence scoring.
-- **TMI**: system-level maturity score in `[0,1]` from calibration, drift, OOD, and coverage quality terms.
+```bash
+verify-truth --query "What is the capital of France?" --answer "The capital of France is Paris." --corpus ./corpus.json
+```
 
-## Safety Behavior
+## Safety Notes
 
-- No fabricated evidence.
-- Missing, stale, contradictory, or out-of-domain evidence drives abstention.
-- External judges are stubs and never treated as oracles.
-- No real external API calls are made.
-- Identity calibration is the prototype default until fitted calibration data exists.
+- ExternalJudgePlugin is a stub and performs no real API calls.
+- External AI platforms are weighted judges, not oracles.
+- Identity calibration is the prototype default until real calibration data exists.
+- Clustering signals are structural verification signals, not final truth.
+- No evidence is fabricated.
+- Tests do not require network calls.
+
+## Known Limitations
+
+- Retrieval is deterministic in-memory overlap matching.
+- Claim decomposition is conservative heuristic splitting.
+- Stage 6 uses deterministic local features rather than real embeddings.
+- SQLite persistence is prototype storage with create-if-not-exists schema setup.
+- Thresholds are configurable defaults and require calibration on real datasets.
+- Persistent homology is scaffolded through topology contracts, not a full topology engine.

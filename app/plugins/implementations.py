@@ -8,6 +8,15 @@ from datetime import timedelta
 from app.plugins.base import PluginContext, VerificationPlugin, _base_result
 
 
+_TOKEN_RE = re.compile(r"[a-z0-9]+")
+
+
+def _tokens(text: str) -> set[str]:
+    """Return normalized lexical tokens for deterministic local evidence checks."""
+
+    return set(_TOKEN_RE.findall(text.lower()))
+
+
 class SourceReliabilityPlugin(VerificationPlugin):
     name = "source_reliability"
 
@@ -62,16 +71,16 @@ class ContradictionPressurePlugin(VerificationPlugin):
     name = "contradiction_pressure"
 
     def evaluate(self, context: PluginContext):
-        claim_tokens = set(context.claim.text.lower().split())
+        claim_tokens = _tokens(context.claim.text)
         positive_hits = 0
         contradiction_hits = 0
         negation_terms = {"not", "never", "false", "incorrect", "refutes", "contradicts"}
         for ev in context.evidences:
-            text = ev.text.lower()
-            overlaps_claim = any(token in text for token in claim_tokens)
+            ev_tokens = _tokens(ev.text)
+            overlaps_claim = bool(claim_tokens & ev_tokens)
             if not overlaps_claim:
                 continue
-            has_negation = any(term in text.split() for term in negation_terms)
+            has_negation = bool(ev_tokens & negation_terms)
             if has_negation:
                 contradiction_hits += 1
             else:
@@ -128,6 +137,7 @@ class NumericConsistencyPlugin(VerificationPlugin):
             score,
             1 - score,
             warnings=[] if score > 0.5 else ["numeric mismatch"],
+            feature_vector={"numeric_consistency": score},
         )
 
 
@@ -152,10 +162,10 @@ class MicroEvidencePlugin(VerificationPlugin):
     def evaluate(self, context: PluginContext):
         if not context.evidences:
             return _base_result(self.name, 0.0, 1.0, warnings=["claim has no local evidence"])
-        claim_tokens = set(context.claim.text.lower().split())
+        claim_tokens = _tokens(context.claim.text)
         overlaps = []
         for ev in context.evidences:
-            ev_tokens = set(ev.text.lower().split())
+            ev_tokens = _tokens(ev.text)
             overlaps.append(len(claim_tokens & ev_tokens) / max(1, len(claim_tokens)))
         score = sum(overlaps) / len(overlaps)
         return _base_result(self.name, score, 1 - score)
@@ -173,4 +183,21 @@ class ExternalJudgePlugin(VerificationPlugin):
             0.5,
             provenance={"mode": "mock", "note": "external judges are weighted judges, not oracles"},
             warnings=["stub implementation"],
+        )
+
+
+class HardMeshStructuralPlugin(VerificationPlugin):
+    name = "hard_mesh_structural"
+
+    def __init__(self, omega: float = 0.5, route: str = "stage_7_verify") -> None:
+        self.omega = max(0.0, min(1.0, omega))
+        self.route = route
+
+    def evaluate(self, context: PluginContext):
+        return _base_result(
+            self.name,
+            self.omega,
+            1.0 - self.omega,
+            provenance={"route": self.route, "note": "Stage 6 structural signal, not a truth oracle"},
+            feature_vector={"hard_mesh_omega": self.omega},
         )

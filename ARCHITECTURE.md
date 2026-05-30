@@ -1,89 +1,114 @@
-# Verified Truth Pyramid and Modular Equation Architecture
+# Verified Truth Pyramid Architecture
+
+## Visual Pyramid
+
+1. Stage 1: Truth Crown
+2. Stage 2: Mesh-Bed Heat Map / Truth Comparison Mesh
+3. Stage 3: Dual Mechanics View
+4. Stage 4: Knowledge of Purity and Wisdom
+5. Stage 5: Equation of Purity
+6. Stage 6: HARD-MESH Verification Pipeline
+7. Stage 7: External AI Platform Verification
+
+## Runtime Execution Graph
+
+Runtime runs bottom-up:
+
+`raw sources / claims / evidence / metadata / graph edges -> Stage 7 boundary when needed -> Stage 6 HARD-MESH -> Stage 5 Equation of Purity -> Stage 4 temporal knowledge store -> Stage 3 macro/micro assessment -> Stage 2 mesh-bed observation -> Stage 1 Truth Crown`
 
 ## Module Map
 
-- `app/models.py`: core typed domain models
-- `app/claims/decomposer.py`: deterministic atomic claim decomposition
-- `app/retrieval/base.py`, `app/retrieval/mock.py`: retrieval interface + in-memory retriever
-- `app/graph/provenance_graph.py`: claim-evidence-source-time graph operations
-- `app/plugins/base.py`, `app/plugins/implementations.py`: plugin interface + built-ins
-- `app/scoring/truth_functional.py`: modular truth equation + TVS
-- `app/scoring/tmi.py`: TMI formula
-- `app/scoring/gate.py`: publish/abstain policy gate
-- `app/engine.py`: orchestration pipeline
-- `app/api.py`: FastAPI endpoints
-- `app/cli.py`: command-line verification entry
-- `app/storage/sqlite_store.py`: local persistence
+- `app/models.py`: Pydantic contracts for truth records, HARD-MESH, topology, query tank, and council sockets.
+- `app/claims/decomposer.py`: deterministic atomic claim decomposition with stable IDs and spans.
+- `app/retrieval/`: retrieval interface and in-memory corpus retriever.
+- `app/graph/provenance_graph.py`: claim/evidence/source/time graph and graph feature export.
+- `app/plugins/`: verification plugin interface and deterministic plugins.
+- `app/stage6/`: HARD-MESH feature builder, preprocessing, lanes, metrics, consensus, and pipeline.
+- `app/scoring/`: Equation of Purity, calibration interface, TMI, and publish gate.
+- `app/storage/sqlite_store.py`: local SQLite persistence and query tank.
+- `app/topology.py`: Persistent Topological Engine scaffold.
+- `app/council_sockets.py`: typed future council socket envelope.
+- `app/api.py`: FastAPI endpoints.
+- `app/cli.py`: `verify-truth` CLI.
 
-## Data Flow
+## Stage Responsibilities
 
-`verify` request:
+Stage 1 exposes TVS, TMI, verdict, confidence explanation, and publish/abstain decision.
 
-1. Build `Query` and `CandidateAnswer`
-2. Decompose answer into `AtomicClaim`s
-3. Retrieve claim-local `EvidenceItem`s
-4. Evaluate plugins per claim
-5. Produce `ClaimVerdict`s
-6. Add records to provenance graph
-7. Aggregate plugin outputs + graph features
-8. Compute TVS and TMI
-9. Apply publish/abstain gate
-10. Persist answer + graph + unresolved queue (if abstained)
+Stage 2 observes graph heat-map features: support count, refutation count, source diversity, source reliability, provenance completeness, contradiction pressure, and Stage 6 structural purity.
 
-## Plugin Interface
+Stage 3 separates macro and micro mechanics. Macro means graph-level consistency, source agreement, temporal coherence, and Stage 6 consensus. Micro means claim-level evidence, local contradiction, numeric consistency, freshness, and provenance completeness.
 
-Every plugin returns:
+Stage 4 persists the history of verification: answer records, claim records, evidence records, source records, graph snapshots, plugin results, HARD-MESH runs, lane results, query tank items, external verifier records, and topology snapshots.
 
-- `score` in `[0,1]`
-- `uncertainty` in `[0,1]`
-- `provenance`
-- optional `warnings`
-- optional `feature_vector`
+Stage 5 computes:
 
-Implemented plugins:
+`J(q,a,t) = b + sum(w_k s_k) + sum(kappa_ij s_i s_j) + lambda_g G(graph_features) + lambda_h H(hard_mesh_features) - mu_c contradiction - mu_u uncertainty - mu_d staleness - mu_o out_of_domain`
 
-- SourceReliabilityPlugin
-- ProvenanceCompletenessPlugin
-- RetrievalSupportPlugin
-- ContradictionPressurePlugin
-- TemporalFreshnessPlugin
-- NumericConsistencyPlugin
-- MacroConsistencyPlugin
-- MicroEvidencePlugin
-- ExternalJudgePlugin (mock stub)
+`TVS(q,a,t) = 100 * Cal(sigmoid(J(q,a,t)))`
 
-## Scoring Equation
+Identity calibration is the prototype default.
 
-`J(q,a,t) = b + sum(w_k s_k) + sum(kappa_ij s_i s_j) + lambda_g G(graph) - mu_c C - mu_u U - mu_d D`
+Stage 6 computes Omega:
 
-`TVS = 100 * Cal(sigmoid(J))`
+`Omega(q) = sigmoid(alpha_hdb p_hdb + alpha_mbk m_mbk + alpha_graph s_graph + alpha_birch b_birch + alpha_cons c_cons + alpha_ext v_ext + alpha_rule r_rule - penalties - tau)`
 
-- `Cal` defaults to identity calibrator for prototype behavior
-- sklearn isotonic calibrator adapter is provided for future fitted calibration
+Stage 7 is a typed external verifier boundary. The current ExternalJudgePlugin is a deterministic stub and does not call real APIs.
 
-Weights and gate thresholds are configurable in `config/truth_weights.yaml`.
+## HARD-MESH Implementation
 
-## Abstention Logic
+Stage 6 is a structural verification layer, not a truth oracle.
 
-Publish only if all are true:
+Feature Builder produces deterministic numeric rows tied to claim/evidence/source IDs. Preprocessing applies imputation, scaling, and dimensionality reduction when sample size allows.
 
-- `TVS >= threshold`
-- `macro_micro_disagreement <= epsilon`
-- `mean_uncertainty <= u_max`
-- no hard-blocking verdict
+Implemented lanes:
 
-Otherwise route to unresolved queue with reason:
+- BIRCH Compression: subcluster/stability signal.
+- MiniBatchKMeans Routing: centroid margin confidence and compactness.
+- HDBSCAN Purification: density/noise purification when available in scikit-learn; otherwise structured skip.
+- OPTICS Audit: variable-density audit lane.
+- Spectral Refinement: graph-native clustering using nearest-neighbor affinity where valid.
+- Agglomerative Refinement: human-auditable hierarchy signal.
 
-- insufficient evidence
-- source conflict
-- stale knowledge
-- out of domain
-- human review required
+Validation metrics are computed only when label geometry is valid. Metrics are evidence, not oracles.
+
+Consensus produces `omega`, lane scores, warnings, validation metrics, agreement metrics, route, route reason, and query tank item if needed.
+
+## Graph and Provenance Layer
+
+The graph includes query, answer, claim, evidence, source, timestamp, and HARD-MESH nodes. Required edge types include `answer_contains_claim`, `claim_supported_by`, `claim_refuted_by`, `evidence_from_source`, `claim_temporally_depends_on`, `claim_conflicts_with`, `claim_structurally_grouped_with`, `claim_flagged_by_hard_mesh`, `evidence_clustered_with`, `evidence_routes_to_query_tank`, and external review placeholders.
+
+`GET /graph/{answer_id}` returns persisted graph JSON with node metadata, edge types, and graph features.
+
+## Publish and Query Tank Routing
+
+Hard verdict precedence:
+
+1. out_of_domain
+2. source_conflict
+3. stale
+4. refuted / hard contradiction
+5. not_enough_evidence
+6. pending_human_review
+7. low structural purity
+8. high uncertainty
+9. publish if no hard block and thresholds pass
+
+The publish gate requires TVS threshold, macro/micro agreement, uncertainty bounds, no hard blocking verdicts, and no blocking HARD-MESH route.
+
+## Persistent Topology Scaffold
+
+`app/topology.py` provides PTE-ready graph metrics: node count, edge count, connected components, component sizes, cycle rank, density, average degree, clustering coefficient, stability score, and drift flag. Heavy persistent homology libraries are not required for core tests.
+
+## Council Socket Scaffold
+
+`app/council_sockets.py` defines typed envelopes for future seven-council units. Security principles: schema validation, no unmanaged code blobs, signed artifacts in future, replayable event logs, least privilege, and no untrusted pickle/joblib loading in production.
 
 ## Future Extension Points
 
-- LLM-based claim decomposition plugin
-- retrieval backends (vector DB, web connectors)
-- trained calibrator and stacked meta-model
-- advanced contradiction and anomaly plugins
-- external judge adapters with weighted jury integration
+- LLM-based claim decomposition.
+- Vector retrieval and source connectors.
+- Fitted calibrators and stacking models.
+- Optional topology adapters such as gudhi behind feature flags.
+- Real external verifier adapters behind explicit credentials and configuration.
+- Production-grade database migrations.
