@@ -167,3 +167,46 @@ def test_query_tank_endpoint_returns_pending_records():
     tank_resp = client.get("/query-tank")
     assert tank_resp.status_code == 200
     assert isinstance(tank_resp.json(), list)
+
+
+def test_api_connection_wiring_for_hard_mesh_graph_and_query_tank():
+    supported_payload = {
+        "query": "What is the capital of France?",
+        "answer": "The capital of France is Paris.",
+        "corpus": [
+            {
+                "source_id": "s1",
+                "source_name": "encyclopedia",
+                "text": "Paris is the capital city of France.",
+                "timestamp": "2026-01-01T00:00:00",
+                "reliability": 0.95,
+            }
+        ],
+        "options": {"enable_hard_mesh": True},
+    }
+    verify_resp = client.post("/verify", json=supported_payload)
+    assert verify_resp.status_code == 200
+    answer_id = verify_resp.json()["answer_id"]
+
+    graph_resp = client.get(f"/graph/{answer_id}")
+    assert graph_resp.status_code == 200
+    assert any(node["node_type"] == "hard_mesh_run" for node in graph_resp.json()["nodes"])
+
+    analyze_resp = client.post("/hard-mesh/analyze", json=supported_payload)
+    assert analyze_resp.status_code == 200
+    hard_mesh = analyze_resp.json()["hard_mesh"]
+    assert hard_mesh["classical_ml"] is not None
+    assert 0.0 <= hard_mesh["omega"] <= 1.0
+
+    unresolved_payload = {
+        "query": "What is the capital of France?",
+        "answer": "The capital of France is Paris.",
+        "corpus": [],
+    }
+    unresolved_resp = client.post("/verify", json=unresolved_payload)
+    assert unresolved_resp.status_code == 200
+    assert unresolved_resp.json()["publish"] is False
+
+    tank_resp = client.get("/query-tank")
+    assert tank_resp.status_code == 200
+    assert any(item["status"] == "open" for item in tank_resp.json())
