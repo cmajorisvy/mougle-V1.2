@@ -101,6 +101,7 @@ Use `TRUTH_PYRAMID_DB_PATH=/tmp/truth_pyramid.db` when the repository directory 
 - No direct Stage 4 or Stage 1 writes.
 - Stage 7 is candidate-only and cannot publish truth.
 - Newsrooms Council is editorial control only: Newsworthiness, SourceReliability, and virality are not TruthScore.
+- Safety invariant `si-14`: Newsrooms Council is not truth authority and cannot publish final truth, write Stage 4 directly, influence Stage 1 directly, fabricate evidence, or convert source popularity into truth.
 - News Room Studio is presentation metadata only: studio cues, SFX plans, VideoObject metadata, and BroadcastReadiness are not truth authority or publishing approval.
 - Signal Culture is routing-only.
 - LocalReadiness is not TruthScore.

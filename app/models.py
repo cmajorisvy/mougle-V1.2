@@ -1856,6 +1856,7 @@ class NewsModalityDivergenceReport(BaseModel):
 
 class NewsroomSafetyBoundaries(BaseModel):
     newsrooms_council_is_editorial_control_plane: bool = True
+    newsrooms_council_is_not_truth_authority: bool = True
     news_room_studio_is_render_plane: bool = True
     stage6_no_bypass: bool = True
     stage7_candidate_only: bool = True

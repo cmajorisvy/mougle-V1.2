@@ -109,6 +109,12 @@
   },
   {
     "method": "GET",
+    "path": "/api/dashboard/safety-invariants",
+    "name": "api_dashboard_safety_invariants",
+    "module_owner": "newsrooms_council_dashboard"
+  },
+  {
+    "method": "GET",
     "path": "/archive/micro-pyramid/candidates",
     "name": "archive_micro_pyramid_candidates",
     "module_owner": "archive_reuse_guard"
@@ -205,6 +211,12 @@
   },
   {
     "method": "GET",
+    "path": "/dashboard/safety-invariants",
+    "name": "dashboard_safety_invariants",
+    "module_owner": "newsrooms_council_dashboard"
+  },
+  {
+    "method": "GET",
     "path": "/graph/{answer_id}",
     "name": "graph",
     "module_owner": "truth_pipeline"
@@ -220,6 +232,12 @@
     "path": "/health",
     "name": "health",
     "module_owner": "api_health"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms",
+    "name": "newsrooms_dashboard_page",
+    "module_owner": "newsrooms_council_dashboard"
   },
   {
     "method": "GET",

@@ -58,6 +58,7 @@ from app.models import (
     NewsOutputModality,
     NewsAnchorScript,
     NewsScoreBundle,
+    NewsSeoArtifact,
     NewsSfxCueType,
     NewsSource,
     NewsSourceInput,
@@ -118,6 +119,7 @@ from app.models import (
 from app.newsrooms_council import (
     build_newsroom_dashboard_cards as news_build_dashboard_cards,
     build_newsroom_dashboard_pages as news_build_dashboard_pages,
+    build_dashboard_safety_invariants as news_build_safety_invariants,
     build_newsroom_safety_boundaries as news_build_safety_boundaries,
     build_hreflang_cluster as news_build_hreflang_cluster,
     build_news_sitemap_entry as news_build_sitemap_entry,
@@ -1189,6 +1191,82 @@ class VerificationEngine:
     def newsroom_safety_boundaries(self) -> NewsroomSafetyBoundaries:
         return news_build_safety_boundaries()
 
+    def dashboard_safety_invariants(self) -> dict:
+        invariants = news_build_safety_invariants()
+        return {
+            "invariant_count": len(invariants),
+            "all_enforced": all(item["enforced"] is True for item in invariants),
+            "safety_invariants": invariants,
+        }
+
+    def newsroom_dashboard_page(self) -> dict:
+        raw_items = self.store.list_raw_news_items()
+        articles = self.store.list_normalized_news_articles()
+        claims = self.store.list_news_claims()
+        seo_artifacts = self.store.list_news_seo_artifacts()
+        live_updates = [
+            row
+            for row in seo_artifacts
+            if row.get("output_type") in {NewsOutputModality.live_blog_update.value, NewsOutputModality.live_update.value}
+        ]
+        text_blogs = [
+            row
+            for row in seo_artifacts
+            if row.get("output_type")
+            in {
+                NewsOutputModality.reported_news_article.value,
+                NewsOutputModality.text_article.value,
+                NewsOutputModality.blog_explainer.value,
+                NewsOutputModality.correction_notice.value,
+            }
+        ]
+        scene_cues = self.store.list_news_studio_scene_cues()
+        screen_states = self.store.list_news_studio_screen_states()
+        sfx_cues = self.store.list_news_studio_sfx_cues()
+        lower_thirds = self.store.list_news_studio_lower_thirds()
+        tickers = self.store.list_news_studio_ticker_items()
+        ai_labels = self.store.list_news_studio_ai_reconstruction_labels()
+        tabs = [
+            {"tab_id": "sources", "title": "Sources", "count": len(self.store.list_news_sources()), "items": self.store.list_news_sources()},
+            {"tab_id": "feeds", "title": "Feeds", "count": len(self.store.list_news_feeds()), "items": self.store.list_news_feeds()},
+            {"tab_id": "articles", "title": "Articles", "count": len(raw_items), "items": {"raw_items": raw_items, "normalized_articles": articles}},
+            {"tab_id": "claims", "title": "Claims", "count": len(claims), "items": claims},
+            {"tab_id": "text_blogs", "title": "Text Blogs", "count": len(text_blogs), "items": text_blogs},
+            {"tab_id": "live_updates", "title": "Live Updates", "count": len(live_updates), "items": live_updates},
+            {"tab_id": "seo_artifacts", "title": "SEO Artifacts", "count": len(seo_artifacts), "items": seo_artifacts},
+            {"tab_id": "stage7_candidates", "title": "Stage 7 Candidates", "count": len(self.store.list_news_stage7_routes()), "items": self.store.list_news_stage7_routes()},
+            {"tab_id": "stage6_packets", "title": "Stage 6 Packets", "count": len(self.store.list_news_stage6_packets()), "items": self.store.list_news_stage6_packets()},
+            {"tab_id": "video_bulletins", "title": "Video Bulletins", "count": len(self.store.list_news_video_bulletins()), "items": self.store.list_news_video_bulletins()},
+            {
+                "tab_id": "studio_cues",
+                "title": "Studio Cues",
+                "count": len(scene_cues) + len(screen_states) + len(sfx_cues) + len(lower_thirds) + len(tickers),
+                "items": {
+                    "scene_cues": scene_cues,
+                    "screen_states": screen_states,
+                    "sfx_cues": sfx_cues,
+                    "lower_thirds": lower_thirds,
+                    "ticker_items": tickers,
+                    "ai_reconstruction_labels": ai_labels,
+                },
+            },
+            {"tab_id": "corrections", "title": "Corrections", "count": len(self.store.list_news_correction_records()), "items": self.store.list_news_correction_records()},
+            {"tab_id": "risk_alerts", "title": "Risk Alerts", "count": len(self.store.list_newsroom_risk_alerts()), "items": self.store.list_newsroom_risk_alerts()},
+            {"tab_id": "audit_trail", "title": "Audit Trail", "count": len(self.store.list_newsroom_audit_logs()), "items": self.store.list_newsroom_audit_logs()},
+            {"tab_id": "safety_boundaries", "title": "Safety Boundaries", "count": 14, "items": self.dashboard_safety_invariants()},
+        ]
+        return {
+            "path": "/newsrooms",
+            "page_id": "newsrooms",
+            "title": "Newsrooms Council",
+            "tabs": tabs,
+            "cards": self.newsroom_dashboard_cards(),
+            "safety_boundaries": self.newsroom_safety_boundaries().model_dump(mode="json"),
+            "safety_invariants": self.dashboard_safety_invariants()["safety_invariants"],
+            "no_external_calls": True,
+            "no_production_db": True,
+        }
+
     def newsroom_seo_dashboard(self) -> dict:
         artifacts = self.store.list_news_seo_artifacts()
         structured = self.store.list_news_structured_data_artifacts()
@@ -1377,14 +1455,38 @@ class VerificationEngine:
 
     def _newsroom_dashboard_cards(self) -> list:
         sources = [NewsSource(**row) for row in self.store.list_news_sources()]
+        feeds = [NewsFeed(**row) for row in self.store.list_news_feeds()]
+        raw_items = [RawNewsItem(**row) for row in self.store.list_raw_news_items()]
         articles = [
             NormalizedNewsArticle(**row) for row in self.store.list_normalized_news_articles()
         ]
         claims = [NewsClaim(**row) for row in self.store.list_news_claims()]
         routes = [NewsStage7CandidateRoute(**row) for row in self.store.list_news_stage7_routes()]
         packets = [NewsStage6SubmissionPacket(**row) for row in self.store.list_news_stage6_packets()]
+        packages = [NewsroomPackage(**row) for row in self.store.list_newsroom_packages()]
+        seo_artifacts = [NewsSeoArtifact(**row) for row in self.store.list_news_seo_artifacts()]
+        video_bulletins = [NewsVideoBulletin(**row) for row in self.store.list_news_video_bulletins()]
+        labels = [
+            NewsStudioAiReconstructionLabel(**row)
+            for row in self.store.list_news_studio_ai_reconstruction_labels()
+        ]
+        corrections = [NewsCorrectionRecord(**row) for row in self.store.list_news_correction_records()]
         alerts = [NewsroomRiskAlert(**row) for row in self.store.list_newsroom_risk_alerts()]
-        return news_build_dashboard_cards(sources, articles, claims, routes, packets, alerts)
+        return news_build_dashboard_cards(
+            sources,
+            feeds,
+            raw_items,
+            articles,
+            claims,
+            routes,
+            packets,
+            packages,
+            seo_artifacts,
+            video_bulletins,
+            labels,
+            corrections,
+            alerts,
+        )
 
     def _news_source(self, source_id: str) -> NewsSource:
         raw = self.store.get_news_source(source_id)

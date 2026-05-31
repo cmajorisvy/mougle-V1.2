@@ -44,8 +44,11 @@ Text/blog/SEO support adds reported news articles, live blog updates, blog expla
 
 News Room Studio video compatibility adds data/control metadata for candidate video bulletins, short anchor scripts, robot explainer cues, controlled `MGL_*` studio preview targets, safe SFX plans, AI reconstruction labels, rights checks, VideoObject metadata, video sitemap entries, and modality divergence reports. It does not generate real video, execute studio hardware, call platform APIs, publish to social/video platforms, or change Stage 6/Stage 7 boundaries.
 
+The canonical dashboard page data endpoint is `GET /newsrooms`. It returns tabs for sources, feeds, articles, claims, text/blog output, live updates, SEO artifacts, Stage 7 candidates, Stage 6 packets, video bulletins, studio cues, corrections, risk alerts, audit trail, and safety boundaries. It also exposes dashboard cards and the 14 enforced safety invariants, including `si-14 Newsrooms Council is not truth authority`.
+
 Dashboard endpoints:
 
+- `GET /newsrooms`
 - `GET /dashboard/newsrooms/cards`
 - `GET /dashboard/newsrooms/pages`
 - `GET /dashboard/newsrooms/risk-alerts`
@@ -56,6 +59,8 @@ Dashboard endpoints:
 - `GET /dashboard/newsrooms/studio-cues`
 - `GET /dashboard/newsrooms/video-bulletins`
 - `GET /dashboard/newsrooms/video-safety`
+- `GET /dashboard/safety-invariants`
+- `GET /api/dashboard/safety-invariants`
 
 
 ## Stage 7 and Agent Collapse Final Wiring

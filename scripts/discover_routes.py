@@ -35,6 +35,10 @@ NEWSROOMS_STUDIO_VIDEO_E2E = (
     "tests/test_newsroom_studio_video.py::"
     "test_newsroom_studio_video_compatibility_layer"
 )
+NEWSROOMS_FULL_E2E = (
+    "tests/test_newsrooms_e2e.py::"
+    "test_newsrooms_council_dashboard_and_full_e2e_wiring"
+)
 
 TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/health"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
@@ -72,6 +76,7 @@ TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/podcast-council/audit-logs"): [PODCAST_COUNCIL_E2E],
     ("GET", "/dashboard/podcast-council/cards"): [PODCAST_COUNCIL_E2E],
     ("GET", "/dashboard/podcast-council/pages"): [PODCAST_COUNCIL_E2E],
+    ("GET", "/newsrooms"): [NEWSROOMS_FULL_E2E],
     ("POST", "/newsrooms/sources"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/newsrooms/sources"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/newsrooms/sources/{source_id}"): [NEWSROOMS_COUNCIL_E2E],
@@ -124,6 +129,8 @@ TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/dashboard/newsrooms/studio-cues"): [NEWSROOMS_STUDIO_VIDEO_E2E],
     ("GET", "/dashboard/newsrooms/video-bulletins"): [NEWSROOMS_STUDIO_VIDEO_E2E],
     ("GET", "/dashboard/newsrooms/video-safety"): [NEWSROOMS_STUDIO_VIDEO_E2E],
+    ("GET", "/dashboard/safety-invariants"): [NEWSROOMS_FULL_E2E],
+    ("GET", "/api/dashboard/safety-invariants"): [NEWSROOMS_FULL_E2E],
     ("GET", "/api/dashboard/collapse-metrics"): [
         "tests/test_api.py::test_dashboard_collapse_alias_preserves_metrics_payload"
     ],
@@ -161,6 +168,8 @@ class RouteEntry:
 def route_owner(path: str) -> str:
     if path == "/health":
         return "api_health"
+    if path in {"/newsrooms", "/dashboard/safety-invariants", "/api/dashboard/safety-invariants"}:
+        return "newsrooms_council_dashboard"
     if path.startswith("/dashboard/newsrooms"):
         return "newsrooms_council_dashboard"
     if path.startswith("/newsrooms"):
@@ -192,6 +201,8 @@ def route_owner(path: str) -> str:
 
 def route_criticality(path: str) -> str:
     if path in {"/health", "/admin/agents/collapse/metrics", "/admin/signal-load-reduction"}:
+        return "P1"
+    if path in {"/newsrooms", "/dashboard/safety-invariants", "/api/dashboard/safety-invariants"}:
         return "P1"
     if path.startswith("/dashboard/newsrooms"):
         return "P1"

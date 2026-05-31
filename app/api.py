@@ -312,6 +312,11 @@ def newsrooms_sources() -> list[dict]:
     return engine.list_news_sources()
 
 
+@app.get("/newsrooms")
+def newsrooms_dashboard_page() -> dict:
+    return engine.newsroom_dashboard_page()
+
+
 @app.get("/newsrooms/sources/{source_id}")
 def newsrooms_source_detail(source_id: str) -> dict:
     try:
@@ -631,7 +636,17 @@ def dashboard_newsrooms_audit_logs() -> list[dict]:
 
 @app.get("/dashboard/newsrooms/safety-boundaries")
 def dashboard_newsrooms_safety_boundaries() -> dict:
-    return engine.newsroom_safety_boundaries().model_dump(mode="json")
+    return engine.newsroom_safety_boundaries().model_dump(mode="json") | engine.dashboard_safety_invariants()
+
+
+@app.get("/dashboard/safety-invariants")
+def dashboard_safety_invariants() -> dict:
+    return engine.dashboard_safety_invariants()
+
+
+@app.get("/api/dashboard/safety-invariants")
+def api_dashboard_safety_invariants() -> dict:
+    return engine.dashboard_safety_invariants()
 
 
 @app.get("/dashboard/newsrooms/seo")

@@ -827,35 +827,80 @@ def create_newsroom_audit_log(action: str, **kwargs: Any) -> NewsroomAuditLog:
 
 def build_newsroom_dashboard_cards(
     sources: list[NewsSource],
+    feeds: list[NewsFeed],
+    raw_items: list[RawNewsItem],
     articles: list[NormalizedNewsArticle],
     claims: list[NewsClaim],
     routes: list[NewsStage7CandidateRoute],
     packets: list[NewsStage6SubmissionPacket],
+    packages: list[NewsroomPackage],
+    seo_artifacts: list[NewsSeoArtifact],
+    video_bulletins: list[NewsVideoBulletin],
+    ai_labels: list[NewsStudioAiReconstructionLabel],
+    corrections: list[NewsCorrectionRecord],
     alerts: list[NewsroomRiskAlert],
 ) -> list[NewsroomDashboardCard]:
     unresolved = sum(1 for claim in claims if claim.status != NewsClaimStatus.submitted_stage6)
     high_alerts = sum(1 for alert in alerts if alert.severity in {NewsroomRiskSeverity.high, NewsroomRiskSeverity.critical})
+    text_outputs = {
+        NewsOutputModality.reported_news_article.value,
+        NewsOutputModality.text_article.value,
+        NewsOutputModality.blog_explainer.value,
+        NewsOutputModality.correction_notice.value,
+    }
+    live_outputs = {NewsOutputModality.live_blog_update.value, NewsOutputModality.live_update.value}
+    text_article_count = sum(1 for artifact in seo_artifacts if artifact.output_type.value in text_outputs)
+    live_update_count = sum(1 for artifact in seo_artifacts if artifact.output_type.value in live_outputs)
+    ai_labels_required = sum(1 for label in ai_labels if label.required)
     return [
         NewsroomDashboardCard(
             card_id="newsroom_sources",
-            title="News Sources",
+            title="Registered Sources",
             value=str(len(sources)),
             tone="steady",
             metadata={"source_reliability_is_truth_score": False},
         ),
         NewsroomDashboardCard(
-            card_id="newsroom_articles",
-            title="Articles",
-            value=str(len(articles)),
+            card_id="newsroom_active_feeds",
+            title="Active Feeds",
+            value=str(len(feeds)),
+            tone="steady",
+            metadata={"external_calls_made": False},
+        ),
+        NewsroomDashboardCard(
+            card_id="newsroom_articles_ingested",
+            title="Articles Ingested",
+            value=str(len(raw_items)),
             tone="neutral",
             metadata={"normalized": sum(1 for article in articles if article.status == NewsArticleStatus.normalized)},
         ),
         NewsroomDashboardCard(
             card_id="newsroom_claims_open",
-            title="Claims Needing Route",
-            value=str(unresolved),
+            title="Claims Extracted",
+            value=str(len(claims)),
             tone="watch" if unresolved else "steady",
-            metadata={"candidate_only": True, "may_publish_truth": False},
+            metadata={"candidate_only": True, "may_publish_truth": False, "unresolved": unresolved},
+        ),
+        NewsroomDashboardCard(
+            card_id="newsroom_text_articles",
+            title="Text Articles",
+            value=str(text_article_count),
+            tone="steady",
+            metadata={"generated_from_claim_graph": True, "no_real_publishing": True},
+        ),
+        NewsroomDashboardCard(
+            card_id="newsroom_live_updates",
+            title="Live Updates",
+            value=str(live_update_count),
+            tone="neutral",
+            metadata={"no_real_publishing": True},
+        ),
+        NewsroomDashboardCard(
+            card_id="newsroom_seo_ready",
+            title="SEO Ready",
+            value=str(len(seo_artifacts)),
+            tone="steady",
+            metadata={"structured_data_artifacts_expected": True, "no_platform_publish": True, "packages": len(packages)},
         ),
         NewsroomDashboardCard(
             card_id="newsroom_stage7_routes",
@@ -872,17 +917,131 @@ def build_newsroom_dashboard_cards(
             metadata={"candidate_answer_not_verified": True},
         ),
         NewsroomDashboardCard(
+            card_id="newsroom_video_bulletins",
+            title="Video Bulletins",
+            value=str(len(video_bulletins)),
+            tone="preview",
+            metadata={"no_real_video_generation": True, "no_platform_publish": True},
+        ),
+        NewsroomDashboardCard(
+            card_id="newsroom_ai_reconstruction_labels_required",
+            title="AI Reconstruction Labels Required",
+            value=str(ai_labels_required),
+            tone="watch" if ai_labels_required else "steady",
+            metadata={"synthetic_visuals_require_visible_label": True},
+        ),
+        NewsroomDashboardCard(
             card_id="newsroom_risk_alerts",
             title="Risk Alerts",
             value=str(len(alerts)),
             tone="alert" if high_alerts else "steady",
             metadata={"high_or_critical": high_alerts},
         ),
+        NewsroomDashboardCard(
+            card_id="newsroom_corrections",
+            title="Corrections",
+            value=str(len(corrections)),
+            tone="watch" if corrections else "steady",
+            metadata={"candidate_only": True, "stage6_required": True},
+        ),
     ]
 
 
 def build_newsroom_safety_boundaries() -> NewsroomSafetyBoundaries:
     return NewsroomSafetyBoundaries()
+
+
+def build_dashboard_safety_invariants() -> list[dict[str, Any]]:
+    return [
+        {
+            "id": "si-01",
+            "title": "Stage 6 no-bypass",
+            "definition": "All verification promotion paths must pass through Stage 6 HARD-MESH when required.",
+            "enforced": True,
+        },
+        {
+            "id": "si-02",
+            "title": "Stage 6 is not truth authority",
+            "definition": "Stage 6 emits structural verification and routing signals, not final truth.",
+            "enforced": True,
+        },
+        {
+            "id": "si-03",
+            "title": "Stage 7 candidate-only",
+            "definition": "Stage 7 stores candidate external memory and cannot publish truth.",
+            "enforced": True,
+        },
+        {
+            "id": "si-04",
+            "title": "No direct Stage 4 or Stage 1 writes",
+            "definition": "Councils, agents, and dashboards cannot write Stage 4 or influence Stage 1 directly.",
+            "enforced": True,
+        },
+        {
+            "id": "si-05",
+            "title": "LocalReadiness is not TruthScore",
+            "definition": "User Agent Micro-Pyramids compute local readiness only.",
+            "enforced": True,
+        },
+        {
+            "id": "si-06",
+            "title": "Signal Culture is routing-only",
+            "definition": "Signal Culture detects, prioritizes, decays, thresholds, and routes signals only.",
+            "enforced": True,
+        },
+        {
+            "id": "si-07",
+            "title": "Collapse does not delete agents",
+            "definition": "Collapse restricts, reviews, recovers, and restores; it does not delete agents.",
+            "enforced": True,
+        },
+        {
+            "id": "si-08",
+            "title": "Emergency collapse cannot restore directly",
+            "definition": "Emergency states must move through recovery/review before normal operation.",
+            "enforced": True,
+        },
+        {
+            "id": "si-09",
+            "title": "Archive runtime imports blocked",
+            "definition": "Archived source may be inspected but cannot become active runtime imports.",
+            "enforced": True,
+        },
+        {
+            "id": "si-10",
+            "title": "Gluon UES AgentRank are not money",
+            "definition": "Gluon, UES, and AgentRank are not payout approval, legal approval, or financial eligibility.",
+            "enforced": True,
+        },
+        {
+            "id": "si-11",
+            "title": "No publish_truth action",
+            "definition": "Agents cannot request or receive a publish_truth action class.",
+            "enforced": True,
+        },
+        {
+            "id": "si-12",
+            "title": "No fabricated evidence",
+            "definition": "Fabricated or unattested evidence is rejected and never treated as verified support.",
+            "enforced": True,
+        },
+        {
+            "id": "si-13",
+            "title": "No real external provider calls",
+            "definition": "Prototype routes and tests stay deterministic and local with no real provider/platform calls.",
+            "enforced": True,
+        },
+        {
+            "id": "si-14",
+            "title": "Newsrooms Council is not truth authority",
+            "definition": (
+                "Newsrooms Council may collect, normalize, extract, score, package, script, localize, "
+                "and route news. It may not publish final truth, write Stage 4 directly, influence "
+                "Stage 1 directly, fabricate evidence, or convert virality/source popularity into truth."
+            ),
+            "enforced": True,
+        },
+    ]
 
 
 def build_newsroom_dashboard_pages(
