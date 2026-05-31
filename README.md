@@ -40,6 +40,8 @@ The Newsrooms Council backend adds a deterministic local editorial control plane
 
 Newsworthiness and SourceReliability are bounded routing signals, not TruthScore. The Newsrooms Council cannot publish final truth, cannot update Stage 1, cannot update Stage 4, and cannot bypass Stage 6. News-to-debate handoff is candidate-only. Evidence submissions require a no-fabricated-evidence attestation, and the MVP performs no external provider calls, no real payments, and no production database writes.
 
+Text/blog/SEO support adds reported news articles, live blog updates, blog explainers, correction notices, taxonomy, canonical/hreflang metadata, news sitemap entries, JSON-LD artifacts, and originality reports. Text is generated from the claim graph and evidence references, not copied source paragraphs, and remains a draft/candidate artifact with no publishing command.
+
 Dashboard endpoints:
 
 - `GET /dashboard/newsrooms/cards`
@@ -47,6 +49,8 @@ Dashboard endpoints:
 - `GET /dashboard/newsrooms/risk-alerts`
 - `GET /dashboard/newsrooms/audit-logs`
 - `GET /dashboard/newsrooms/safety-boundaries`
+- `GET /dashboard/newsrooms/seo`
+- `GET /dashboard/newsrooms/originality`
 
 
 ## Stage 7 and Agent Collapse Final Wiring

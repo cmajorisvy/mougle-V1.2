@@ -12,12 +12,15 @@ import json
 import math
 import re
 from collections.abc import Iterable
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 
 from app.models import (
     EvidenceSource,
     NewsArticleStatus,
+    NewsCanonicalCluster,
+    NewsCategory,
+    NewsCategoryInput,
     NewsClaim,
     NewsClaimInput,
     NewsClaimStatus,
@@ -30,6 +33,8 @@ from app.models import (
     NewsIngestEvent,
     NewsOutputModality,
     NewsScoreBundle,
+    NewsSeoArtifact,
+    NewsSitemapEntry,
     NewsSource,
     NewsSourceInput,
     NewsSourceReliabilityRecord,
@@ -37,7 +42,10 @@ from app.models import (
     NewsStage7CandidateRoute,
     NewsStudioCueType,
     NewsStructuredDataType,
+    NewsStructuredDataArtifact,
     NewsToDebateHandoff,
+    NewsHreflangVariant,
+    NewsOriginalityReport,
     NewsroomAuditLog,
     NewsroomDashboardCard,
     NewsroomDashboardPage,
@@ -50,6 +58,8 @@ from app.models import (
     NewsroomScript,
     NewsroomScriptInput,
     NewsroomSegment,
+    NewsSlug,
+    NewsTopic,
     NormalizedNewsArticle,
     RawNewsItem,
     RawNewsItemInput,
@@ -912,3 +922,452 @@ def create_manual_news_claim(payload: NewsClaimInput, source_id: str | None = No
         priority=priority,
         status=NewsClaimStatus.extracted,
     )
+
+TEXT_OUTPUT_TYPES = {
+    NewsOutputModality.reported_news_article,
+    NewsOutputModality.live_blog_update,
+    NewsOutputModality.blog_explainer,
+    NewsOutputModality.correction_notice,
+}
+STUDIO_CUE_TERMS = {"sfx", "lower-third", "lower third", "ticker", "shot plan", "studio cue"}
+
+
+def _slugify(value: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+    return slug or "story"
+
+
+def _locale(locale: str | None) -> str:
+    return (locale or "en").strip("/") or "en"
+
+
+def _safe_section(value: str | None) -> str:
+    return _slugify(value or "news")
+
+
+def _story_slug(title: str, override: str | None = None) -> str:
+    return _slugify(override or title)[:96]
+
+
+def build_article_path(locale: str, section: str, story_slug: str, subsection: str | None = None) -> str:
+    segments = [_locale(locale), _safe_section(section)]
+    if subsection:
+        segments.append(_safe_section(subsection))
+    segments.append(_story_slug(story_slug))
+    if len(segments) > 4:
+        segments = [segments[0], segments[1], segments[2], segments[-1]]
+    return "/" + "/".join(segments) + "/"
+
+
+def build_live_path(locale: str, event_slug: str) -> str:
+    return f"/{_locale(locale)}/live/{_story_slug(event_slug)}/"
+
+
+def build_blog_path(locale: str, topic: str, story_slug: str) -> str:
+    return f"/{_locale(locale)}/blog/{_safe_section(topic)}/{_story_slug(story_slug)}/"
+
+
+def build_video_path(locale: str, section: str, video_slug: str) -> str:
+    return f"/{_locale(locale)}/video/{_safe_section(section)}/{_story_slug(video_slug)}/"
+
+
+def build_topic_path(locale: str, topic_slug: str) -> str:
+    return f"/{_locale(locale)}/topic/{_story_slug(topic_slug)}/"
+
+
+def build_author_path(locale: str, author_slug: str) -> str:
+    return f"/{_locale(locale)}/author/{_story_slug(author_slug)}/"
+
+
+def create_news_category(payload: NewsCategoryInput, parent: NewsCategory | None = None) -> NewsCategory:
+    slug = _slugify(payload.slug or payload.name)
+    parent_segments = parent.path_segments if parent else []
+    depth = min(3, len(parent_segments) + 1)
+    path_segments = [*parent_segments[:2], slug][:3]
+    public_url = "/" + "/".join([_locale(payload.locale), *path_segments]) + "/"
+    return NewsCategory(
+        category_id=_stable_id("news_category", payload.locale, parent.category_id if parent else None, slug),
+        name=payload.name,
+        slug=slug,
+        locale=_locale(payload.locale),
+        parent_category_id=parent.category_id if parent else None,
+        depth=depth,
+        path_segments=path_segments,
+        public_url=public_url,
+        description=payload.description,
+        metadata=payload.metadata | {"public_url_depth_max": 3},
+    )
+
+
+def create_news_topic(name: str, locale: str = "en", category_id: str | None = None) -> NewsTopic:
+    slug = _slugify(name)
+    return NewsTopic(
+        topic_id=_stable_id("news_topic", locale, category_id, slug),
+        name=name,
+        slug=slug,
+        locale=_locale(locale),
+        category_id=category_id,
+        public_url=build_topic_path(locale, slug),
+    )
+
+
+def create_news_slug(entity_type: str, entity_id: str, slug: str, locale: str, canonical_path: str) -> NewsSlug:
+    return NewsSlug(
+        slug_id=_stable_id("news_slug", entity_type, entity_id, locale, slug),
+        entity_type=entity_type,
+        entity_id=entity_id,
+        slug=_slugify(slug),
+        locale=_locale(locale),
+        url_pattern=canonical_path,
+        canonical_path=canonical_path,
+    )
+
+
+def _claim_fact(claim: NewsClaim) -> str:
+    text = re.sub(r"\s+", " ", claim.claim_text).strip().rstrip(".")
+    return f"The claim graph records this candidate fact: {text}."
+
+
+def _evidence_context(evidence: list[NewsEvidence]) -> list[str]:
+    contexts: list[str] = []
+    for item in evidence[:4]:
+        source_name = item.source.source_name or item.source.source_id
+        contexts.append(f"Attribution is preserved to {source_name} via {item.retrieval_method}.")
+    return contexts
+
+
+def _compose_text_body(
+    output_type: NewsOutputModality,
+    article: NormalizedNewsArticle,
+    claims: list[NewsClaim],
+    evidence: list[NewsEvidence],
+) -> tuple[str, str, list[str], list[str], list[str]]:
+    claim_lines = [_claim_fact(claim) for claim in claims[:6]] or [
+        "The claim graph does not yet contain enough candidate facts for a verified article."
+    ]
+    lead_prefix = {
+        NewsOutputModality.reported_news_article: "A newsroom review is tracking candidate claims from the verification graph.",
+        NewsOutputModality.text_article: "A newsroom review is tracking candidate claims from the verification graph.",
+        NewsOutputModality.live_blog_update: "Live update: the newsroom verification graph has new candidate facts under review.",
+        NewsOutputModality.live_update: "Live update: the newsroom verification graph has new candidate facts under review.",
+        NewsOutputModality.blog_explainer: "This explainer summarizes what the candidate claim graph currently supports.",
+        NewsOutputModality.correction_notice: "Correction notice: this item records a candidate correction and keeps the verification path open.",
+    }.get(output_type, "A newsroom review is tracking candidate claims from the verification graph.")
+    lead = f"{lead_prefix} {claim_lines[0]}"
+    supporting = claim_lines[1:4]
+    if not supporting:
+        supporting = ["Editors have not marked this output as final truth; Stage 6 remains required."]
+    context = [
+        "The text is generated from normalized claims and evidence references, not copied source paragraphs.",
+        *_evidence_context(evidence),
+    ]
+    details = [
+        "Newsworthiness and source reliability are routing signals, not TruthScore.",
+        "No publishing command is attached to this draft.",
+    ]
+    body = "\n\n".join([lead, *supporting, *context, *details])
+    return body, lead, supporting, context, details
+
+
+def _source_similarity(generated_text: str, source_text: str) -> float:
+    gen_tokens = re.findall(r"[a-z0-9]+", generated_text.lower())
+    src_tokens = re.findall(r"[a-z0-9]+", source_text.lower())
+    if not gen_tokens or not src_tokens:
+        return 0.0
+    gen_ngrams = set(zip(gen_tokens, gen_tokens[1:], gen_tokens[2:])) or set((token,) for token in gen_tokens)
+    src_ngrams = set(zip(src_tokens, src_tokens[1:], src_tokens[2:])) or set((token,) for token in src_tokens)
+    overlap = len(gen_ngrams & src_ngrams)
+    return _clip01(overlap / max(1, min(len(gen_ngrams), len(src_ngrams))))
+
+
+def build_originality_report(
+    *,
+    article_id: str,
+    package_id: str | None,
+    generated_text: str,
+    source_texts: list[str],
+    source_refs: list[str],
+    threshold: float = 0.72,
+) -> NewsOriginalityReport:
+    similarities = [_source_similarity(generated_text, source_text) for source_text in source_texts]
+    max_similarity = max(similarities, default=0.0)
+    originality_score = _clip01(1.0 - max_similarity)
+    blocked = originality_score < threshold
+    return NewsOriginalityReport(
+        report_id=_stable_id("news_originality", article_id, package_id, generated_text, threshold),
+        article_id=article_id,
+        package_id=package_id,
+        originality_score=originality_score,
+        max_similarity=max_similarity,
+        threshold=threshold,
+        blocked=blocked,
+        route_for_rewrite=blocked,
+        source_refs=source_refs,
+        metadata={
+            "do_not_paraphrase_raw_source_paragraphs": True,
+            "generated_from_normalized_claim_graph": True,
+            "similarity_count": len(similarities),
+        },
+    )
+
+
+def create_seo_artifact(
+    *,
+    article: NormalizedNewsArticle,
+    package: NewsroomPackage | None,
+    claims: list[NewsClaim],
+    evidence: list[NewsEvidence],
+    output_type: NewsOutputModality,
+    locale: str = "en",
+    section: str = "news",
+    subsection: str | None = None,
+    topic: str | None = None,
+    image: str | None = None,
+    threshold: float = 0.72,
+) -> tuple[NewsSeoArtifact, NewsOriginalityReport]:
+    if output_type not in TEXT_OUTPUT_TYPES and output_type not in {NewsOutputModality.text_article, NewsOutputModality.live_update}:
+        raise ValueError("unsupported text newsroom output type")
+    slug = _story_slug(article.title)
+    if output_type in {NewsOutputModality.live_blog_update, NewsOutputModality.live_update}:
+        public_url = build_live_path(locale, topic or slug)
+    elif output_type == NewsOutputModality.blog_explainer:
+        public_url = build_blog_path(locale, topic or (article.topic_tags[0] if article.topic_tags else "news"), slug)
+    else:
+        public_url = build_article_path(locale, section, slug, subsection)
+    body, lead, supporting, context, details = _compose_text_body(output_type, article, claims, evidence)
+    if any(term in body.lower() for term in STUDIO_CUE_TERMS):
+        raise ValueError("text output rejected: studio cue or SFX term detected")
+    report = build_originality_report(
+        article_id=article.article_id,
+        package_id=package.package_id if package else None,
+        generated_text=body,
+        source_texts=[article.normalized_text, *[item.text for item in evidence]],
+        source_refs=[article.source_id, *[item.evidence_id for item in evidence]],
+        threshold=threshold,
+    )
+    artifact = NewsSeoArtifact(
+        artifact_id=_stable_id("news_seo", article.article_id, package.package_id if package else None, output_type.value, locale),
+        article_id=article.article_id,
+        package_id=package.package_id if package else None,
+        output_type=output_type,
+        headline=package.title if package else article.title,
+        slug=slug,
+        locale=_locale(locale),
+        canonical_url=public_url,
+        section=_safe_section(section),
+        subsection=_safe_section(subsection) if subsection else None,
+        public_url=public_url,
+        body_text=body,
+        lead=lead,
+        supporting_facts=supporting,
+        context_background=context,
+        minor_details=details,
+        keywords=sorted(set(article.topic_tags + [claim.topic_tags[0] for claim in claims if claim.topic_tags]))[:12],
+        author=article.author or "Mougle Newsroom",
+        image=image,
+        originality_report_id=report.report_id,
+        metadata={
+            "text_structure": "inverted_pyramid",
+            "formal_objective_tone": True,
+            "self_contained_context": True,
+            "generated_from_claim_graph_not_raw_paragraphs": True,
+            "originality_blocked": report.blocked,
+        },
+    )
+    return artifact, report
+
+
+def _publisher() -> dict[str, Any]:
+    return {
+        "@type": "Organization",
+        "name": "Mougle",
+        "url": "https://mougle.local/",
+        "logo": {"@type": "ImageObject", "url": "https://mougle.local/static/mougle-logo.png"},
+    }
+
+
+def _base_article_jsonld(artifact: NewsSeoArtifact, article: NormalizedNewsArticle) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "headline": artifact.headline,
+        "datePublished": (article.published_at or article.created_at).isoformat(),
+        "dateModified": artifact.updated_at.isoformat(),
+        "author": {"@type": "Person", "name": artifact.author},
+        "publisher": _publisher(),
+        "articleSection": artifact.section,
+        "keywords": artifact.keywords,
+        "url": artifact.canonical_url,
+        "mainEntityOfPage": artifact.canonical_url,
+        "inLanguage": artifact.locale,
+        "backstory": article.summary,
+        "provenance": {
+            "article_id": article.article_id,
+            "source_id": article.source_id,
+            "generated_from_claim_graph": artifact.generated_from_claim_graph,
+        },
+    }
+    if artifact.image:
+        payload["image"] = artifact.image
+    if article.metadata.get("ai_reconstruction") or article.metadata.get("synthetic_asset_used"):
+        payload["digitalSourceType"] = "https://cv.iptc.org/newscodes/digitalsourcetype/syntheticMedia"
+    return payload
+
+
+def build_news_article_jsonld(artifact: NewsSeoArtifact, article: NormalizedNewsArticle) -> NewsStructuredDataArtifact:
+    jsonld = {"@context": "https://schema.org", "@type": "NewsArticle"} | _base_article_jsonld(artifact, article)
+    return NewsStructuredDataArtifact(
+        artifact_id=_stable_id("news_jsonld", artifact.artifact_id, "NewsArticle"),
+        article_id=article.article_id,
+        package_id=artifact.package_id,
+        structured_data_type=NewsStructuredDataType.news_article,
+        canonical_url=artifact.canonical_url,
+        jsonld=jsonld,
+    )
+
+
+def build_live_blog_posting_jsonld(artifact: NewsSeoArtifact, article: NormalizedNewsArticle) -> NewsStructuredDataArtifact:
+    jsonld = {"@context": "https://schema.org", "@type": "LiveBlogPosting"} | _base_article_jsonld(artifact, article)
+    jsonld["coverageStartTime"] = (article.published_at or article.created_at).isoformat()
+    jsonld["liveBlogUpdate"] = [{"@type": "BlogPosting", "headline": artifact.headline, "articleBody": artifact.lead}]
+    return NewsStructuredDataArtifact(
+        artifact_id=_stable_id("news_jsonld", artifact.artifact_id, "LiveBlogPosting"),
+        article_id=article.article_id,
+        package_id=artifact.package_id,
+        structured_data_type=NewsStructuredDataType.live_blog_posting,
+        canonical_url=artifact.canonical_url,
+        jsonld=jsonld,
+    )
+
+
+def build_blog_posting_jsonld(artifact: NewsSeoArtifact, article: NormalizedNewsArticle) -> NewsStructuredDataArtifact:
+    jsonld = {"@context": "https://schema.org", "@type": "BlogPosting"} | _base_article_jsonld(artifact, article)
+    return NewsStructuredDataArtifact(
+        artifact_id=_stable_id("news_jsonld", artifact.artifact_id, "BlogPosting"),
+        article_id=article.article_id,
+        package_id=artifact.package_id,
+        structured_data_type=NewsStructuredDataType.blog_posting,
+        canonical_url=artifact.canonical_url,
+        jsonld=jsonld,
+    )
+
+
+def build_breadcrumb_jsonld(artifact: NewsSeoArtifact) -> NewsStructuredDataArtifact:
+    items = [
+        {"@type": "ListItem", "position": 1, "name": artifact.locale, "item": f"/{artifact.locale}/"},
+        {"@type": "ListItem", "position": 2, "name": artifact.section, "item": f"/{artifact.locale}/{artifact.section}/"},
+    ]
+    if artifact.subsection:
+        items.append(
+            {
+                "@type": "ListItem",
+                "position": len(items) + 1,
+                "name": artifact.subsection,
+                "item": f"/{artifact.locale}/{artifact.section}/{artifact.subsection}/",
+            }
+        )
+    items.append({"@type": "ListItem", "position": len(items) + 1, "name": artifact.headline, "item": artifact.canonical_url})
+    return NewsStructuredDataArtifact(
+        artifact_id=_stable_id("news_jsonld", artifact.artifact_id, "BreadcrumbList"),
+        article_id=artifact.article_id,
+        package_id=artifact.package_id,
+        structured_data_type=NewsStructuredDataType.breadcrumb_list,
+        canonical_url=artifact.canonical_url,
+        jsonld={"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": items},
+    )
+
+
+def build_organization_jsonld(canonical_url: str) -> NewsStructuredDataArtifact:
+    return NewsStructuredDataArtifact(
+        artifact_id=_stable_id("news_jsonld", canonical_url, "Organization"),
+        structured_data_type=NewsStructuredDataType.organization,
+        canonical_url=canonical_url,
+        jsonld={"@context": "https://schema.org", **_publisher()},
+    )
+
+
+def build_video_object_jsonld_placeholder(artifact: NewsSeoArtifact, article: NormalizedNewsArticle) -> NewsStructuredDataArtifact:
+    jsonld = {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        "name": artifact.headline,
+        "description": "Video watch-page metadata placeholder; no video publishing command is attached.",
+        "uploadDate": (article.published_at or article.created_at).isoformat(),
+        "url": artifact.canonical_url,
+        "inLanguage": artifact.locale,
+    }
+    return NewsStructuredDataArtifact(
+        artifact_id=_stable_id("news_jsonld", artifact.artifact_id, "VideoObject"),
+        article_id=article.article_id,
+        package_id=artifact.package_id,
+        structured_data_type=NewsStructuredDataType.video_object,
+        canonical_url=artifact.canonical_url,
+        jsonld=jsonld,
+    )
+
+
+def build_video_object_jsonld(artifact: NewsSeoArtifact, article: NormalizedNewsArticle) -> NewsStructuredDataArtifact:
+    return build_video_object_jsonld_placeholder(artifact, article)
+
+
+def build_news_sitemap_entry(artifact: NewsSeoArtifact, article: NormalizedNewsArticle) -> NewsSitemapEntry:
+    publication_date = article.published_at or article.created_at
+    is_recent_news = publication_date >= utc_now() - timedelta(days=2)
+    return NewsSitemapEntry(
+        entry_id=_stable_id("news_sitemap", artifact.artifact_id, artifact.canonical_url),
+        url=artifact.canonical_url,
+        lastmod=artifact.updated_at,
+        is_news=is_recent_news and artifact.output_type in {NewsOutputModality.reported_news_article, NewsOutputModality.text_article},
+        language=artifact.locale,
+        publication_date=publication_date,
+        title=artifact.headline,
+        keywords=artifact.keywords,
+    )
+
+
+def build_hreflang_cluster(
+    *,
+    canonical_url: str,
+    locale: str,
+    article_id: str | None = None,
+    package_id: str | None = None,
+    variant_urls: dict[str, str] | None = None,
+) -> tuple[NewsCanonicalCluster, list[NewsHreflangVariant]]:
+    variants = dict(variant_urls or {})
+    variants.setdefault(_locale(locale), canonical_url)
+    cluster_id = _stable_id("news_canonical_cluster", canonical_url, article_id, package_id)
+    urls = list(variants.values())
+    hreflang_variants = [
+        NewsHreflangVariant(
+            variant_id=_stable_id("news_hreflang", cluster_id, variant_locale, url),
+            cluster_id=cluster_id,
+            locale=_locale(variant_locale),
+            url=url,
+            self_referencing=url in urls,
+            bidirectional_targets=[target for target in urls if target != url],
+        )
+        for variant_locale, url in sorted(variants.items())
+    ]
+    cluster = NewsCanonicalCluster(
+        cluster_id=cluster_id,
+        canonical_url=canonical_url,
+        locale=_locale(locale),
+        variant_urls=urls,
+        article_id=article_id,
+        package_id=package_id,
+    )
+    return cluster, hreflang_variants
+
+
+def structured_data_for_text_artifact(
+    artifact: NewsSeoArtifact, article: NormalizedNewsArticle
+) -> list[NewsStructuredDataArtifact]:
+    if artifact.output_type in {NewsOutputModality.live_blog_update, NewsOutputModality.live_update}:
+        primary = build_live_blog_posting_jsonld(artifact, article)
+    elif artifact.output_type == NewsOutputModality.blog_explainer:
+        primary = build_blog_posting_jsonld(artifact, article)
+    else:
+        primary = build_news_article_jsonld(artifact, article)
+    return [
+        primary,
+        build_breadcrumb_jsonld(artifact),
+        build_organization_jsonld(artifact.canonical_url),
+    ]

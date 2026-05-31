@@ -158,6 +158,8 @@ The fabric creates replayable envelopes, hashes payloads, emits policy decisions
 
 `app/newsrooms_council.py` is the editorial and verification control plane for newsroom artifacts. It handles source/feed ingestion, raw and normalized article records, deterministic claim extraction, no-fabricated-evidence-gated evidence submission, SourceReliability, Newsworthiness, EditorialRisk, ClaimPriority, NewsroomReadiness, BroadcastReadiness, Stage 7 candidate routes, Stage 6 submission packets, text/video package metadata, preview-only studio script data, news-to-debate candidate handoff, corrections, risk alerts, audit logs, and dashboard cards/pages.
 
+The text/blog/SEO layer adds reported news articles, live blog updates, blog explainers, correction notices, parent-child taxonomy, canonical clusters, hreflang variants, sitemap entries, JSON-LD artifacts, and originality reports. Draft text is generated from normalized claims and evidence references, not copied source paragraphs, and no publishing command is attached.
+
 The Newsrooms Council is not the render plane, not a truth oracle, and not a publishing engine. Newsworthiness is not TruthScore, SourceReliability is not TruthScore, virality is not truth, Stage 7 remains candidate-only, Stage 6 packets are not final verification, and the council cannot publish truth or write Stage 1/Stage 4 directly.
 
 ## Future Extension Points

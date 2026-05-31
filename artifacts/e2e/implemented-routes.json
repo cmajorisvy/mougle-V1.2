@@ -145,6 +145,12 @@
   },
   {
     "method": "GET",
+    "path": "/dashboard/newsrooms/originality",
+    "name": "dashboard_newsrooms_originality",
+    "module_owner": "newsrooms_council_dashboard"
+  },
+  {
+    "method": "GET",
     "path": "/dashboard/newsrooms/pages",
     "name": "dashboard_newsrooms_pages",
     "module_owner": "newsrooms_council_dashboard"
@@ -159,6 +165,12 @@
     "method": "GET",
     "path": "/dashboard/newsrooms/safety-boundaries",
     "name": "dashboard_newsrooms_safety_boundaries",
+    "module_owner": "newsrooms_council_dashboard"
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/seo",
+    "name": "dashboard_newsrooms_seo",
     "module_owner": "newsrooms_council_dashboard"
   },
   {
@@ -222,9 +234,39 @@
     "module_owner": "newsrooms_council"
   },
   {
+    "method": "POST",
+    "path": "/newsrooms/articles/{article_id}/originality-check",
+    "name": "newsrooms_article_originality_check",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/articles/{article_id}/seo-artifact",
+    "name": "newsrooms_article_seo_artifact",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/articles/{article_id}/seo-artifact",
+    "name": "newsrooms_article_seo_artifact_create",
+    "module_owner": "newsrooms_council"
+  },
+  {
     "method": "GET",
     "path": "/newsrooms/audit-logs",
     "name": "newsrooms_audit_logs",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/categories",
+    "name": "newsrooms_categories",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/categories",
+    "name": "newsrooms_category_create",
     "module_owner": "newsrooms_council"
   },
   {
@@ -307,6 +349,18 @@
   },
   {
     "method": "POST",
+    "path": "/newsrooms/packages/{package_id}/blog-post",
+    "name": "newsrooms_package_blog_post",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/packages/{package_id}/live-blog-update",
+    "name": "newsrooms_package_live_blog_update",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
     "path": "/newsrooms/packages/{package_id}/news-to-debate",
     "name": "newsrooms_package_news_to_debate",
     "module_owner": "newsrooms_council"
@@ -315,6 +369,12 @@
     "method": "POST",
     "path": "/newsrooms/packages/{package_id}/script",
     "name": "newsrooms_package_script",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/packages/{package_id}/text-article",
+    "name": "newsrooms_package_text_article",
     "module_owner": "newsrooms_council"
   },
   {

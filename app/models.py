@@ -1000,7 +1000,10 @@ class NewsroomRiskSeverity(str, Enum):
 class NewsOutputModality(str, Enum):
     text_article = "text_article"
     live_update = "live_update"
+    reported_news_article = "reported_news_article"
+    live_blog_update = "live_blog_update"
     blog_explainer = "blog_explainer"
+    correction_notice = "correction_notice"
     anchor_script = "anchor_script"
     robot_explainer = "robot_explainer"
     video_plan = "video_plan"
@@ -1437,6 +1440,151 @@ class NewsroomDashboardPage(BaseModel):
     cards: list[NewsroomDashboardCard] = Field(default_factory=list)
     sections: list[dict[str, Any]] = Field(default_factory=list)
     safety_boundaries: dict[str, Any] = Field(default_factory=dict)
+
+
+class NewsCategoryInput(BaseModel):
+    name: str
+    slug: Optional[str] = None
+    locale: str = "en"
+    parent_category_id: Optional[str] = None
+    description: Optional[str] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class NewsCategory(BaseModel):
+    category_id: str
+    name: str
+    slug: str
+    locale: str = "en"
+    parent_category_id: Optional[str] = None
+    depth: int = Field(default=1, ge=1, le=3)
+    path_segments: list[str] = Field(default_factory=list)
+    public_url: str
+    description: Optional[str] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
+    updated_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsTopic(BaseModel):
+    topic_id: str
+    name: str
+    slug: str
+    locale: str = "en"
+    category_id: Optional[str] = None
+    public_url: str
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsSlug(BaseModel):
+    slug_id: str
+    entity_type: str
+    entity_id: str
+    slug: str
+    locale: str = "en"
+    url_pattern: str
+    canonical_path: str
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsHreflangVariant(BaseModel):
+    variant_id: str
+    cluster_id: str
+    locale: str
+    url: str
+    self_referencing: bool = True
+    bidirectional_targets: list[str] = Field(default_factory=list)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsCanonicalCluster(BaseModel):
+    cluster_id: str
+    canonical_url: str
+    locale: str = "en"
+    variant_urls: list[str] = Field(default_factory=list)
+    article_id: Optional[str] = None
+    package_id: Optional[str] = None
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsSeoArtifact(BaseModel):
+    artifact_id: str
+    article_id: str
+    package_id: Optional[str] = None
+    output_type: NewsOutputModality = NewsOutputModality.reported_news_article
+    headline: str
+    slug: str
+    locale: str = "en"
+    canonical_url: str
+    section: str
+    subsection: Optional[str] = None
+    public_url: str
+    body_text: str
+    lead: str
+    supporting_facts: list[str] = Field(default_factory=list)
+    context_background: list[str] = Field(default_factory=list)
+    minor_details: list[str] = Field(default_factory=list)
+    keywords: list[str] = Field(default_factory=list)
+    author: str = "Mougle Newsroom"
+    image: Optional[str] = None
+    structured_data_ids: list[str] = Field(default_factory=list)
+    sitemap_entry_id: Optional[str] = None
+    originality_report_id: Optional[str] = None
+    generated_from_claim_graph: bool = True
+    copies_source_article_prose: bool = False
+    no_sfx: bool = True
+    no_studio_cues: bool = True
+    may_publish_truth: bool = False
+    may_update_stage1: bool = False
+    may_update_stage4: bool = False
+    external_calls_made: bool = False
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
+    updated_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsSitemapEntry(BaseModel):
+    entry_id: str
+    url: str
+    lastmod: datetime = Field(default_factory=utc_now)
+    changefreq: str = "hourly"
+    priority: float = Field(default=0.6, ge=0.0, le=1.0)
+    is_news: bool = False
+    publication_name: str = "Mougle"
+    language: str = "en"
+    publication_date: Optional[datetime] = None
+    title: str
+    keywords: list[str] = Field(default_factory=list)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsStructuredDataArtifact(BaseModel):
+    artifact_id: str
+    article_id: Optional[str] = None
+    package_id: Optional[str] = None
+    structured_data_type: NewsStructuredDataType
+    canonical_url: str
+    jsonld: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsOriginalityReport(BaseModel):
+    report_id: str
+    article_id: str
+    package_id: Optional[str] = None
+    originality_score: float = Field(default=1.0, ge=0.0, le=1.0)
+    max_similarity: float = Field(default=0.0, ge=0.0, le=1.0)
+    threshold: float = Field(default=0.72, ge=0.0, le=1.0)
+    blocked: bool = False
+    route_for_rewrite: bool = False
+    generated_from_claim_graph: bool = True
+    preserves_attribution: bool = True
+    direct_quotes_attributed: bool = True
+    not_verified_unless_claims_passed_verification_path: bool = True
+    source_refs: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
 
 
 class NewsroomSafetyBoundaries(BaseModel):

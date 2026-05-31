@@ -14,6 +14,7 @@ from app.models import (
     AgentCollapseRestoreRequest,
     AgentCollapseReviewRequest,
     CouncilSocketEnvelope,
+    NewsCategoryInput,
     NewsClaimInput,
     NewsCorrectionInput,
     NewsEvidenceInput,
@@ -318,6 +319,19 @@ def newsrooms_source_detail(source_id: str) -> dict:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
+@app.post("/newsrooms/categories")
+def newsrooms_category_create(payload: NewsCategoryInput) -> dict:
+    try:
+        return engine.create_news_category(payload).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/newsrooms/categories")
+def newsrooms_categories() -> list[dict]:
+    return engine.list_news_categories()
+
+
 @app.post("/newsrooms/feeds")
 def newsrooms_feed_create(payload: NewsFeedInput) -> dict:
     try:
@@ -373,6 +387,31 @@ def newsrooms_article_normalize(article_id: str) -> dict:
 def newsrooms_article_extract_claims(article_id: str) -> dict:
     try:
         return engine.extract_news_article_claims(article_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/articles/{article_id}/seo-artifact")
+def newsrooms_article_seo_artifact_create(article_id: str, payload: dict | None = None) -> dict:
+    try:
+        return engine.create_news_article_seo_artifact(article_id, payload)
+    except ValueError as exc:
+        status = 400 if "unsupported" in str(exc) or "rejected" in str(exc) else 404
+        raise HTTPException(status_code=status, detail=str(exc)) from exc
+
+
+@app.get("/newsrooms/articles/{article_id}/seo-artifact")
+def newsrooms_article_seo_artifact(article_id: str) -> dict:
+    try:
+        return engine.get_news_article_seo_artifact(article_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/articles/{article_id}/originality-check")
+def newsrooms_article_originality_check(article_id: str, payload: dict | None = None) -> dict:
+    try:
+        return engine.check_news_article_originality(article_id, payload).model_dump(mode="json")
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
@@ -452,6 +491,30 @@ def newsrooms_package_script(package_id: str, payload: NewsroomScriptInput) -> d
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
+@app.post("/newsrooms/packages/{package_id}/text-article")
+def newsrooms_package_text_article(package_id: str, payload: dict | None = None) -> dict:
+    try:
+        return engine.create_newsroom_text_article(package_id, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=400 if "rejected" in str(exc) else 404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/packages/{package_id}/live-blog-update")
+def newsrooms_package_live_blog_update(package_id: str, payload: dict | None = None) -> dict:
+    try:
+        return engine.create_newsroom_live_blog_update(package_id, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=400 if "rejected" in str(exc) else 404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/packages/{package_id}/blog-post")
+def newsrooms_package_blog_post(package_id: str, payload: dict | None = None) -> dict:
+    try:
+        return engine.create_newsroom_blog_post(package_id, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=400 if "rejected" in str(exc) else 404, detail=str(exc)) from exc
+
+
 @app.post("/newsrooms/packages/{package_id}/news-to-debate")
 def newsrooms_package_news_to_debate(package_id: str) -> dict:
     try:
@@ -498,6 +561,16 @@ def dashboard_newsrooms_audit_logs() -> list[dict]:
 @app.get("/dashboard/newsrooms/safety-boundaries")
 def dashboard_newsrooms_safety_boundaries() -> dict:
     return engine.newsroom_safety_boundaries().model_dump(mode="json")
+
+
+@app.get("/dashboard/newsrooms/seo")
+def dashboard_newsrooms_seo() -> dict:
+    return engine.newsroom_seo_dashboard()
+
+
+@app.get("/dashboard/newsrooms/originality")
+def dashboard_newsrooms_originality() -> dict:
+    return engine.newsroom_originality_dashboard()
 
 
 def _collapse_dashboard_payload() -> dict:

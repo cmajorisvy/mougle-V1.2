@@ -8,7 +8,7 @@
 - `app/agent_control.py`: local agent micro-pyramid readiness, simulation, permission gates, and escalation.
 - `app/signal_culture.py`: signal vectors, routing, and load-reduction calculations.
 - `app/archive_reuse.py`: manifest-only archive reuse scanner, Micro-Pyramid mapping, P0 blocking, and runtime import checks.
-- `app/newsrooms_council.py`: deterministic Newsrooms Council backend control plane, candidate-only Stage 7/Stage 6 handoff, newsroom packages, risk alerts, audit logs, and dashboard payloads.
+- `app/newsrooms_council.py`: deterministic Newsrooms Council backend control plane, candidate-only Stage 7/Stage 6 handoff, newsroom packages, text/blog/SEO artifacts, taxonomy, structured data, originality reports, risk alerts, audit logs, and dashboard payloads.
 - `app/podcast_council.py`: deterministic Podcast Forum Debate Council rooms, sessions, claims, evidence, reviews, candidate-only Stage 7/Stage 6 handoff, risk alerts, audit logs, and dashboard payloads.
 - `app/graph/`: provenance-aware claim/evidence/source/time graph.
 - `app/plugins/`: verification plugin interface and built-in deterministic plugins.
@@ -69,6 +69,7 @@ Use `TRUTH_PYRAMID_DB_PATH=/tmp/truth_pyramid.db` when the repository directory 
 ## Do-Not Rules
 
 - Do not fabricate evidence.
+- Do not copy raw source article prose into Newsrooms text outputs; generate from normalized claims and evidence refs.
 - Do not restore archived code wholesale.
 - Do not import runtime code directly from `archive/legacy-codebase/**/source`.
 - Do not add `publish_truth` as an agent action class.

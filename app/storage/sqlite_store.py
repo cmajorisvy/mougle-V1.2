@@ -17,14 +17,21 @@ from app.models import (
     AgentCollapseReview,
     CouncilSocketDecision,
     CouncilSocketEnvelope,
+    NewsCanonicalCluster,
+    NewsCategory,
     NewsClaim,
     NewsCorrectionRecord,
     NewsEvidence,
     NewsFeed,
+    NewsHreflangVariant,
     NewsIngestEvent,
+    NewsOriginalityReport,
     NewsScoreBundle,
+    NewsSeoArtifact,
+    NewsSitemapEntry,
     NewsSource,
     NewsSourceReliabilityRecord,
+    NewsStructuredDataArtifact,
     NewsStage6SubmissionPacket,
     NewsStage7CandidateRoute,
     NewsToDebateHandoff,
@@ -33,6 +40,7 @@ from app.models import (
     NewsroomRiskAlert,
     NewsroomScript,
     NewsroomSegment,
+    NewsTopic,
     NormalizedNewsArticle,
     PodcastAgentInvitation,
     PodcastClaimReview,
@@ -691,6 +699,105 @@ class SQLiteStore:
                     action TEXT NOT NULL,
                     article_id TEXT,
                     claim_id TEXT,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_categories (
+                    category_id TEXT PRIMARY KEY,
+                    parent_category_id TEXT,
+                    locale TEXT NOT NULL,
+                    slug TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_topics (
+                    topic_id TEXT PRIMARY KEY,
+                    category_id TEXT,
+                    locale TEXT NOT NULL,
+                    slug TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_canonical_clusters (
+                    cluster_id TEXT PRIMARY KEY,
+                    article_id TEXT,
+                    package_id TEXT,
+                    canonical_url TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_hreflang_variants (
+                    variant_id TEXT PRIMARY KEY,
+                    cluster_id TEXT NOT NULL,
+                    locale TEXT NOT NULL,
+                    url TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_seo_artifacts (
+                    artifact_id TEXT PRIMARY KEY,
+                    article_id TEXT NOT NULL,
+                    package_id TEXT,
+                    output_type TEXT NOT NULL,
+                    canonical_url TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_sitemap_entries (
+                    entry_id TEXT PRIMARY KEY,
+                    url TEXT NOT NULL,
+                    is_news INTEGER NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_structured_data_artifacts (
+                    artifact_id TEXT PRIMARY KEY,
+                    article_id TEXT,
+                    package_id TEXT,
+                    structured_data_type TEXT NOT NULL,
+                    canonical_url TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_originality_reports (
+                    report_id TEXT PRIMARY KEY,
+                    article_id TEXT NOT NULL,
+                    package_id TEXT,
+                    blocked INTEGER NOT NULL,
                     payload_json TEXT NOT NULL,
                     created_at TEXT DEFAULT CURRENT_TIMESTAMP
                 )
@@ -1753,6 +1860,138 @@ class SQLiteStore:
 
     def list_newsroom_audit_logs(self, article_id: str | None = None) -> list[dict]:
         return self._list_payloads("newsroom_audit_logs", {"article_id": article_id})
+
+    def save_news_category(self, category: NewsCategory) -> None:
+        self._save_payload(
+            "news_categories",
+            "category_id",
+            category.category_id,
+            category,
+            {
+                "parent_category_id": category.parent_category_id,
+                "locale": category.locale,
+                "slug": category.slug,
+            },
+        )
+
+    def list_news_categories(self, parent_category_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_categories", {"parent_category_id": parent_category_id})
+
+    def get_news_category(self, category_id: str) -> Optional[dict]:
+        return self._get_payload("news_categories", "category_id", category_id)
+
+    def save_news_topic(self, topic: NewsTopic) -> None:
+        self._save_payload(
+            "news_topics",
+            "topic_id",
+            topic.topic_id,
+            topic,
+            {"category_id": topic.category_id, "locale": topic.locale, "slug": topic.slug},
+        )
+
+    def list_news_topics(self, category_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_topics", {"category_id": category_id})
+
+    def save_news_canonical_cluster(self, cluster: NewsCanonicalCluster) -> None:
+        self._save_payload(
+            "news_canonical_clusters",
+            "cluster_id",
+            cluster.cluster_id,
+            cluster,
+            {
+                "article_id": cluster.article_id,
+                "package_id": cluster.package_id,
+                "canonical_url": cluster.canonical_url,
+            },
+        )
+
+    def list_news_canonical_clusters(self, article_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_canonical_clusters", {"article_id": article_id})
+
+    def save_news_hreflang_variant(self, variant: NewsHreflangVariant) -> None:
+        self._save_payload(
+            "news_hreflang_variants",
+            "variant_id",
+            variant.variant_id,
+            variant,
+            {"cluster_id": variant.cluster_id, "locale": variant.locale, "url": variant.url},
+        )
+
+    def list_news_hreflang_variants(self, cluster_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_hreflang_variants", {"cluster_id": cluster_id})
+
+    def save_news_seo_artifact(self, artifact: NewsSeoArtifact) -> None:
+        self._save_payload(
+            "news_seo_artifacts",
+            "artifact_id",
+            artifact.artifact_id,
+            artifact,
+            {
+                "article_id": artifact.article_id,
+                "package_id": artifact.package_id,
+                "output_type": artifact.output_type.value,
+                "canonical_url": artifact.canonical_url,
+            },
+        )
+
+    def list_news_seo_artifacts(
+        self, article_id: str | None = None, package_id: str | None = None
+    ) -> list[dict]:
+        return self._list_payloads("news_seo_artifacts", {"article_id": article_id, "package_id": package_id})
+
+    def get_latest_news_seo_artifact(self, article_id: str) -> Optional[dict]:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT payload_json FROM news_seo_artifacts WHERE article_id = ? ORDER BY created_at DESC",
+                (article_id,),
+            ).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def save_news_sitemap_entry(self, entry: NewsSitemapEntry) -> None:
+        self._save_payload(
+            "news_sitemap_entries",
+            "entry_id",
+            entry.entry_id,
+            entry,
+            {"url": entry.url, "is_news": 1 if entry.is_news else 0},
+        )
+
+    def list_news_sitemap_entries(self) -> list[dict]:
+        return self._list_payloads("news_sitemap_entries")
+
+    def save_news_structured_data_artifact(self, artifact: NewsStructuredDataArtifact) -> None:
+        self._save_payload(
+            "news_structured_data_artifacts",
+            "artifact_id",
+            artifact.artifact_id,
+            artifact,
+            {
+                "article_id": artifact.article_id,
+                "package_id": artifact.package_id,
+                "structured_data_type": artifact.structured_data_type.value,
+                "canonical_url": artifact.canonical_url,
+            },
+        )
+
+    def list_news_structured_data_artifacts(
+        self, article_id: str | None = None, package_id: str | None = None
+    ) -> list[dict]:
+        return self._list_payloads(
+            "news_structured_data_artifacts",
+            {"article_id": article_id, "package_id": package_id},
+        )
+
+    def save_news_originality_report(self, report: NewsOriginalityReport) -> None:
+        self._save_payload(
+            "news_originality_reports",
+            "report_id",
+            report.report_id,
+            report,
+            {"article_id": report.article_id, "package_id": report.package_id, "blocked": 1 if report.blocked else 0},
+        )
+
+    def list_news_originality_reports(self, article_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_originality_reports", {"article_id": article_id})
 
     def save_agent_collapse_metrics(self, metrics: AgentCollapseMetrics) -> None:
         with self._connect() as conn:

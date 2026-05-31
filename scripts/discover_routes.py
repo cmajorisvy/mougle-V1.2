@@ -27,6 +27,10 @@ NEWSROOMS_COUNCIL_E2E = (
     "tests/test_newsrooms_council.py::"
     "test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
 )
+NEWSROOMS_TEXT_SEO_E2E = (
+    "tests/test_newsrooms_text_seo.py::"
+    "test_newsrooms_text_blog_seo_structured_data_and_originality"
+)
 
 TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/health"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
@@ -67,6 +71,8 @@ TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("POST", "/newsrooms/sources"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/newsrooms/sources"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/newsrooms/sources/{source_id}"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/categories"): [NEWSROOMS_TEXT_SEO_E2E],
+    ("GET", "/newsrooms/categories"): [NEWSROOMS_TEXT_SEO_E2E],
     ("POST", "/newsrooms/feeds"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/newsrooms/feeds"): [NEWSROOMS_COUNCIL_E2E],
     ("POST", "/newsrooms/feeds/{feed_id}/ingest"): [NEWSROOMS_COUNCIL_E2E],
@@ -75,6 +81,9 @@ TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/newsrooms/articles/{article_id}"): [NEWSROOMS_COUNCIL_E2E],
     ("POST", "/newsrooms/articles/{article_id}/normalize"): [NEWSROOMS_COUNCIL_E2E],
     ("POST", "/newsrooms/articles/{article_id}/extract-claims"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/articles/{article_id}/seo-artifact"): [NEWSROOMS_TEXT_SEO_E2E],
+    ("GET", "/newsrooms/articles/{article_id}/seo-artifact"): [NEWSROOMS_TEXT_SEO_E2E],
+    ("POST", "/newsrooms/articles/{article_id}/originality-check"): [NEWSROOMS_TEXT_SEO_E2E],
     ("POST", "/newsrooms/claims"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/newsrooms/claims"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/newsrooms/claims/{claim_id}"): [NEWSROOMS_COUNCIL_E2E],
@@ -85,6 +94,9 @@ TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/newsrooms/packages"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/newsrooms/packages/{package_id}"): [NEWSROOMS_COUNCIL_E2E],
     ("POST", "/newsrooms/packages/{package_id}/script"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/packages/{package_id}/text-article"): [NEWSROOMS_TEXT_SEO_E2E],
+    ("POST", "/newsrooms/packages/{package_id}/live-blog-update"): [NEWSROOMS_TEXT_SEO_E2E],
+    ("POST", "/newsrooms/packages/{package_id}/blog-post"): [NEWSROOMS_TEXT_SEO_E2E],
     ("POST", "/newsrooms/packages/{package_id}/news-to-debate"): [NEWSROOMS_COUNCIL_E2E],
     ("POST", "/newsrooms/corrections"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/newsrooms/risk-alerts"): [NEWSROOMS_COUNCIL_E2E],
@@ -94,6 +106,8 @@ TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/dashboard/newsrooms/risk-alerts"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/dashboard/newsrooms/audit-logs"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/dashboard/newsrooms/safety-boundaries"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/dashboard/newsrooms/seo"): [NEWSROOMS_TEXT_SEO_E2E],
+    ("GET", "/dashboard/newsrooms/originality"): [NEWSROOMS_TEXT_SEO_E2E],
     ("GET", "/api/dashboard/collapse-metrics"): [
         "tests/test_api.py::test_dashboard_collapse_alias_preserves_metrics_payload"
     ],
