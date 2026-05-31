@@ -14,6 +14,13 @@ from app.models import (
     AgentCollapseRestoreRequest,
     AgentCollapseReviewRequest,
     CouncilSocketEnvelope,
+    NewsClaimInput,
+    NewsCorrectionInput,
+    NewsEvidenceInput,
+    NewsFeedInput,
+    NewsroomPackageInput,
+    NewsroomScriptInput,
+    NewsSourceInput,
     PodcastAgentInvitationInput,
     PodcastClaimReviewInput,
     PodcastDebateClaimInput,
@@ -23,6 +30,7 @@ from app.models import (
     PodcastParticipantInput,
     PodcastRoomInput,
     PodcastSessionInput,
+    RawNewsItemInput,
     Stage7ExternalRecordInput,
     Stage7ResolutionRequest,
     SignalEventRequest,
@@ -290,6 +298,206 @@ def podcast_council_dashboard_cards() -> list[dict]:
 @app.get("/dashboard/podcast-council/pages")
 def podcast_council_dashboard_pages() -> list[dict]:
     return engine.podcast_dashboard_pages()
+
+
+@app.post("/newsrooms/sources")
+def newsrooms_source_create(payload: NewsSourceInput) -> dict:
+    return engine.register_news_source(payload).model_dump(mode="json")
+
+
+@app.get("/newsrooms/sources")
+def newsrooms_sources() -> list[dict]:
+    return engine.list_news_sources()
+
+
+@app.get("/newsrooms/sources/{source_id}")
+def newsrooms_source_detail(source_id: str) -> dict:
+    try:
+        return engine.get_news_source(source_id).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/feeds")
+def newsrooms_feed_create(payload: NewsFeedInput) -> dict:
+    try:
+        return engine.create_news_feed(payload).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/newsrooms/feeds")
+def newsrooms_feeds() -> list[dict]:
+    return engine.list_news_feeds()
+
+
+@app.post("/newsrooms/feeds/{feed_id}/ingest")
+def newsrooms_feed_ingest(feed_id: str, payload: RawNewsItemInput) -> dict:
+    try:
+        return engine.ingest_news_feed_item(feed_id, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/articles")
+def newsrooms_article_create(payload: RawNewsItemInput) -> dict:
+    try:
+        return engine.create_news_article(payload).model_dump(mode="json")
+    except ValueError as exc:
+        status = 400 if "required" in str(exc) else 404
+        raise HTTPException(status_code=status, detail=str(exc)) from exc
+
+
+@app.get("/newsrooms/articles")
+def newsrooms_articles() -> dict:
+    return engine.list_news_articles()
+
+
+@app.get("/newsrooms/articles/{article_id}")
+def newsrooms_article_detail(article_id: str) -> dict:
+    try:
+        return engine.get_news_article_detail(article_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/articles/{article_id}/normalize")
+def newsrooms_article_normalize(article_id: str) -> dict:
+    try:
+        return engine.normalize_news_article(article_id).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/articles/{article_id}/extract-claims")
+def newsrooms_article_extract_claims(article_id: str) -> dict:
+    try:
+        return engine.extract_news_article_claims(article_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/claims")
+def newsrooms_claim_create(payload: NewsClaimInput) -> dict:
+    try:
+        return engine.create_news_claim(payload).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/newsrooms/claims")
+def newsrooms_claims() -> list[dict]:
+    return engine.list_news_claims()
+
+
+@app.get("/newsrooms/claims/{claim_id}")
+def newsrooms_claim_detail(claim_id: str) -> dict:
+    try:
+        return engine.get_news_claim(claim_id).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/claims/{claim_id}/evidence")
+def newsrooms_claim_evidence(claim_id: str, payload: NewsEvidenceInput) -> dict:
+    try:
+        return engine.submit_news_claim_evidence(claim_id, payload).model_dump(mode="json")
+    except ValueError as exc:
+        status = 400 if "rejected" in str(exc) else 404
+        raise HTTPException(status_code=status, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/claims/{claim_id}/route-stage7")
+def newsrooms_claim_route_stage7(claim_id: str) -> dict:
+    try:
+        return engine.route_news_claim_stage7(claim_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/claims/{claim_id}/submit-stage6")
+def newsrooms_claim_submit_stage6(claim_id: str) -> dict:
+    try:
+        return engine.submit_news_claim_stage6(claim_id).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/packages")
+def newsrooms_package_create(payload: NewsroomPackageInput) -> dict:
+    try:
+        return engine.create_newsroom_package(payload).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/newsrooms/packages")
+def newsrooms_packages() -> list[dict]:
+    return engine.list_newsroom_packages()
+
+
+@app.get("/newsrooms/packages/{package_id}")
+def newsrooms_package_detail(package_id: str) -> dict:
+    try:
+        return engine.get_newsroom_package_detail(package_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/packages/{package_id}/script")
+def newsrooms_package_script(package_id: str, payload: NewsroomScriptInput) -> dict:
+    try:
+        return engine.create_newsroom_script(package_id, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/packages/{package_id}/news-to-debate")
+def newsrooms_package_news_to_debate(package_id: str) -> dict:
+    try:
+        return engine.create_news_to_debate_handoff(package_id).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/corrections")
+def newsrooms_correction_create(payload: NewsCorrectionInput) -> dict:
+    return engine.create_news_correction(payload).model_dump(mode="json")
+
+
+@app.get("/newsrooms/risk-alerts")
+def newsrooms_risk_alerts() -> list[dict]:
+    return engine.newsroom_risk_alerts()
+
+
+@app.get("/newsrooms/audit-logs")
+def newsrooms_audit_logs() -> list[dict]:
+    return engine.newsroom_audit_logs()
+
+
+@app.get("/dashboard/newsrooms/cards")
+def dashboard_newsrooms_cards() -> list[dict]:
+    return engine.newsroom_dashboard_cards()
+
+
+@app.get("/dashboard/newsrooms/pages")
+def dashboard_newsrooms_pages() -> list[dict]:
+    return engine.newsroom_dashboard_pages()
+
+
+@app.get("/dashboard/newsrooms/risk-alerts")
+def dashboard_newsrooms_risk_alerts() -> list[dict]:
+    return engine.newsroom_risk_alerts()
+
+
+@app.get("/dashboard/newsrooms/audit-logs")
+def dashboard_newsrooms_audit_logs() -> list[dict]:
+    return engine.newsroom_audit_logs()
+
+
+@app.get("/dashboard/newsrooms/safety-boundaries")
+def dashboard_newsrooms_safety_boundaries() -> dict:
+    return engine.newsroom_safety_boundaries().model_dump(mode="json")
 
 
 def _collapse_dashboard_payload() -> dict:

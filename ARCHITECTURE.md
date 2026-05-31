@@ -22,6 +22,8 @@ Runtime runs bottom-up:
 - `app/agent_control.py`: user agent micro-pyramid readiness, simulation, permission gate, and escalation.
 - `app/signal_culture.py`: signal vector scoring, routing, and load-reduction analytics.
 - `app/archive_reuse.py`: manifest-only archive reuse matrix, P0 blocking, pyramid fit mapping, and no-runtime-import checks.
+- `app/newsrooms_council.py`: deterministic Newsrooms Council control plane for source intake, normalization, claim extraction, evidence submission, scoring, Stage 7 candidate routing, Stage 6 packets, scripts, handoffs, risk alerts, audit logs, and dashboard payloads.
+- `app/podcast_council.py`: deterministic Podcast Forum Debate Council for rooms, sessions, participants, debate claims, evidence, reviews, Stage 7 candidate routing, Stage 6 packets, risk alerts, audit logs, and dashboard payloads.
 - `app/claims/decomposer.py`: deterministic atomic claim decomposition with stable IDs and spans.
 - `app/retrieval/`: retrieval interface and in-memory corpus retriever.
 - `app/graph/provenance_graph.py`: claim/evidence/source/time graph and graph feature export.
@@ -151,6 +153,12 @@ The publish gate requires TVS threshold, macro/micro agreement, uncertainty boun
 - Financial Management
 
 The fabric creates replayable envelopes, hashes payloads, emits policy decisions, rejects direct Stage 4/Stage 1 bypass attempts, routes ordinary upward events through Stage 7 then Stage 6, routes low-risk telemetry to Stage 6, and places high-risk legal/financial events into query-tank review. Security principles: schema validation, no unmanaged code blobs, signed artifacts in future, replayable event logs, least privilege, and no untrusted pickle/joblib loading in production.
+
+## Newsrooms Council
+
+`app/newsrooms_council.py` is the editorial and verification control plane for newsroom artifacts. It handles source/feed ingestion, raw and normalized article records, deterministic claim extraction, no-fabricated-evidence-gated evidence submission, SourceReliability, Newsworthiness, EditorialRisk, ClaimPriority, NewsroomReadiness, BroadcastReadiness, Stage 7 candidate routes, Stage 6 submission packets, text/video package metadata, preview-only studio script data, news-to-debate candidate handoff, corrections, risk alerts, audit logs, and dashboard cards/pages.
+
+The Newsrooms Council is not the render plane, not a truth oracle, and not a publishing engine. Newsworthiness is not TruthScore, SourceReliability is not TruthScore, virality is not truth, Stage 7 remains candidate-only, Stage 6 packets are not final verification, and the council cannot publish truth or write Stage 1/Stage 4 directly.
 
 ## Future Extension Points
 

@@ -23,6 +23,10 @@ PODCAST_COUNCIL_E2E = (
     "tests/test_podcast_council.py::"
     "test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
 )
+NEWSROOMS_COUNCIL_E2E = (
+    "tests/test_newsrooms_council.py::"
+    "test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+)
 
 TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/health"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
@@ -60,6 +64,36 @@ TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/podcast-council/audit-logs"): [PODCAST_COUNCIL_E2E],
     ("GET", "/dashboard/podcast-council/cards"): [PODCAST_COUNCIL_E2E],
     ("GET", "/dashboard/podcast-council/pages"): [PODCAST_COUNCIL_E2E],
+    ("POST", "/newsrooms/sources"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/newsrooms/sources"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/newsrooms/sources/{source_id}"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/feeds"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/newsrooms/feeds"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/feeds/{feed_id}/ingest"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/articles"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/newsrooms/articles"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/newsrooms/articles/{article_id}"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/articles/{article_id}/normalize"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/articles/{article_id}/extract-claims"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/claims"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/newsrooms/claims"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/newsrooms/claims/{claim_id}"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/claims/{claim_id}/evidence"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/claims/{claim_id}/route-stage7"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/claims/{claim_id}/submit-stage6"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/packages"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/newsrooms/packages"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/newsrooms/packages/{package_id}"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/packages/{package_id}/script"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/packages/{package_id}/news-to-debate"): [NEWSROOMS_COUNCIL_E2E],
+    ("POST", "/newsrooms/corrections"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/newsrooms/risk-alerts"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/newsrooms/audit-logs"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/dashboard/newsrooms/cards"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/dashboard/newsrooms/pages"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/dashboard/newsrooms/risk-alerts"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/dashboard/newsrooms/audit-logs"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/dashboard/newsrooms/safety-boundaries"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/api/dashboard/collapse-metrics"): [
         "tests/test_api.py::test_dashboard_collapse_alias_preserves_metrics_payload"
     ],
@@ -97,6 +131,10 @@ class RouteEntry:
 def route_owner(path: str) -> str:
     if path == "/health":
         return "api_health"
+    if path.startswith("/dashboard/newsrooms"):
+        return "newsrooms_council_dashboard"
+    if path.startswith("/newsrooms"):
+        return "newsrooms_council"
     if path.startswith("/dashboard/podcast-council"):
         return "podcast_council_dashboard"
     if path.startswith("/podcast-council"):
@@ -124,6 +162,8 @@ def route_owner(path: str) -> str:
 
 def route_criticality(path: str) -> str:
     if path in {"/health", "/admin/agents/collapse/metrics", "/admin/signal-load-reduction"}:
+        return "P1"
+    if path.startswith("/dashboard/newsrooms"):
         return "P1"
     if path.startswith("/dashboard/podcast-council"):
         return "P1"

@@ -8,6 +8,8 @@
 - `app/agent_control.py`: local agent micro-pyramid readiness, simulation, permission gates, and escalation.
 - `app/signal_culture.py`: signal vectors, routing, and load-reduction calculations.
 - `app/archive_reuse.py`: manifest-only archive reuse scanner, Micro-Pyramid mapping, P0 blocking, and runtime import checks.
+- `app/newsrooms_council.py`: deterministic Newsrooms Council backend control plane, candidate-only Stage 7/Stage 6 handoff, newsroom packages, risk alerts, audit logs, and dashboard payloads.
+- `app/podcast_council.py`: deterministic Podcast Forum Debate Council rooms, sessions, claims, evidence, reviews, candidate-only Stage 7/Stage 6 handoff, risk alerts, audit logs, and dashboard payloads.
 - `app/graph/`: provenance-aware claim/evidence/source/time graph.
 - `app/plugins/`: verification plugin interface and built-in deterministic plugins.
 - `app/stage6/`: HARD-MESH feature builder, preprocessing, clustering lanes, metrics, consensus, and routing.
@@ -71,6 +73,7 @@ Use `TRUTH_PYRAMID_DB_PATH=/tmp/truth_pyramid.db` when the repository directory 
 - Do not import runtime code directly from `archive/legacy-codebase/**/source`.
 - Do not add `publish_truth` as an agent action class.
 - Do not let Signal Culture or local readiness write to Stage 4 or Stage 1.
+- Do not let Newsrooms Council publish final truth, write Stage 1, write Stage 4, or bypass Stage 6.
 - Do not add real external AI calls to stubs.
 - Do not use OpenAI, Anthropic, xAI, or other provider APIs unless explicitly configured later.
 - Do not treat clustering labels, external judges, or local models as final truth.
@@ -95,6 +98,7 @@ Use `TRUTH_PYRAMID_DB_PATH=/tmp/truth_pyramid.db` when the repository directory 
 - No Stage 6 bypass.
 - No direct Stage 4 or Stage 1 writes.
 - Stage 7 is candidate-only and cannot publish truth.
+- Newsrooms Council is editorial control only: Newsworthiness, SourceReliability, and virality are not TruthScore.
 - Signal Culture is routing-only.
 - LocalReadiness is not TruthScore.
 - Gluon is not money.

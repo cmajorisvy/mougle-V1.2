@@ -44,6 +44,27 @@ from app.models import (
     CouncilSocketDecision,
     CouncilSocketEnvelope,
     MacroMicroAssessment,
+    NewsClaim,
+    NewsClaimInput,
+    NewsCorrectionInput,
+    NewsCorrectionRecord,
+    NewsEvidence,
+    NewsEvidenceInput,
+    NewsFeed,
+    NewsFeedInput,
+    NewsScoreBundle,
+    NewsSource,
+    NewsSourceInput,
+    NewsStage6SubmissionPacket,
+    NewsStage7CandidateRoute,
+    NewsToDebateHandoff,
+    NewsroomAuditLog,
+    NewsroomPackage,
+    NewsroomPackageInput,
+    NewsroomRiskAlert,
+    NewsroomScriptInput,
+    NewsroomSafetyBoundaries,
+    NormalizedNewsArticle,
     PodcastAgentInvitation,
     PodcastAgentInvitationInput,
     PodcastClaimReview,
@@ -69,6 +90,8 @@ from app.models import (
     ProvenancePayload,
     QueryTankItem,
     Query,
+    RawNewsItem,
+    RawNewsItemInput,
     SignalEvent,
     SignalProcessingRecord,
     Stage7ExternalRecord,
@@ -80,6 +103,30 @@ from app.models import (
     TruthMetrics,
     VerdictLabel,
     VerifyRequest,
+)
+from app.newsrooms_council import (
+    build_newsroom_dashboard_cards as news_build_dashboard_cards,
+    build_newsroom_dashboard_pages as news_build_dashboard_pages,
+    build_newsroom_safety_boundaries as news_build_safety_boundaries,
+    create_correction_record as news_create_correction_record,
+    create_manual_news_claim as news_create_manual_claim,
+    create_news_feed as news_create_feed,
+    create_news_to_debate_handoff as news_create_debate_handoff,
+    create_newsroom_audit_log as news_write_audit_log,
+    create_newsroom_candidate as news_create_candidate,
+    create_newsroom_package as news_create_package,
+    create_newsroom_risk_alert as news_create_risk_alert,
+    create_newsroom_script as news_create_script,
+    create_score_bundle as news_create_score_bundle,
+    deduplicate_news_article as news_dedupe_article,
+    dedupe_alerts as news_dedupe_alerts,
+    extract_news_claims as news_extract_claims,
+    ingest_news_item as news_ingest_item,
+    normalize_news_article as news_normalize_article,
+    register_news_source as news_register_source,
+    route_news_claim_to_stage7 as news_route_stage7,
+    submit_news_claim_to_stage6 as news_submit_stage6,
+    submit_news_evidence as news_submit_evidence,
 )
 from app.plugins.base import PluginContext
 from app.plugins.implementations import (
@@ -502,6 +549,479 @@ class VerificationEngine:
     def stage7_alerts(self) -> list[dict]:
         records = [Stage7ExternalRecord(**row) for row in self.store.list_stage7_external_records()]
         return [alert.model_dump(mode="json") for alert in build_stage7_alerts(records)]
+
+    def register_news_source(self, payload: NewsSourceInput) -> NewsSource:
+        source, reliability = news_register_source(payload)
+        self.store.save_news_source(source)
+        self.store.save_news_source_reliability_record(reliability)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "source_registered",
+                entity_type="news_source",
+                entity_id=source.source_id,
+                actor_id="newsrooms_council",
+                metadata={
+                    "source_reliability": reliability.score,
+                    "source_reliability_is_truth_score": False,
+                    "external_calls_made": False,
+                },
+            )
+        )
+        return source
+
+    def list_news_sources(self) -> list[dict]:
+        return self.store.list_news_sources()
+
+    def get_news_source(self, source_id: str) -> NewsSource:
+        return self._news_source(source_id)
+
+    def create_news_feed(self, payload: NewsFeedInput) -> NewsFeed:
+        source = self._news_source(payload.source_id)
+        feed = news_create_feed(source, payload)
+        self.store.save_news_feed(feed)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "feed_created",
+                entity_type="news_feed",
+                entity_id=feed.feed_id,
+                actor_id="newsrooms_council",
+                metadata={"source_id": source.source_id, "external_calls_made": False},
+            )
+        )
+        return feed
+
+    def list_news_feeds(self) -> list[dict]:
+        return self.store.list_news_feeds()
+
+    def ingest_news_feed_item(self, feed_id: str, payload: RawNewsItemInput) -> dict:
+        feed = self._news_feed(feed_id)
+        source = self._news_source(feed.source_id)
+        raw, event = news_ingest_item(feed, source, payload)
+        self.store.save_raw_news_item(raw)
+        self.store.save_news_ingest_event(event)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "article_ingested",
+                entity_type="raw_news_item",
+                entity_id=raw.raw_item_id,
+                actor_id="newsrooms_council",
+                metadata={"feed_id": feed_id, "external_calls_made": False},
+            )
+        )
+        return {
+            "raw_item": raw.model_dump(mode="json"),
+            "ingest_event": event.model_dump(mode="json"),
+        }
+
+    def create_news_article(self, payload: RawNewsItemInput) -> RawNewsItem:
+        if not payload.source_id:
+            raise ValueError("source_id is required for direct article ingestion")
+        source = self._news_source(payload.source_id)
+        raw, event = news_ingest_item(None, source, payload)
+        self.store.save_raw_news_item(raw)
+        self.store.save_news_ingest_event(event)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "article_created",
+                entity_type="raw_news_item",
+                entity_id=raw.raw_item_id,
+                actor_id="newsrooms_council",
+                metadata={"external_calls_made": False, "no_production_db": True},
+            )
+        )
+        return raw
+
+    def list_news_articles(self) -> dict:
+        return {
+            "raw_items": self.store.list_raw_news_items(),
+            "normalized_articles": self.store.list_normalized_news_articles(),
+        }
+
+    def get_news_article_detail(self, article_id: str) -> dict:
+        raw = self.store.get_raw_news_item(article_id)
+        normalized = self.store.get_normalized_news_article(article_id)
+        if normalized is None and raw is not None:
+            normalized = self.store.get_normalized_news_article_for_raw_item(article_id)
+        if raw is None and normalized is None:
+            raise ValueError("news article not found")
+        return {
+            "raw_item": raw,
+            "article": normalized,
+            "claims": self.store.list_news_claims(article_id=normalized["article_id"]) if normalized else [],
+            "risk_alerts": (
+                self.store.list_newsroom_risk_alerts(article_id=normalized["article_id"])
+                if normalized
+                else []
+            ),
+        }
+
+    def normalize_news_article(self, article_id: str) -> NormalizedNewsArticle:
+        existing = self.store.get_normalized_news_article(article_id)
+        if existing is None:
+            existing = self.store.get_normalized_news_article_for_raw_item(article_id)
+        if existing is not None:
+            return NormalizedNewsArticle(**existing)
+        raw = self._raw_news_item(article_id)
+        source = self._news_source(raw.source_id)
+        article = news_normalize_article(raw, source)
+        existing_articles = [
+            NormalizedNewsArticle(**row) for row in self.store.list_normalized_news_articles()
+        ]
+        article = news_dedupe_article(article, existing_articles)
+        self.store.save_normalized_news_article(article)
+        self._save_news_score_bundle(article.article_id)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "article_normalized",
+                entity_type="normalized_news_article",
+                entity_id=article.article_id,
+                article_id=article.article_id,
+                metadata={
+                    "raw_item_id": raw.raw_item_id,
+                    "newsworthiness_is_truth_score": False,
+                    "may_publish_truth": False,
+                },
+            )
+        )
+        return article
+
+    def extract_news_article_claims(self, article_id: str) -> dict:
+        article = self._news_article(article_id)
+        claims, updated_article = news_extract_claims(article)
+        for claim in claims:
+            self.store.save_news_claim(claim)
+        self.store.save_normalized_news_article(updated_article)
+        bundle = self._save_news_score_bundle(article.article_id)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "claims_extracted",
+                entity_type="normalized_news_article",
+                entity_id=article.article_id,
+                article_id=article.article_id,
+                metadata={"claim_count": len(claims), "stage6_required": True},
+            )
+        )
+        return {
+            "article": updated_article.model_dump(mode="json"),
+            "claims": [claim.model_dump(mode="json") for claim in claims],
+            "score_bundle": bundle.model_dump(mode="json"),
+        }
+
+    def create_news_claim(self, payload: NewsClaimInput) -> NewsClaim:
+        article = self._news_article(payload.article_id)
+        claim = news_create_manual_claim(payload, article.source_id)
+        self.store.save_news_claim(claim)
+        self._save_news_score_bundle(article.article_id)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "claim_created",
+                entity_type="news_claim",
+                entity_id=claim.claim_id,
+                article_id=claim.article_id,
+                claim_id=claim.claim_id,
+                actor_id=payload.claimant_id,
+                metadata={"candidate_only": True, "stage6_required": True},
+            )
+        )
+        return claim
+
+    def list_news_claims(self) -> list[dict]:
+        return self.store.list_news_claims()
+
+    def get_news_claim(self, claim_id: str) -> NewsClaim:
+        return self._news_claim(claim_id)
+
+    def submit_news_claim_evidence(self, claim_id: str, payload: NewsEvidenceInput) -> NewsEvidence:
+        claim = self._news_claim(claim_id)
+        evidence, updated_claim = news_submit_evidence(claim, payload)
+        self.store.save_news_evidence(evidence)
+        self.store.save_news_claim(updated_claim)
+        self._save_news_score_bundle(claim.article_id)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "evidence_submitted",
+                entity_type="news_evidence",
+                entity_id=evidence.evidence_id,
+                article_id=claim.article_id,
+                claim_id=claim.claim_id,
+                actor_id=payload.submitted_by,
+                metadata={"no_fabricated_evidence_attestation": True, "external_calls_made": False},
+            )
+        )
+        return evidence
+
+    def route_news_claim_stage7(self, claim_id: str) -> dict:
+        claim = self._news_claim(claim_id)
+        evidence = self._news_evidence_for_claim(claim_id)
+        stage7_input = news_create_candidate(claim, evidence)
+        record = create_stage7_external_record(stage7_input)
+        self.store.save_stage7_external_record(record)
+        if record.status.value in {"unresolved", "disputed", "unknown"}:
+            self.store.enqueue_query_tank(build_query_tank_item(record))
+        route, updated_claim = news_route_stage7(claim, record)
+        self.store.save_news_stage7_route(route)
+        self.store.save_news_claim(updated_claim)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "claim_routed_stage7",
+                entity_type="news_claim",
+                entity_id=claim.claim_id,
+                article_id=claim.article_id,
+                claim_id=claim.claim_id,
+                metadata={
+                    "stage7_record_id": record.record_id,
+                    "candidate_only": True,
+                    "stage6_required": True,
+                    "query_tank_handoff": record.status.value in {"unresolved", "disputed", "unknown"},
+                },
+            )
+        )
+        return {"route": route.model_dump(mode="json"), "stage7_record": record.model_dump(mode="json")}
+
+    def submit_news_claim_stage6(self, claim_id: str) -> NewsStage6SubmissionPacket:
+        claim = self._news_claim(claim_id)
+        route_raw = self.store.get_news_stage7_route_for_claim(claim_id)
+        if route_raw is None:
+            route_payload = self.route_news_claim_stage7(claim_id)
+            route = NewsStage7CandidateRoute(**route_payload["route"])
+            record = Stage7ExternalRecord(**route_payload["stage7_record"])
+            claim = self._news_claim(claim_id)
+        else:
+            route = NewsStage7CandidateRoute(**route_raw)
+            raw_record = self.store.get_stage7_external_record(route.stage7_record_id)
+            if raw_record is None:
+                raise ValueError("stage7 record not found for news claim")
+            record = Stage7ExternalRecord(**raw_record)
+        package = package_stage7_for_stage6(record)
+        self.store.save_stage7_external_record(record)
+        self.store.save_stage7_submission_package(package)
+        evidence = self._news_evidence_for_claim(claim_id)
+        packet, updated_claim = news_submit_stage6(claim, route, package, evidence)
+        self.store.save_news_stage6_packet(packet)
+        self.store.save_news_claim(updated_claim)
+        self._maybe_save_news_risk_alert(updated_claim)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "claim_submitted_stage6",
+                entity_type="news_claim",
+                entity_id=claim.claim_id,
+                article_id=claim.article_id,
+                claim_id=claim.claim_id,
+                metadata={
+                    "packet_id": packet.packet_id,
+                    "stage7_submission_id": package.submission_id,
+                    "candidate_answer_not_verified": True,
+                },
+            )
+        )
+        return packet
+
+    def create_newsroom_package(self, payload: NewsroomPackageInput) -> NewsroomPackage:
+        article = self._news_article(payload.article_id)
+        claims = self._news_claims_for_article(article.article_id)
+        if payload.claim_ids:
+            requested = set(payload.claim_ids)
+            claims = [claim for claim in claims if claim.claim_id in requested]
+        bundle = self._save_news_score_bundle(article.article_id)
+        package = news_create_package(payload, article, claims, bundle)
+        self.store.save_newsroom_package(package)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "package_created",
+                entity_type="newsroom_package",
+                entity_id=package.package_id,
+                article_id=article.article_id,
+                actor_id=payload.editor_id,
+                metadata={"modality": package.modality.value, "stage6_required_for_truth": True},
+            )
+        )
+        return package
+
+    def list_newsroom_packages(self) -> list[dict]:
+        return self.store.list_newsroom_packages()
+
+    def get_newsroom_package_detail(self, package_id: str) -> dict:
+        package = self._newsroom_package(package_id)
+        return {
+            "package": package.model_dump(mode="json"),
+            "scripts": self.store.list_newsroom_scripts(package_id),
+            "segments": self.store.list_newsroom_segments(package_id),
+            "handoffs": [
+                row
+                for row in self.store.list_news_to_debate_handoffs(article_id=package.article_id)
+                if row.get("package_id") == package_id
+            ],
+        }
+
+    def create_newsroom_script(self, package_id: str, payload: NewsroomScriptInput) -> dict:
+        package = self._newsroom_package(package_id)
+        claims = self._news_claims_for_ids(package.claim_ids)
+        script, segments, updated_package = news_create_script(package, claims, payload)
+        self.store.save_newsroom_script(script)
+        for segment in segments:
+            self.store.save_newsroom_segment(segment)
+        self.store.save_newsroom_package(updated_package)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "script_created",
+                entity_type="newsroom_script",
+                entity_id=script.script_id,
+                article_id=package.article_id,
+                metadata={"preview_only_studio_cues": True, "hardware_execution": False},
+            )
+        )
+        return {
+            "script": script.model_dump(mode="json"),
+            "segments": [segment.model_dump(mode="json") for segment in segments],
+        }
+
+    def create_news_to_debate_handoff(self, package_id: str) -> NewsToDebateHandoff:
+        package = self._newsroom_package(package_id)
+        claims = self._news_claims_for_ids(package.claim_ids)
+        handoff = news_create_debate_handoff(package, claims)
+        package.status = type(package.status).debate_handoff_ready
+        self.store.save_news_to_debate_handoff(handoff)
+        self.store.save_newsroom_package(package)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "news_to_debate_handoff_created",
+                entity_type="news_to_debate_handoff",
+                entity_id=handoff.handoff_id,
+                article_id=package.article_id,
+                metadata={"candidate_only": True, "stage6_required": True},
+            )
+        )
+        return handoff
+
+    def create_news_correction(self, payload: NewsCorrectionInput) -> NewsCorrectionRecord:
+        correction = news_create_correction_record(payload)
+        self.store.save_news_correction_record(correction)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "correction_recorded",
+                entity_type="news_correction_record",
+                entity_id=correction.correction_id,
+                article_id=correction.article_id,
+                claim_id=correction.claim_id,
+                actor_id=payload.requested_by,
+                metadata={"candidate_only": True, "may_publish_truth": False},
+            )
+        )
+        return correction
+
+    def newsroom_risk_alerts(self) -> list[dict]:
+        return self.store.list_newsroom_risk_alerts()
+
+    def newsroom_audit_logs(self) -> list[dict]:
+        return self.store.list_newsroom_audit_logs()
+
+    def newsroom_dashboard_cards(self) -> list[dict]:
+        cards = self._newsroom_dashboard_cards()
+        return [card.model_dump(mode="json") for card in cards]
+
+    def newsroom_dashboard_pages(self) -> list[dict]:
+        cards = self._newsroom_dashboard_cards()
+        articles = [
+            NormalizedNewsArticle(**row) for row in self.store.list_normalized_news_articles()
+        ]
+        alerts = [NewsroomRiskAlert(**row) for row in self.store.list_newsroom_risk_alerts()]
+        audit_logs = [NewsroomAuditLog(**row) for row in self.store.list_newsroom_audit_logs()]
+        pages = news_build_dashboard_pages(cards, articles, alerts, audit_logs)
+        return [page.model_dump(mode="json") for page in pages]
+
+    def newsroom_safety_boundaries(self) -> NewsroomSafetyBoundaries:
+        return news_build_safety_boundaries()
+
+    def _save_news_score_bundle(self, article_id: str) -> NewsScoreBundle:
+        article = self._news_article(article_id)
+        source = self._news_source(article.source_id)
+        claims = self._news_claims_for_article(article.article_id)
+        evidence = [NewsEvidence(**row) for row in self.store.list_news_evidence(article_id=article.article_id)]
+        bundle = news_create_score_bundle(article, source, claims, evidence)
+        self.store.save_news_score_bundle(bundle)
+        if bundle.editorial_risk >= 0.65:
+            alert = news_create_risk_alert(
+                article_id=article.article_id,
+                claim_id=None,
+                risk_score=bundle.editorial_risk,
+                reason="editorial risk score requires Stage 6-aware review",
+            )
+            self.store.save_newsroom_risk_alert(alert)
+        return bundle
+
+    def _maybe_save_news_risk_alert(self, claim: NewsClaim) -> None:
+        if claim.priority < 0.65:
+            return
+        alert = news_create_risk_alert(
+            article_id=claim.article_id,
+            claim_id=claim.claim_id,
+            risk_score=claim.priority,
+            reason="high-priority newsroom claim submitted to Stage 6",
+        )
+        existing = [
+            NewsroomRiskAlert(**row)
+            for row in self.store.list_newsroom_risk_alerts(article_id=claim.article_id)
+        ]
+        for deduped in news_dedupe_alerts([*existing, alert]):
+            self.store.save_newsroom_risk_alert(deduped)
+
+    def _newsroom_dashboard_cards(self) -> list:
+        sources = [NewsSource(**row) for row in self.store.list_news_sources()]
+        articles = [
+            NormalizedNewsArticle(**row) for row in self.store.list_normalized_news_articles()
+        ]
+        claims = [NewsClaim(**row) for row in self.store.list_news_claims()]
+        routes = [NewsStage7CandidateRoute(**row) for row in self.store.list_news_stage7_routes()]
+        packets = [NewsStage6SubmissionPacket(**row) for row in self.store.list_news_stage6_packets()]
+        alerts = [NewsroomRiskAlert(**row) for row in self.store.list_newsroom_risk_alerts()]
+        return news_build_dashboard_cards(sources, articles, claims, routes, packets, alerts)
+
+    def _news_source(self, source_id: str) -> NewsSource:
+        raw = self.store.get_news_source(source_id)
+        if raw is None:
+            raise ValueError("news source not found")
+        return NewsSource(**raw)
+
+    def _news_feed(self, feed_id: str) -> NewsFeed:
+        raw = self.store.get_news_feed(feed_id)
+        if raw is None:
+            raise ValueError("news feed not found")
+        return NewsFeed(**raw)
+
+    def _raw_news_item(self, raw_item_id: str) -> RawNewsItem:
+        raw = self.store.get_raw_news_item(raw_item_id)
+        if raw is None:
+            raise ValueError("raw news item not found")
+        return RawNewsItem(**raw)
+
+    def _news_article(self, article_id: str) -> NormalizedNewsArticle:
+        raw = self.store.get_normalized_news_article(article_id)
+        if raw is None:
+            raw = self.store.get_normalized_news_article_for_raw_item(article_id)
+        if raw is None:
+            raise ValueError("normalized news article not found")
+        return NormalizedNewsArticle(**raw)
+
+    def _news_claim(self, claim_id: str) -> NewsClaim:
+        raw = self.store.get_news_claim(claim_id)
+        if raw is None:
+            raise ValueError("news claim not found")
+        return NewsClaim(**raw)
+
+    def _news_evidence_for_claim(self, claim_id: str) -> list[NewsEvidence]:
+        return [NewsEvidence(**row) for row in self.store.list_news_evidence(claim_id=claim_id)]
+
+    def _news_claims_for_article(self, article_id: str) -> list[NewsClaim]:
+        return [NewsClaim(**row) for row in self.store.list_news_claims(article_id=article_id)]
+
+    def _news_claims_for_ids(self, claim_ids: list[str]) -> list[NewsClaim]:
+        return [self._news_claim(claim_id) for claim_id in claim_ids]
+
+    def _newsroom_package(self, package_id: str) -> NewsroomPackage:
+        raw = self.store.get_newsroom_package(package_id)
+        if raw is None:
+            raise ValueError("newsroom package not found")
+        return NewsroomPackage(**raw)
 
     def create_podcast_room(self, payload: PodcastRoomInput) -> PodcastRoom:
         room = podcast_create_room(payload)

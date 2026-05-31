@@ -133,6 +133,36 @@
   },
   {
     "method": "GET",
+    "path": "/dashboard/newsrooms/audit-logs",
+    "name": "dashboard_newsrooms_audit_logs",
+    "module_owner": "newsrooms_council_dashboard"
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/cards",
+    "name": "dashboard_newsrooms_cards",
+    "module_owner": "newsrooms_council_dashboard"
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/pages",
+    "name": "dashboard_newsrooms_pages",
+    "module_owner": "newsrooms_council_dashboard"
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/risk-alerts",
+    "name": "dashboard_newsrooms_risk_alerts",
+    "module_owner": "newsrooms_council_dashboard"
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/safety-boundaries",
+    "name": "dashboard_newsrooms_safety_boundaries",
+    "module_owner": "newsrooms_council_dashboard"
+  },
+  {
+    "method": "GET",
     "path": "/dashboard/podcast-council/cards",
     "name": "podcast_council_dashboard_cards",
     "module_owner": "podcast_council_dashboard"
@@ -160,6 +190,156 @@
     "path": "/health",
     "name": "health",
     "module_owner": "api_health"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/articles",
+    "name": "newsrooms_articles",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/articles",
+    "name": "newsrooms_article_create",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/articles/{article_id}",
+    "name": "newsrooms_article_detail",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/articles/{article_id}/extract-claims",
+    "name": "newsrooms_article_extract_claims",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/articles/{article_id}/normalize",
+    "name": "newsrooms_article_normalize",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/audit-logs",
+    "name": "newsrooms_audit_logs",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/claims",
+    "name": "newsrooms_claims",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/claims",
+    "name": "newsrooms_claim_create",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/claims/{claim_id}",
+    "name": "newsrooms_claim_detail",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/claims/{claim_id}/evidence",
+    "name": "newsrooms_claim_evidence",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/claims/{claim_id}/route-stage7",
+    "name": "newsrooms_claim_route_stage7",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/claims/{claim_id}/submit-stage6",
+    "name": "newsrooms_claim_submit_stage6",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/corrections",
+    "name": "newsrooms_correction_create",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/feeds",
+    "name": "newsrooms_feeds",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/feeds",
+    "name": "newsrooms_feed_create",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/feeds/{feed_id}/ingest",
+    "name": "newsrooms_feed_ingest",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/packages",
+    "name": "newsrooms_packages",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/packages",
+    "name": "newsrooms_package_create",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/packages/{package_id}",
+    "name": "newsrooms_package_detail",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/packages/{package_id}/news-to-debate",
+    "name": "newsrooms_package_news_to_debate",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/packages/{package_id}/script",
+    "name": "newsrooms_package_script",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/risk-alerts",
+    "name": "newsrooms_risk_alerts",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/sources",
+    "name": "newsrooms_sources",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/sources",
+    "name": "newsrooms_source_create",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/sources/{source_id}",
+    "name": "newsrooms_source_detail",
+    "module_owner": "newsrooms_council"
   },
   {
     "method": "GET",

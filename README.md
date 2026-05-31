@@ -34,6 +34,20 @@ Report 46 adds a safe local agent-control slice before the council fabric:
 
 These layers reduce workload and structure events. They are not the Truth Engine, not the Knowledge Graph, not the final governance authority, and not a monetization engine.
 
+## Newsrooms Council MVP
+
+The Newsrooms Council backend adds a deterministic local editorial control plane for source/feed ingestion, raw article intake, article normalization, claim extraction, evidence submission, source reliability scoring, newsworthiness scoring, editorial risk scoring, Stage 7 candidate routing, Stage 6 submission packets, newsroom packages, preview-only scripts, news-to-debate handoffs, corrections, risk alerts, audit logs, and dashboard pages.
+
+Newsworthiness and SourceReliability are bounded routing signals, not TruthScore. The Newsrooms Council cannot publish final truth, cannot update Stage 1, cannot update Stage 4, and cannot bypass Stage 6. News-to-debate handoff is candidate-only. Evidence submissions require a no-fabricated-evidence attestation, and the MVP performs no external provider calls, no real payments, and no production database writes.
+
+Dashboard endpoints:
+
+- `GET /dashboard/newsrooms/cards`
+- `GET /dashboard/newsrooms/pages`
+- `GET /dashboard/newsrooms/risk-alerts`
+- `GET /dashboard/newsrooms/audit-logs`
+- `GET /dashboard/newsrooms/safety-boundaries`
+
 
 ## Stage 7 and Agent Collapse Final Wiring
 
