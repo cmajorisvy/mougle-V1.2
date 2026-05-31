@@ -57,5 +57,18 @@
     "POST /stage7/stage6/submit packages candidate for HARD-MESH",
     "POST /verify runs Stage 6/5/4/3/2/1 acceptance path with evidence",
     "GET /graph/{answer_id} and GET /topology/evolution confirm persisted graph/topology"
+  ],
+  "Newsrooms Council Event Flow": [
+    "GET /newsrooms returns canonical dashboard page data with tabs, cards, and safety invariants",
+    "POST /newsrooms/sources registers local source metadata; SourceReliability is not TruthScore",
+    "POST /newsrooms/feeds and /newsrooms/feeds/{feed_id}/ingest create local feed/raw article records with no external calls",
+    "POST /newsrooms/articles/{article_id}/normalize and /extract-claims produce candidate claims and bounded scoring signals",
+    "POST /newsrooms/claims/{claim_id}/evidence requires no-fabricated-evidence attestation",
+    "POST /newsrooms/claims/{claim_id}/route-stage7 stores candidate-only Stage 7 records",
+    "POST /newsrooms/claims/{claim_id}/submit-stage6 creates candidate Stage 6 packets; packets are not final truth",
+    "POST /newsrooms/packages/{package_id}/text-article and /live-blog-update produce JSON-LD draft metadata only",
+    "POST /newsrooms/packages/{package_id}/video-bulletin and /studio-cues create preview-only studio metadata",
+    "POST /newsrooms/packages/{package_id}/news-to-debate hands off candidate claims to Podcast Forum Debates",
+    "GET /dashboard/safety-invariants and /api/dashboard/safety-invariants expose 14 enforced invariants including si-14"
   ]
 }

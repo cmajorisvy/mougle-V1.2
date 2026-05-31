@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from app.models import (
     AgentActionDecision,
@@ -17,6 +17,46 @@ from app.models import (
     AgentCollapseReview,
     CouncilSocketDecision,
     CouncilSocketEnvelope,
+    NewsCanonicalCluster,
+    NewsCategory,
+    NewsClaim,
+    NewsCorrectionRecord,
+    NewsEvidence,
+    NewsFeed,
+    NewsHreflangVariant,
+    NewsIngestEvent,
+    NewsAnchorScript,
+    NewsAnchorScriptLine,
+    NewsModalityDivergenceReport,
+    NewsOriginalityReport,
+    NewsRobotExplainerCue,
+    NewsScoreBundle,
+    NewsSeoArtifact,
+    NewsStudioAiReconstructionLabel,
+    NewsStudioAssetRequirement,
+    NewsStudioLowerThird,
+    NewsStudioRightsCheck,
+    NewsStudioSceneCue,
+    NewsStudioScreenState,
+    NewsStudioSfxCue,
+    NewsStudioTickerItem,
+    NewsSitemapEntry,
+    NewsSource,
+    NewsSourceReliabilityRecord,
+    NewsStructuredDataArtifact,
+    NewsStage6SubmissionPacket,
+    NewsStage7CandidateRoute,
+    NewsToDebateHandoff,
+    NewsroomAuditLog,
+    NewsroomPackage,
+    NewsroomRiskAlert,
+    NewsroomScript,
+    NewsroomSegment,
+    NewsTopic,
+    NewsVideoBulletin,
+    NewsVideoSeoArtifact,
+    NewsVideoSitemapEntry,
+    NormalizedNewsArticle,
     PodcastAgentInvitation,
     PodcastClaimReview,
     PodcastCouncilAuditLog,
@@ -31,6 +71,7 @@ from app.models import (
     PodcastStage6SubmissionPacket,
     PodcastStage7CandidateRoute,
     QueryTankItem,
+    RawNewsItem,
     SignalProcessingRecord,
     Stage7ExternalRecord,
     Stage7SubmissionPackage,
@@ -465,6 +506,480 @@ class SQLiteStore:
                     room_id TEXT,
                     claim_id TEXT,
                     action TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_sources (
+                    source_id TEXT PRIMARY KEY,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_feeds (
+                    feed_id TEXT PRIMARY KEY,
+                    source_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_ingest_events (
+                    ingest_event_id TEXT PRIMARY KEY,
+                    feed_id TEXT,
+                    raw_item_id TEXT NOT NULL,
+                    source_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS raw_news_items (
+                    raw_item_id TEXT PRIMARY KEY,
+                    feed_id TEXT,
+                    source_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS normalized_news_articles (
+                    article_id TEXT PRIMARY KEY,
+                    raw_item_id TEXT,
+                    source_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_claims (
+                    claim_id TEXT PRIMARY KEY,
+                    article_id TEXT NOT NULL,
+                    source_id TEXT,
+                    status TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_evidence (
+                    evidence_id TEXT PRIMARY KEY,
+                    claim_id TEXT NOT NULL,
+                    article_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_source_reliability_records (
+                    record_id TEXT PRIMARY KEY,
+                    source_id TEXT NOT NULL,
+                    score REAL NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_score_bundles (
+                    score_bundle_id TEXT PRIMARY KEY,
+                    article_id TEXT,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_stage7_candidate_routes (
+                    route_id TEXT PRIMARY KEY,
+                    claim_id TEXT NOT NULL,
+                    article_id TEXT NOT NULL,
+                    stage7_record_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_stage6_submission_packets (
+                    packet_id TEXT PRIMARY KEY,
+                    claim_id TEXT NOT NULL,
+                    article_id TEXT NOT NULL,
+                    stage7_submission_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS newsroom_packages (
+                    package_id TEXT PRIMARY KEY,
+                    article_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    modality TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS newsroom_scripts (
+                    script_id TEXT PRIMARY KEY,
+                    package_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS newsroom_segments (
+                    segment_id TEXT PRIMARY KEY,
+                    script_id TEXT NOT NULL,
+                    package_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_to_debate_handoffs (
+                    handoff_id TEXT PRIMARY KEY,
+                    package_id TEXT NOT NULL,
+                    article_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_correction_records (
+                    correction_id TEXT PRIMARY KEY,
+                    article_id TEXT,
+                    claim_id TEXT,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS newsroom_risk_alerts (
+                    alert_id TEXT PRIMARY KEY,
+                    article_id TEXT,
+                    claim_id TEXT,
+                    severity TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS newsroom_audit_logs (
+                    audit_id TEXT PRIMARY KEY,
+                    entity_type TEXT NOT NULL,
+                    entity_id TEXT NOT NULL,
+                    action TEXT NOT NULL,
+                    article_id TEXT,
+                    claim_id TEXT,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_categories (
+                    category_id TEXT PRIMARY KEY,
+                    parent_category_id TEXT,
+                    locale TEXT NOT NULL,
+                    slug TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_topics (
+                    topic_id TEXT PRIMARY KEY,
+                    category_id TEXT,
+                    locale TEXT NOT NULL,
+                    slug TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_canonical_clusters (
+                    cluster_id TEXT PRIMARY KEY,
+                    article_id TEXT,
+                    package_id TEXT,
+                    canonical_url TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_hreflang_variants (
+                    variant_id TEXT PRIMARY KEY,
+                    cluster_id TEXT NOT NULL,
+                    locale TEXT NOT NULL,
+                    url TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_seo_artifacts (
+                    artifact_id TEXT PRIMARY KEY,
+                    article_id TEXT NOT NULL,
+                    package_id TEXT,
+                    output_type TEXT NOT NULL,
+                    canonical_url TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_sitemap_entries (
+                    entry_id TEXT PRIMARY KEY,
+                    url TEXT NOT NULL,
+                    is_news INTEGER NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_structured_data_artifacts (
+                    artifact_id TEXT PRIMARY KEY,
+                    article_id TEXT,
+                    package_id TEXT,
+                    structured_data_type TEXT NOT NULL,
+                    canonical_url TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_originality_reports (
+                    report_id TEXT PRIMARY KEY,
+                    article_id TEXT NOT NULL,
+                    package_id TEXT,
+                    blocked INTEGER NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_video_bulletins (
+                    bulletin_id TEXT PRIMARY KEY,
+                    package_id TEXT NOT NULL,
+                    article_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_anchor_scripts (
+                    script_id TEXT PRIMARY KEY,
+                    bulletin_id TEXT NOT NULL,
+                    package_id TEXT NOT NULL,
+                    article_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_anchor_script_lines (
+                    line_id TEXT PRIMARY KEY,
+                    script_id TEXT NOT NULL,
+                    bulletin_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_robot_explainer_cues (
+                    cue_id TEXT PRIMARY KEY,
+                    bulletin_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_studio_scene_cues (
+                    cue_id TEXT PRIMARY KEY,
+                    bulletin_id TEXT NOT NULL,
+                    target TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_studio_screen_states (
+                    state_id TEXT PRIMARY KEY,
+                    bulletin_id TEXT NOT NULL,
+                    target TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_studio_sfx_cues (
+                    sfx_id TEXT PRIMARY KEY,
+                    bulletin_id TEXT NOT NULL,
+                    cue_type TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_studio_lower_thirds (
+                    lower_third_id TEXT PRIMARY KEY,
+                    bulletin_id TEXT NOT NULL,
+                    target TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_studio_ticker_items (
+                    ticker_id TEXT PRIMARY KEY,
+                    bulletin_id TEXT NOT NULL,
+                    target TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_studio_asset_requirements (
+                    requirement_id TEXT PRIMARY KEY,
+                    bulletin_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_studio_rights_checks (
+                    rights_check_id TEXT PRIMARY KEY,
+                    bulletin_id TEXT NOT NULL,
+                    passed INTEGER NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_studio_ai_reconstruction_labels (
+                    label_id TEXT PRIMARY KEY,
+                    bulletin_id TEXT NOT NULL,
+                    disclosure TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_video_seo_artifacts (
+                    video_seo_id TEXT PRIMARY KEY,
+                    bulletin_id TEXT NOT NULL,
+                    package_id TEXT NOT NULL,
+                    article_id TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_video_sitemap_entries (
+                    entry_id TEXT PRIMARY KEY,
+                    bulletin_id TEXT NOT NULL,
+                    watch_url TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS news_modality_divergence_reports (
+                    report_id TEXT PRIMARY KEY,
+                    bulletin_id TEXT NOT NULL,
+                    package_id TEXT NOT NULL,
+                    article_id TEXT NOT NULL,
                     payload_json TEXT NOT NULL,
                     created_at TEXT DEFAULT CURRENT_TIMESTAMP
                 )
@@ -1222,6 +1737,626 @@ class SQLiteStore:
                     "SELECT payload_json FROM podcast_council_audit_logs ORDER BY created_at DESC"
                 ).fetchall()
         return [json.loads(row[0]) for row in rows]
+
+    def _save_payload(
+        self,
+        table: str,
+        id_column: str,
+        id_value: str,
+        payload: Any,
+        columns: dict[str, Any] | None = None,
+    ) -> None:
+        columns = columns or {}
+        names = [id_column, *columns.keys(), "payload_json"]
+        values = [id_value, *columns.values(), payload.model_dump_json()]
+        placeholders = ", ".join("?" for _ in names)
+        with self._connect() as conn:
+            conn.execute(
+                f"INSERT OR REPLACE INTO {table}({', '.join(names)}) VALUES ({placeholders})",
+                values,
+            )
+
+    def _list_payloads(
+        self,
+        table: str,
+        filters: dict[str, Any] | None = None,
+        *,
+        order_by: str = "created_at DESC",
+    ) -> list[dict]:
+        filters = {key: value for key, value in (filters or {}).items() if value is not None}
+        where = ""
+        values: list[Any] = []
+        if filters:
+            where = " WHERE " + " AND ".join(f"{key} = ?" for key in filters)
+            values = list(filters.values())
+        with self._connect() as conn:
+            rows = conn.execute(
+                f"SELECT payload_json FROM {table}{where} ORDER BY {order_by}",
+                values,
+            ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+    def _get_payload(self, table: str, id_column: str, id_value: str) -> Optional[dict]:
+        with self._connect() as conn:
+            row = conn.execute(
+                f"SELECT payload_json FROM {table} WHERE {id_column} = ?",
+                (id_value,),
+            ).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def save_news_source(self, source: NewsSource) -> None:
+        self._save_payload("news_sources", "source_id", source.source_id, source)
+
+    def list_news_sources(self) -> list[dict]:
+        return self._list_payloads("news_sources", order_by="created_at DESC")
+
+    def get_news_source(self, source_id: str) -> Optional[dict]:
+        return self._get_payload("news_sources", "source_id", source_id)
+
+    def save_news_feed(self, feed: NewsFeed) -> None:
+        self._save_payload("news_feeds", "feed_id", feed.feed_id, feed, {"source_id": feed.source_id})
+
+    def list_news_feeds(self, source_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_feeds", {"source_id": source_id})
+
+    def get_news_feed(self, feed_id: str) -> Optional[dict]:
+        return self._get_payload("news_feeds", "feed_id", feed_id)
+
+    def save_news_ingest_event(self, event: NewsIngestEvent) -> None:
+        self._save_payload(
+            "news_ingest_events",
+            "ingest_event_id",
+            event.ingest_event_id,
+            event,
+            {"feed_id": event.feed_id, "raw_item_id": event.raw_item_id, "source_id": event.source_id},
+        )
+
+    def list_news_ingest_events(self, feed_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_ingest_events", {"feed_id": feed_id})
+
+    def save_raw_news_item(self, item: RawNewsItem) -> None:
+        self._save_payload(
+            "raw_news_items",
+            "raw_item_id",
+            item.raw_item_id,
+            item,
+            {"feed_id": item.feed_id, "source_id": item.source_id},
+        )
+
+    def list_raw_news_items(self, source_id: str | None = None, feed_id: str | None = None) -> list[dict]:
+        return self._list_payloads("raw_news_items", {"source_id": source_id, "feed_id": feed_id})
+
+    def get_raw_news_item(self, raw_item_id: str) -> Optional[dict]:
+        return self._get_payload("raw_news_items", "raw_item_id", raw_item_id)
+
+    def save_normalized_news_article(self, article: NormalizedNewsArticle) -> None:
+        self._save_payload(
+            "normalized_news_articles",
+            "article_id",
+            article.article_id,
+            article,
+            {"raw_item_id": article.raw_item_id, "source_id": article.source_id, "status": article.status.value},
+        )
+
+    def list_normalized_news_articles(self, source_id: str | None = None) -> list[dict]:
+        return self._list_payloads("normalized_news_articles", {"source_id": source_id})
+
+    def get_normalized_news_article(self, article_id: str) -> Optional[dict]:
+        return self._get_payload("normalized_news_articles", "article_id", article_id)
+
+    def get_normalized_news_article_for_raw_item(self, raw_item_id: str) -> Optional[dict]:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT payload_json FROM normalized_news_articles WHERE raw_item_id = ? ORDER BY created_at DESC",
+                (raw_item_id,),
+            ).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def save_news_claim(self, claim: NewsClaim) -> None:
+        self._save_payload(
+            "news_claims",
+            "claim_id",
+            claim.claim_id,
+            claim,
+            {"article_id": claim.article_id, "source_id": claim.source_id, "status": claim.status.value},
+        )
+
+    def list_news_claims(self, article_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_claims", {"article_id": article_id})
+
+    def get_news_claim(self, claim_id: str) -> Optional[dict]:
+        return self._get_payload("news_claims", "claim_id", claim_id)
+
+    def save_news_evidence(self, evidence: NewsEvidence) -> None:
+        self._save_payload(
+            "news_evidence",
+            "evidence_id",
+            evidence.evidence_id,
+            evidence,
+            {"claim_id": evidence.claim_id, "article_id": evidence.article_id},
+        )
+
+    def list_news_evidence(
+        self, article_id: str | None = None, claim_id: str | None = None
+    ) -> list[dict]:
+        return self._list_payloads("news_evidence", {"article_id": article_id, "claim_id": claim_id})
+
+    def save_news_source_reliability_record(self, record: NewsSourceReliabilityRecord) -> None:
+        self._save_payload(
+            "news_source_reliability_records",
+            "record_id",
+            record.record_id,
+            record,
+            {"source_id": record.source_id, "score": record.score},
+        )
+
+    def list_news_source_reliability_records(self, source_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_source_reliability_records", {"source_id": source_id})
+
+    def save_news_score_bundle(self, bundle: NewsScoreBundle) -> None:
+        self._save_payload(
+            "news_score_bundles",
+            "score_bundle_id",
+            bundle.score_bundle_id,
+            bundle,
+            {"article_id": bundle.article_id},
+        )
+
+    def list_news_score_bundles(self, article_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_score_bundles", {"article_id": article_id})
+
+    def save_news_stage7_route(self, route: NewsStage7CandidateRoute) -> None:
+        self._save_payload(
+            "news_stage7_candidate_routes",
+            "route_id",
+            route.route_id,
+            route,
+            {
+                "claim_id": route.claim_id,
+                "article_id": route.article_id,
+                "stage7_record_id": route.stage7_record_id,
+            },
+        )
+
+    def list_news_stage7_routes(self, article_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_stage7_candidate_routes", {"article_id": article_id})
+
+    def get_news_stage7_route_for_claim(self, claim_id: str) -> Optional[dict]:
+        with self._connect() as conn:
+            row = conn.execute(
+                """
+                SELECT payload_json FROM news_stage7_candidate_routes
+                WHERE claim_id = ? ORDER BY created_at DESC
+                """,
+                (claim_id,),
+            ).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def save_news_stage6_packet(self, packet: NewsStage6SubmissionPacket) -> None:
+        self._save_payload(
+            "news_stage6_submission_packets",
+            "packet_id",
+            packet.packet_id,
+            packet,
+            {
+                "claim_id": packet.claim_id,
+                "article_id": packet.article_id,
+                "stage7_submission_id": packet.stage7_submission_id,
+            },
+        )
+
+    def list_news_stage6_packets(self, article_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_stage6_submission_packets", {"article_id": article_id})
+
+    def save_newsroom_package(self, package: NewsroomPackage) -> None:
+        self._save_payload(
+            "newsroom_packages",
+            "package_id",
+            package.package_id,
+            package,
+            {"article_id": package.article_id, "status": package.status.value, "modality": package.modality.value},
+        )
+
+    def list_newsroom_packages(self, article_id: str | None = None) -> list[dict]:
+        return self._list_payloads("newsroom_packages", {"article_id": article_id})
+
+    def get_newsroom_package(self, package_id: str) -> Optional[dict]:
+        return self._get_payload("newsroom_packages", "package_id", package_id)
+
+    def save_newsroom_script(self, script: NewsroomScript) -> None:
+        self._save_payload(
+            "newsroom_scripts",
+            "script_id",
+            script.script_id,
+            script,
+            {"package_id": script.package_id},
+        )
+
+    def list_newsroom_scripts(self, package_id: str | None = None) -> list[dict]:
+        return self._list_payloads("newsroom_scripts", {"package_id": package_id})
+
+    def save_newsroom_segment(self, segment: NewsroomSegment) -> None:
+        self._save_payload(
+            "newsroom_segments",
+            "segment_id",
+            segment.segment_id,
+            segment,
+            {"script_id": segment.script_id, "package_id": segment.package_id},
+        )
+
+    def list_newsroom_segments(self, package_id: str | None = None) -> list[dict]:
+        return self._list_payloads("newsroom_segments", {"package_id": package_id})
+
+    def save_news_to_debate_handoff(self, handoff: NewsToDebateHandoff) -> None:
+        self._save_payload(
+            "news_to_debate_handoffs",
+            "handoff_id",
+            handoff.handoff_id,
+            handoff,
+            {"package_id": handoff.package_id, "article_id": handoff.article_id},
+        )
+
+    def list_news_to_debate_handoffs(self, article_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_to_debate_handoffs", {"article_id": article_id})
+
+    def save_news_correction_record(self, correction: NewsCorrectionRecord) -> None:
+        self._save_payload(
+            "news_correction_records",
+            "correction_id",
+            correction.correction_id,
+            correction,
+            {"article_id": correction.article_id, "claim_id": correction.claim_id},
+        )
+
+    def list_news_correction_records(self, article_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_correction_records", {"article_id": article_id})
+
+    def save_newsroom_risk_alert(self, alert: NewsroomRiskAlert) -> None:
+        self._save_payload(
+            "newsroom_risk_alerts",
+            "alert_id",
+            alert.alert_id,
+            alert,
+            {"article_id": alert.article_id, "claim_id": alert.claim_id, "severity": alert.severity.value},
+        )
+
+    def list_newsroom_risk_alerts(
+        self, article_id: str | None = None, claim_id: str | None = None
+    ) -> list[dict]:
+        return self._list_payloads("newsroom_risk_alerts", {"article_id": article_id, "claim_id": claim_id})
+
+    def save_newsroom_audit_log(self, audit: NewsroomAuditLog) -> None:
+        self._save_payload(
+            "newsroom_audit_logs",
+            "audit_id",
+            audit.audit_id,
+            audit,
+            {
+                "entity_type": audit.entity_type,
+                "entity_id": audit.entity_id,
+                "action": audit.action,
+                "article_id": audit.article_id,
+                "claim_id": audit.claim_id,
+            },
+        )
+
+    def list_newsroom_audit_logs(self, article_id: str | None = None) -> list[dict]:
+        return self._list_payloads("newsroom_audit_logs", {"article_id": article_id})
+
+    def save_news_category(self, category: NewsCategory) -> None:
+        self._save_payload(
+            "news_categories",
+            "category_id",
+            category.category_id,
+            category,
+            {
+                "parent_category_id": category.parent_category_id,
+                "locale": category.locale,
+                "slug": category.slug,
+            },
+        )
+
+    def list_news_categories(self, parent_category_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_categories", {"parent_category_id": parent_category_id})
+
+    def get_news_category(self, category_id: str) -> Optional[dict]:
+        return self._get_payload("news_categories", "category_id", category_id)
+
+    def save_news_topic(self, topic: NewsTopic) -> None:
+        self._save_payload(
+            "news_topics",
+            "topic_id",
+            topic.topic_id,
+            topic,
+            {"category_id": topic.category_id, "locale": topic.locale, "slug": topic.slug},
+        )
+
+    def list_news_topics(self, category_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_topics", {"category_id": category_id})
+
+    def save_news_canonical_cluster(self, cluster: NewsCanonicalCluster) -> None:
+        self._save_payload(
+            "news_canonical_clusters",
+            "cluster_id",
+            cluster.cluster_id,
+            cluster,
+            {
+                "article_id": cluster.article_id,
+                "package_id": cluster.package_id,
+                "canonical_url": cluster.canonical_url,
+            },
+        )
+
+    def list_news_canonical_clusters(self, article_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_canonical_clusters", {"article_id": article_id})
+
+    def save_news_hreflang_variant(self, variant: NewsHreflangVariant) -> None:
+        self._save_payload(
+            "news_hreflang_variants",
+            "variant_id",
+            variant.variant_id,
+            variant,
+            {"cluster_id": variant.cluster_id, "locale": variant.locale, "url": variant.url},
+        )
+
+    def list_news_hreflang_variants(self, cluster_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_hreflang_variants", {"cluster_id": cluster_id})
+
+    def save_news_seo_artifact(self, artifact: NewsSeoArtifact) -> None:
+        self._save_payload(
+            "news_seo_artifacts",
+            "artifact_id",
+            artifact.artifact_id,
+            artifact,
+            {
+                "article_id": artifact.article_id,
+                "package_id": artifact.package_id,
+                "output_type": artifact.output_type.value,
+                "canonical_url": artifact.canonical_url,
+            },
+        )
+
+    def list_news_seo_artifacts(
+        self, article_id: str | None = None, package_id: str | None = None
+    ) -> list[dict]:
+        return self._list_payloads("news_seo_artifacts", {"article_id": article_id, "package_id": package_id})
+
+    def get_latest_news_seo_artifact(self, article_id: str) -> Optional[dict]:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT payload_json FROM news_seo_artifacts WHERE article_id = ? ORDER BY created_at DESC",
+                (article_id,),
+            ).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def save_news_sitemap_entry(self, entry: NewsSitemapEntry) -> None:
+        self._save_payload(
+            "news_sitemap_entries",
+            "entry_id",
+            entry.entry_id,
+            entry,
+            {"url": entry.url, "is_news": 1 if entry.is_news else 0},
+        )
+
+    def list_news_sitemap_entries(self) -> list[dict]:
+        return self._list_payloads("news_sitemap_entries")
+
+    def save_news_structured_data_artifact(self, artifact: NewsStructuredDataArtifact) -> None:
+        self._save_payload(
+            "news_structured_data_artifacts",
+            "artifact_id",
+            artifact.artifact_id,
+            artifact,
+            {
+                "article_id": artifact.article_id,
+                "package_id": artifact.package_id,
+                "structured_data_type": artifact.structured_data_type.value,
+                "canonical_url": artifact.canonical_url,
+            },
+        )
+
+    def list_news_structured_data_artifacts(
+        self, article_id: str | None = None, package_id: str | None = None
+    ) -> list[dict]:
+        return self._list_payloads(
+            "news_structured_data_artifacts",
+            {"article_id": article_id, "package_id": package_id},
+        )
+
+    def save_news_originality_report(self, report: NewsOriginalityReport) -> None:
+        self._save_payload(
+            "news_originality_reports",
+            "report_id",
+            report.report_id,
+            report,
+            {"article_id": report.article_id, "package_id": report.package_id, "blocked": 1 if report.blocked else 0},
+        )
+
+    def list_news_originality_reports(self, article_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_originality_reports", {"article_id": article_id})
+
+    def save_news_video_bulletin(self, bulletin: NewsVideoBulletin) -> None:
+        self._save_payload(
+            "news_video_bulletins",
+            "bulletin_id",
+            bulletin.bulletin_id,
+            bulletin,
+            {"package_id": bulletin.package_id, "article_id": bulletin.article_id},
+        )
+
+    def list_news_video_bulletins(self, package_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_video_bulletins", {"package_id": package_id})
+
+    def get_news_video_bulletin(self, bulletin_id: str) -> Optional[dict]:
+        return self._get_payload("news_video_bulletins", "bulletin_id", bulletin_id)
+
+    def save_news_anchor_script(self, script: NewsAnchorScript) -> None:
+        self._save_payload(
+            "news_anchor_scripts",
+            "script_id",
+            script.script_id,
+            script,
+            {"bulletin_id": script.bulletin_id, "package_id": script.package_id, "article_id": script.article_id},
+        )
+
+    def list_news_anchor_scripts(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_anchor_scripts", {"bulletin_id": bulletin_id})
+
+    def save_news_anchor_script_line(self, line: NewsAnchorScriptLine) -> None:
+        self._save_payload(
+            "news_anchor_script_lines",
+            "line_id",
+            line.line_id,
+            line,
+            {"script_id": line.script_id, "bulletin_id": line.bulletin_id},
+        )
+
+    def list_news_anchor_script_lines(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_anchor_script_lines", {"bulletin_id": bulletin_id})
+
+    def save_news_robot_explainer_cue(self, cue: NewsRobotExplainerCue) -> None:
+        self._save_payload(
+            "news_robot_explainer_cues",
+            "cue_id",
+            cue.cue_id,
+            cue,
+            {"bulletin_id": cue.bulletin_id},
+        )
+
+    def list_news_robot_explainer_cues(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_robot_explainer_cues", {"bulletin_id": bulletin_id})
+
+    def save_news_studio_scene_cue(self, cue: NewsStudioSceneCue) -> None:
+        self._save_payload(
+            "news_studio_scene_cues",
+            "cue_id",
+            cue.cue_id,
+            cue,
+            {"bulletin_id": cue.bulletin_id, "target": cue.target.value},
+        )
+
+    def list_news_studio_scene_cues(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_studio_scene_cues", {"bulletin_id": bulletin_id})
+
+    def save_news_studio_screen_state(self, state: NewsStudioScreenState) -> None:
+        self._save_payload(
+            "news_studio_screen_states",
+            "state_id",
+            state.state_id,
+            state,
+            {"bulletin_id": state.bulletin_id, "target": state.target.value},
+        )
+
+    def list_news_studio_screen_states(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_studio_screen_states", {"bulletin_id": bulletin_id})
+
+    def save_news_studio_sfx_cue(self, cue: NewsStudioSfxCue) -> None:
+        self._save_payload(
+            "news_studio_sfx_cues",
+            "sfx_id",
+            cue.sfx_id,
+            cue,
+            {"bulletin_id": cue.bulletin_id, "cue_type": cue.cue_type.value},
+        )
+
+    def list_news_studio_sfx_cues(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_studio_sfx_cues", {"bulletin_id": bulletin_id})
+
+    def save_news_studio_lower_third(self, lower_third: NewsStudioLowerThird) -> None:
+        self._save_payload(
+            "news_studio_lower_thirds",
+            "lower_third_id",
+            lower_third.lower_third_id,
+            lower_third,
+            {"bulletin_id": lower_third.bulletin_id, "target": lower_third.target.value},
+        )
+
+    def list_news_studio_lower_thirds(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_studio_lower_thirds", {"bulletin_id": bulletin_id})
+
+    def save_news_studio_ticker_item(self, ticker: NewsStudioTickerItem) -> None:
+        self._save_payload(
+            "news_studio_ticker_items",
+            "ticker_id",
+            ticker.ticker_id,
+            ticker,
+            {"bulletin_id": ticker.bulletin_id, "target": ticker.target.value},
+        )
+
+    def list_news_studio_ticker_items(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_studio_ticker_items", {"bulletin_id": bulletin_id})
+
+    def save_news_studio_asset_requirement(self, requirement: NewsStudioAssetRequirement) -> None:
+        self._save_payload(
+            "news_studio_asset_requirements",
+            "requirement_id",
+            requirement.requirement_id,
+            requirement,
+            {"bulletin_id": requirement.bulletin_id},
+        )
+
+    def list_news_studio_asset_requirements(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_studio_asset_requirements", {"bulletin_id": bulletin_id})
+
+    def save_news_studio_rights_check(self, check: NewsStudioRightsCheck) -> None:
+        self._save_payload(
+            "news_studio_rights_checks",
+            "rights_check_id",
+            check.rights_check_id,
+            check,
+            {"bulletin_id": check.bulletin_id, "passed": 1 if check.passed else 0},
+        )
+
+    def list_news_studio_rights_checks(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_studio_rights_checks", {"bulletin_id": bulletin_id})
+
+    def save_news_studio_ai_reconstruction_label(self, label: NewsStudioAiReconstructionLabel) -> None:
+        self._save_payload(
+            "news_studio_ai_reconstruction_labels",
+            "label_id",
+            label.label_id,
+            label,
+            {"bulletin_id": label.bulletin_id, "disclosure": label.disclosure.value},
+        )
+
+    def list_news_studio_ai_reconstruction_labels(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_studio_ai_reconstruction_labels", {"bulletin_id": bulletin_id})
+
+    def save_news_video_seo_artifact(self, artifact: NewsVideoSeoArtifact) -> None:
+        self._save_payload(
+            "news_video_seo_artifacts",
+            "video_seo_id",
+            artifact.video_seo_id,
+            artifact,
+            {"bulletin_id": artifact.bulletin_id, "package_id": artifact.package_id, "article_id": artifact.article_id},
+        )
+
+    def list_news_video_seo_artifacts(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_video_seo_artifacts", {"bulletin_id": bulletin_id})
+
+    def save_news_video_sitemap_entry(self, entry: NewsVideoSitemapEntry) -> None:
+        self._save_payload(
+            "news_video_sitemap_entries",
+            "entry_id",
+            entry.entry_id,
+            entry,
+            {"bulletin_id": entry.bulletin_id, "watch_url": entry.watch_url},
+        )
+
+    def list_news_video_sitemap_entries(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_video_sitemap_entries", {"bulletin_id": bulletin_id})
+
+    def save_news_modality_divergence_report(self, report: NewsModalityDivergenceReport) -> None:
+        self._save_payload(
+            "news_modality_divergence_reports",
+            "report_id",
+            report.report_id,
+            report,
+            {"bulletin_id": report.bulletin_id, "package_id": report.package_id, "article_id": report.article_id},
+        )
+
+    def list_news_modality_divergence_reports(self, bulletin_id: str | None = None) -> list[dict]:
+        return self._list_payloads("news_modality_divergence_reports", {"bulletin_id": bulletin_id})
 
     def save_agent_collapse_metrics(self, metrics: AgentCollapseMetrics) -> None:
         with self._connect() as conn:

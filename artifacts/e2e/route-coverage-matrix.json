@@ -225,6 +225,18 @@
   },
   {
     "method": "GET",
+    "path": "/api/dashboard/safety-invariants",
+    "name": "api_dashboard_safety_invariants",
+    "module_owner": "newsrooms_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_newsrooms_e2e.py::test_newsrooms_council_dashboard_and_full_e2e_wiring"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
     "path": "/archive/micro-pyramid/candidates",
     "name": "archive_micro_pyramid_candidates",
     "module_owner": "archive_reuse_guard",
@@ -277,6 +289,126 @@
   },
   {
     "method": "GET",
+    "path": "/dashboard/newsrooms/audit-logs",
+    "name": "dashboard_newsrooms_audit_logs",
+    "module_owner": "newsrooms_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/cards",
+    "name": "dashboard_newsrooms_cards",
+    "module_owner": "newsrooms_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/originality",
+    "name": "dashboard_newsrooms_originality",
+    "module_owner": "newsrooms_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_newsrooms_text_seo.py::test_newsrooms_text_blog_seo_structured_data_and_originality"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/pages",
+    "name": "dashboard_newsrooms_pages",
+    "module_owner": "newsrooms_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/risk-alerts",
+    "name": "dashboard_newsrooms_risk_alerts",
+    "module_owner": "newsrooms_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/safety-boundaries",
+    "name": "dashboard_newsrooms_safety_boundaries",
+    "module_owner": "newsrooms_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/seo",
+    "name": "dashboard_newsrooms_seo",
+    "module_owner": "newsrooms_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_newsrooms_text_seo.py::test_newsrooms_text_blog_seo_structured_data_and_originality"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/studio-cues",
+    "name": "dashboard_newsrooms_studio_cues",
+    "module_owner": "newsrooms_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_newsroom_studio_video.py::test_newsroom_studio_video_compatibility_layer"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/video-bulletins",
+    "name": "dashboard_newsrooms_video_bulletins",
+    "module_owner": "newsrooms_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_newsroom_studio_video.py::test_newsroom_studio_video_compatibility_layer"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/video-safety",
+    "name": "dashboard_newsrooms_video_safety",
+    "module_owner": "newsrooms_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_newsroom_studio_video.py::test_newsroom_studio_video_compatibility_layer"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
     "path": "/dashboard/podcast-council/cards",
     "name": "podcast_council_dashboard_cards",
     "module_owner": "podcast_council_dashboard",
@@ -295,6 +427,18 @@
     "criticality": "P1",
     "tested_by": [
       "tests/test_podcast_council.py::test_podcast_council_mvp_routes_candidates_and_packets_without_truth_authority"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/safety-invariants",
+    "name": "dashboard_safety_invariants",
+    "module_owner": "newsrooms_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_newsrooms_e2e.py::test_newsrooms_council_dashboard_and_full_e2e_wiring"
     ],
     "status": "tested",
     "reason": null
@@ -332,6 +476,522 @@
     "criticality": "P1",
     "tested_by": [
       "tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms",
+    "name": "newsrooms_dashboard_page",
+    "module_owner": "newsrooms_council_dashboard",
+    "criticality": "P1",
+    "tested_by": [
+      "tests/test_newsrooms_e2e.py::test_newsrooms_council_dashboard_and_full_e2e_wiring"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/articles",
+    "name": "newsrooms_articles",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/articles",
+    "name": "newsrooms_article_create",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/articles/{article_id}",
+    "name": "newsrooms_article_detail",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/articles/{article_id}/extract-claims",
+    "name": "newsrooms_article_extract_claims",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/articles/{article_id}/normalize",
+    "name": "newsrooms_article_normalize",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/articles/{article_id}/originality-check",
+    "name": "newsrooms_article_originality_check",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_text_seo.py::test_newsrooms_text_blog_seo_structured_data_and_originality"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/articles/{article_id}/seo-artifact",
+    "name": "newsrooms_article_seo_artifact",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_text_seo.py::test_newsrooms_text_blog_seo_structured_data_and_originality"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/articles/{article_id}/seo-artifact",
+    "name": "newsrooms_article_seo_artifact_create",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_text_seo.py::test_newsrooms_text_blog_seo_structured_data_and_originality"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/audit-logs",
+    "name": "newsrooms_audit_logs",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/categories",
+    "name": "newsrooms_categories",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_text_seo.py::test_newsrooms_text_blog_seo_structured_data_and_originality"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/categories",
+    "name": "newsrooms_category_create",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_text_seo.py::test_newsrooms_text_blog_seo_structured_data_and_originality"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/claims",
+    "name": "newsrooms_claims",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/claims",
+    "name": "newsrooms_claim_create",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/claims/{claim_id}",
+    "name": "newsrooms_claim_detail",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/claims/{claim_id}/evidence",
+    "name": "newsrooms_claim_evidence",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/claims/{claim_id}/route-stage7",
+    "name": "newsrooms_claim_route_stage7",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/claims/{claim_id}/submit-stage6",
+    "name": "newsrooms_claim_submit_stage6",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/corrections",
+    "name": "newsrooms_correction_create",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/feeds",
+    "name": "newsrooms_feeds",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/feeds",
+    "name": "newsrooms_feed_create",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/feeds/{feed_id}/ingest",
+    "name": "newsrooms_feed_ingest",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/packages",
+    "name": "newsrooms_packages",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/packages",
+    "name": "newsrooms_package_create",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/packages/{package_id}",
+    "name": "newsrooms_package_detail",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/packages/{package_id}/blog-post",
+    "name": "newsrooms_package_blog_post",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_text_seo.py::test_newsrooms_text_blog_seo_structured_data_and_originality"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/packages/{package_id}/live-blog-update",
+    "name": "newsrooms_package_live_blog_update",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_text_seo.py::test_newsrooms_text_blog_seo_structured_data_and_originality"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/packages/{package_id}/news-to-debate",
+    "name": "newsrooms_package_news_to_debate",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/packages/{package_id}/script",
+    "name": "newsrooms_package_script",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/packages/{package_id}/text-article",
+    "name": "newsrooms_package_text_article",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_text_seo.py::test_newsrooms_text_blog_seo_structured_data_and_originality"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/packages/{package_id}/video-bulletin",
+    "name": "newsrooms_package_video_bulletin",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsroom_studio_video.py::test_newsroom_studio_video_compatibility_layer"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/risk-alerts",
+    "name": "newsrooms_risk_alerts",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/sources",
+    "name": "newsrooms_sources",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/sources",
+    "name": "newsrooms_source_create",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/sources/{source_id}",
+    "name": "newsrooms_source_detail",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsrooms_council.py::test_newsrooms_council_mvp_routes_candidates_packets_and_dashboard"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/video-bulletins",
+    "name": "newsrooms_video_bulletins",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsroom_studio_video.py::test_newsroom_studio_video_compatibility_layer"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}",
+    "name": "newsrooms_video_bulletin_detail",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsroom_studio_video.py::test_newsroom_studio_video_compatibility_layer"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}/anchor-script",
+    "name": "newsrooms_video_bulletin_anchor_script",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsroom_studio_video.py::test_newsroom_studio_video_compatibility_layer"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}/modality-divergence",
+    "name": "newsrooms_video_bulletin_modality_divergence",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsroom_studio_video.py::test_newsroom_studio_video_compatibility_layer"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}/rights-check",
+    "name": "newsrooms_video_bulletin_rights_check",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsroom_studio_video.py::test_newsroom_studio_video_compatibility_layer"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}/sfx-plan",
+    "name": "newsrooms_video_bulletin_sfx_plan",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsroom_studio_video.py::test_newsroom_studio_video_compatibility_layer"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}/studio-cues",
+    "name": "newsrooms_video_bulletin_studio_cues",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsroom_studio_video.py::test_newsroom_studio_video_compatibility_layer"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}/video-seo",
+    "name": "newsrooms_video_bulletin_video_seo",
+    "module_owner": "newsrooms_council",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_newsroom_studio_video.py::test_newsroom_studio_video_compatibility_layer"
     ],
     "status": "tested",
     "reason": null

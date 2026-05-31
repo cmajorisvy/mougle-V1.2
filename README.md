@@ -34,6 +34,34 @@ Report 46 adds a safe local agent-control slice before the council fabric:
 
 These layers reduce workload and structure events. They are not the Truth Engine, not the Knowledge Graph, not the final governance authority, and not a monetization engine.
 
+## Newsrooms Council MVP
+
+The Newsrooms Council backend adds a deterministic local editorial control plane for source/feed ingestion, raw article intake, article normalization, claim extraction, evidence submission, source reliability scoring, newsworthiness scoring, editorial risk scoring, Stage 7 candidate routing, Stage 6 submission packets, newsroom packages, preview-only scripts, news-to-debate handoffs, corrections, risk alerts, audit logs, and dashboard pages.
+
+Newsworthiness and SourceReliability are bounded routing signals, not TruthScore. The Newsrooms Council cannot publish final truth, cannot update Stage 1, cannot update Stage 4, and cannot bypass Stage 6. News-to-debate handoff is candidate-only. Evidence submissions require a no-fabricated-evidence attestation, and the MVP performs no external provider calls, no real payments, and no production database writes.
+
+Text/blog/SEO support adds reported news articles, live blog updates, blog explainers, correction notices, taxonomy, canonical/hreflang metadata, news sitemap entries, JSON-LD artifacts, and originality reports. Text is generated from the claim graph and evidence references, not copied source paragraphs, and remains a draft/candidate artifact with no publishing command.
+
+News Room Studio video compatibility adds data/control metadata for candidate video bulletins, short anchor scripts, robot explainer cues, controlled `MGL_*` studio preview targets, safe SFX plans, AI reconstruction labels, rights checks, VideoObject metadata, video sitemap entries, and modality divergence reports. It does not generate real video, execute studio hardware, call platform APIs, publish to social/video platforms, or change Stage 6/Stage 7 boundaries.
+
+The canonical dashboard page data endpoint is `GET /newsrooms`. It returns tabs for sources, feeds, articles, claims, text/blog output, live updates, SEO artifacts, Stage 7 candidates, Stage 6 packets, video bulletins, studio cues, corrections, risk alerts, audit trail, and safety boundaries. It also exposes dashboard cards and the 14 enforced safety invariants, including `si-14 Newsrooms Council is not truth authority`.
+
+Dashboard endpoints:
+
+- `GET /newsrooms`
+- `GET /dashboard/newsrooms/cards`
+- `GET /dashboard/newsrooms/pages`
+- `GET /dashboard/newsrooms/risk-alerts`
+- `GET /dashboard/newsrooms/audit-logs`
+- `GET /dashboard/newsrooms/safety-boundaries`
+- `GET /dashboard/newsrooms/seo`
+- `GET /dashboard/newsrooms/originality`
+- `GET /dashboard/newsrooms/studio-cues`
+- `GET /dashboard/newsrooms/video-bulletins`
+- `GET /dashboard/newsrooms/video-safety`
+- `GET /dashboard/safety-invariants`
+- `GET /api/dashboard/safety-invariants`
+
 
 ## Stage 7 and Agent Collapse Final Wiring
 

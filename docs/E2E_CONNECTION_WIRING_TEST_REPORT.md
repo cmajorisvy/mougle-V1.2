@@ -30,8 +30,8 @@ Artifacts:
 
 Current route result:
 
-- Routes discovered: 31
-- Routes tested: 31
+- Routes discovered: 105
+- Routes tested: 105
 - Coverage: 100%
 - Missing P0/P1 routes: none
 - Intentionally excluded routes: framework docs/openapi routes only
@@ -46,6 +46,7 @@ Current route result:
 - Signal Culture: low-value archive route, high-risk admin route, load-reduction ratio.
 - Archive Reuse: candidate API and runtime import guard.
 - Collapse: evaluate, create event, state/events, restrictions, recovery plan, review, restore rejection, Stage 6 handoff, truth-impact council handoff.
+- Newsrooms Council: source/feed/article/claim/evidence/scoring, Stage 7 candidate routing, Stage 6 packets, text/live JSON-LD, video/studio metadata, news-to-debate handoff, `/newsrooms` dashboard page data, dashboard cards/tabs, and safety invariant list.
 - Query Tank: weak evidence, Stage 7 unresolved records, council policy review, collapse handoff.
 - Graph: persisted answer graph reconstruction.
 - Admin endpoints: signal load reduction, Stage 7 alerts, collapse events/alerts/metrics.
@@ -61,24 +62,24 @@ Current route result:
 - Scenario G, collapse emergency path: hard policy violation enters emergency restriction, applies restrictions, rejects direct restore, routes to Stage 6 and Knowledge/Truth Council.
 - Scenario H, archive guard: runtime archive imports are absent and blocked/P0 candidates are not returned for direct adaptation.
 - Scenario I, podcast room event: podcast debate claim flows through Signal Culture, Agent Micro-Pyramid, Podcast Forum Debate Council, Council Socket Fabric, Stage 7 candidate memory, Query Tank when unresolved, Stage 6, Stage 5, Stage 4 graph, Stage 3 topology, Stage 2 rollup, and Stage 1 only after accepted verification.
+- Scenario J, Newsrooms Council dashboard and wiring: source/feed/article/claim/evidence/scoring flows through Stage 7 candidate routing, Stage 6 packet submission, newsroom package creation, text NewsArticle JSON-LD, live LiveBlogPosting JSON-LD, video bulletin/studio cues, news-to-debate handoff, dashboard pages, and route coverage with no missing P0/P1 routes.
 
 ## Safety Invariants
 
-- Stage 6 no-bypass: passed.
-- Stage 6 non-oracle behavior: passed; Stage 6 emits structural/routing signals, not final truth.
-- Stage 7 candidate-only: passed.
-- Stage 7 no direct Stage 4/Stage 1 writes: passed.
-- Council no direct Stage 4/Stage 1 target: passed.
-- Micro-Pyramid LocalReadiness is not TruthScore: passed.
-- Signal Culture routing-only: passed.
-- Collapse restricts/reviews/recovers and does not delete: passed.
-- Emergency collapse cannot restore directly: passed.
-- Archive runtime imports blocked: passed.
-- Gluon/UES/AgentRank are not money/payout approval: passed.
-- No `publish_truth` action returned: passed.
-- No fabricated evidence accepted as verified evidence: passed.
-- No real external provider calls: passed.
-- No secrets printed: passed.
+- `si-01` Stage 6 no-bypass: passed.
+- `si-02` Stage 6 is not truth authority: passed; Stage 6 emits structural/routing signals, not final truth.
+- `si-03` Stage 7 candidate-only: passed.
+- `si-04` No direct Stage 4 or Stage 1 writes: passed.
+- `si-05` LocalReadiness is not TruthScore: passed.
+- `si-06` Signal Culture is routing-only: passed.
+- `si-07` Collapse does not delete agents: passed.
+- `si-08` Emergency collapse cannot restore directly: passed.
+- `si-09` Archive runtime imports blocked: passed.
+- `si-10` Gluon/UES/AgentRank are not money/payout approval: passed.
+- `si-11` No `publish_truth` action returned: passed.
+- `si-12` No fabricated evidence accepted as verified evidence: passed.
+- `si-13` No real external provider calls: passed.
+- `si-14` Newsrooms Council is not truth authority: passed; it may collect, normalize, extract, score, package, script, localize, and route news, but may not publish final truth, write Stage 4 directly, influence Stage 1 directly, fabricate evidence, or convert virality/source popularity into truth.
 
 ## Persistence and Restart
 
@@ -98,6 +99,8 @@ pytest -q tests/test_100_percent_connection_wiring_e2e.py
 pytest -q tests/test_e2e_persistence_restart.py
 pytest -q tests/test_e2e_security_boundaries.py
 pytest -q tests/test_e2e_route_coverage.py
+pytest -q tests/test_newsrooms_council.py
+pytest -q tests/test_newsrooms_e2e.py
 npm run archive:verify
 npm run check
 npm run build
@@ -109,7 +112,7 @@ Additional smoke checks passed:
 - CLI smoke via `verify-truth` with a temp SQLite DB.
 - API smoke for `/health`, `/verify`, `/graph/{answer_id}`, and abstention.
 
-Full suite result: `61 passed`, with one non-blocking Starlette TestClient deprecation warning.
+Full suite result: `68 passed`, with one non-blocking Starlette TestClient deprecation warning. Targeted Newsrooms Council, Newsrooms full E2E, route coverage, Podcast Council, and collapse dashboard alias checks also passed.
 
 ## Warnings
 

@@ -22,6 +22,8 @@ Runtime runs bottom-up:
 - `app/agent_control.py`: user agent micro-pyramid readiness, simulation, permission gate, and escalation.
 - `app/signal_culture.py`: signal vector scoring, routing, and load-reduction analytics.
 - `app/archive_reuse.py`: manifest-only archive reuse matrix, P0 blocking, pyramid fit mapping, and no-runtime-import checks.
+- `app/newsrooms_council.py`: deterministic Newsrooms Council control plane for source intake, normalization, claim extraction, evidence submission, scoring, Stage 7 candidate routing, Stage 6 packets, scripts, handoffs, risk alerts, audit logs, and dashboard payloads.
+- `app/podcast_council.py`: deterministic Podcast Forum Debate Council for rooms, sessions, participants, debate claims, evidence, reviews, Stage 7 candidate routing, Stage 6 packets, risk alerts, audit logs, and dashboard payloads.
 - `app/claims/decomposer.py`: deterministic atomic claim decomposition with stable IDs and spans.
 - `app/retrieval/`: retrieval interface and in-memory corpus retriever.
 - `app/graph/provenance_graph.py`: claim/evidence/source/time graph and graph feature export.
@@ -151,6 +153,18 @@ The publish gate requires TVS threshold, macro/micro agreement, uncertainty boun
 - Financial Management
 
 The fabric creates replayable envelopes, hashes payloads, emits policy decisions, rejects direct Stage 4/Stage 1 bypass attempts, routes ordinary upward events through Stage 7 then Stage 6, routes low-risk telemetry to Stage 6, and places high-risk legal/financial events into query-tank review. Security principles: schema validation, no unmanaged code blobs, signed artifacts in future, replayable event logs, least privilege, and no untrusted pickle/joblib loading in production.
+
+## Newsrooms Council
+
+`app/newsrooms_council.py` is the editorial and verification control plane for newsroom artifacts. It handles source/feed ingestion, raw and normalized article records, deterministic claim extraction, no-fabricated-evidence-gated evidence submission, SourceReliability, Newsworthiness, EditorialRisk, ClaimPriority, NewsroomReadiness, BroadcastReadiness, Stage 7 candidate routes, Stage 6 submission packets, text/video package metadata, preview-only studio script data, news-to-debate candidate handoff, corrections, risk alerts, audit logs, and dashboard cards/pages.
+
+The text/blog/SEO layer adds reported news articles, live blog updates, blog explainers, correction notices, parent-child taxonomy, canonical clusters, hreflang variants, sitemap entries, JSON-LD artifacts, and originality reports. Draft text is generated from normalized claims and evidence references, not copied source paragraphs, and no publishing command is attached.
+
+The News Room Studio video compatibility layer adds candidate video bulletins, short anchor-script lines, robot explainer cues, preview-only scene cues, screen states, lower-thirds, tickers, SFX plans, rights checks, AI reconstruction labels, VideoObject metadata, video sitemap entries, and modality divergence reports. Studio targets are constrained to controlled `MGL_*` zones and remain preview metadata only: no real video generation, no LED/4D/Cinema4D/Unreal execution, no platform publishing calls, no external providers, no Stage 1 writes, no Stage 4 writes, and no Stage 6 bypass.
+
+`GET /newsrooms` is the canonical Newsrooms dashboard page-data endpoint. It composes cards, tab payloads, audit/risk visibility, text/live/SEO/video/studio status, and the 14-item safety invariant list. `si-14` explicitly states that Newsrooms Council may collect, normalize, extract, score, package, script, localize, and route news, but may not publish final truth, write Stage 4 directly, influence Stage 1 directly, fabricate evidence, or convert virality/source popularity into truth.
+
+The Newsrooms Council is not the render plane, not a truth oracle, and not a publishing engine. Newsworthiness is not TruthScore, SourceReliability is not TruthScore, virality is not truth, Stage 7 remains candidate-only, Stage 6 packets are not final verification, and the council cannot publish truth or write Stage 1/Stage 4 directly.
 
 ## Future Extension Points
 
