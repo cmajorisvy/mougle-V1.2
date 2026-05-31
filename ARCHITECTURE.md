@@ -160,6 +160,8 @@ The fabric creates replayable envelopes, hashes payloads, emits policy decisions
 
 The text/blog/SEO layer adds reported news articles, live blog updates, blog explainers, correction notices, parent-child taxonomy, canonical clusters, hreflang variants, sitemap entries, JSON-LD artifacts, and originality reports. Draft text is generated from normalized claims and evidence references, not copied source paragraphs, and no publishing command is attached.
 
+The News Room Studio video compatibility layer adds candidate video bulletins, short anchor-script lines, robot explainer cues, preview-only scene cues, screen states, lower-thirds, tickers, SFX plans, rights checks, AI reconstruction labels, VideoObject metadata, video sitemap entries, and modality divergence reports. Studio targets are constrained to controlled `MGL_*` zones and remain preview metadata only: no real video generation, no LED/4D/Cinema4D/Unreal execution, no platform publishing calls, no external providers, no Stage 1 writes, no Stage 4 writes, and no Stage 6 bypass.
+
 The Newsrooms Council is not the render plane, not a truth oracle, and not a publishing engine. Newsworthiness is not TruthScore, SourceReliability is not TruthScore, virality is not truth, Stage 7 remains candidate-only, Stage 6 packets are not final verification, and the council cannot publish truth or write Stage 1/Stage 4 directly.
 
 ## Future Extension Points

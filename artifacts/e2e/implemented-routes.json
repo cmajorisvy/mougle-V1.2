@@ -175,6 +175,24 @@
   },
   {
     "method": "GET",
+    "path": "/dashboard/newsrooms/studio-cues",
+    "name": "dashboard_newsrooms_studio_cues",
+    "module_owner": "newsrooms_council_dashboard"
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/video-bulletins",
+    "name": "dashboard_newsrooms_video_bulletins",
+    "module_owner": "newsrooms_council_dashboard"
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard/newsrooms/video-safety",
+    "name": "dashboard_newsrooms_video_safety",
+    "module_owner": "newsrooms_council_dashboard"
+  },
+  {
+    "method": "GET",
     "path": "/dashboard/podcast-council/cards",
     "name": "podcast_council_dashboard_cards",
     "module_owner": "podcast_council_dashboard"
@@ -378,6 +396,12 @@
     "module_owner": "newsrooms_council"
   },
   {
+    "method": "POST",
+    "path": "/newsrooms/packages/{package_id}/video-bulletin",
+    "name": "newsrooms_package_video_bulletin",
+    "module_owner": "newsrooms_council"
+  },
+  {
     "method": "GET",
     "path": "/newsrooms/risk-alerts",
     "name": "newsrooms_risk_alerts",
@@ -399,6 +423,54 @@
     "method": "GET",
     "path": "/newsrooms/sources/{source_id}",
     "name": "newsrooms_source_detail",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/video-bulletins",
+    "name": "newsrooms_video_bulletins",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "GET",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}",
+    "name": "newsrooms_video_bulletin_detail",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}/anchor-script",
+    "name": "newsrooms_video_bulletin_anchor_script",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}/modality-divergence",
+    "name": "newsrooms_video_bulletin_modality_divergence",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}/rights-check",
+    "name": "newsrooms_video_bulletin_rights_check",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}/sfx-plan",
+    "name": "newsrooms_video_bulletin_sfx_plan",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}/studio-cues",
+    "name": "newsrooms_video_bulletin_studio_cues",
+    "module_owner": "newsrooms_council"
+  },
+  {
+    "method": "POST",
+    "path": "/newsrooms/video-bulletins/{bulletin_id}/video-seo",
+    "name": "newsrooms_video_bulletin_video_seo",
     "module_owner": "newsrooms_council"
   },
   {

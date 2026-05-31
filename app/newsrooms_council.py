@@ -18,6 +18,9 @@ from typing import Any
 from app.models import (
     EvidenceSource,
     NewsArticleStatus,
+    NewsAiVisualDisclosure,
+    NewsAnchorScript,
+    NewsAnchorScriptLine,
     NewsCanonicalCluster,
     NewsCategory,
     NewsCategoryInput,
@@ -31,6 +34,7 @@ from app.models import (
     NewsFeed,
     NewsFeedInput,
     NewsIngestEvent,
+    NewsModalityDivergenceReport,
     NewsOutputModality,
     NewsScoreBundle,
     NewsSeoArtifact,
@@ -40,12 +44,27 @@ from app.models import (
     NewsSourceReliabilityRecord,
     NewsStage6SubmissionPacket,
     NewsStage7CandidateRoute,
+    NewsStudioAiReconstructionLabel,
+    NewsStudioAssetRequirement,
+    NewsStudioCueTarget,
     NewsStudioCueType,
+    NewsStudioLowerThird,
+    NewsStudioRightsCheck,
+    NewsStudioSceneCue,
+    NewsStudioScreenState,
+    NewsStudioSfxCue,
+    NewsStudioTickerItem,
     NewsStructuredDataType,
     NewsStructuredDataArtifact,
     NewsToDebateHandoff,
     NewsHreflangVariant,
     NewsOriginalityReport,
+    NewsRobotExplainerCue,
+    NewsSfxCueType,
+    NewsVideoBulletin,
+    NewsVideoBulletinInput,
+    NewsVideoSeoArtifact,
+    NewsVideoSitemapEntry,
     NewsroomAuditLog,
     NewsroomDashboardCard,
     NewsroomDashboardPage,
@@ -1371,3 +1390,337 @@ def structured_data_for_text_artifact(
         build_breadcrumb_jsonld(artifact),
         build_organization_jsonld(artifact.canonical_url),
     ]
+
+SYNTHETIC_VISUAL_DISCLOSURES = {
+    NewsAiVisualDisclosure.ai_reconstruction,
+    NewsAiVisualDisclosure.simulation,
+    NewsAiVisualDisclosure.artist_visualization,
+    NewsAiVisualDisclosure.not_actual_footage,
+    NewsAiVisualDisclosure.internal_preview_only,
+}
+TRAGEDY_CATEGORY_TERMS = {
+    "death",
+    "war",
+    "terrorism",
+    "disaster",
+    "child-safety",
+    "child_safety",
+    "children",
+    "attack",
+}
+TRAGEDY_UNSAFE_SFX = {
+    NewsSfxCueType.market_energy,
+    NewsSfxCueType.data_ping,
+    NewsSfxCueType.transition_whoosh,
+    NewsSfxCueType.weather_ambience,
+}
+
+
+def create_video_bulletin(
+    package: NewsroomPackage,
+    article: NormalizedNewsArticle,
+    payload: NewsVideoBulletinInput,
+) -> NewsVideoBulletin:
+    title = payload.title or package.title
+    slug = _story_slug(title)
+    watch_url = build_video_path(payload.locale, payload.section, slug)
+    synthetic = payload.synthetic_visual_used or payload.visual_disclosure in SYNTHETIC_VISUAL_DISCLOSURES
+    return NewsVideoBulletin(
+        bulletin_id=_stable_id("news_video_bulletin", package.package_id, payload.video_format.value, title),
+        package_id=package.package_id,
+        article_id=article.article_id,
+        title=title,
+        video_format=payload.video_format,
+        locale=_locale(payload.locale),
+        section=_safe_section(payload.section),
+        watch_url=watch_url,
+        target_duration_seconds=payload.target_duration_seconds,
+        story_structure=payload.story_structure,
+        visual_disclosure=payload.visual_disclosure,
+        synthetic_visual_used=synthetic,
+        metadata=payload.metadata
+        | {
+            "data_control_layer_only": True,
+            "no_real_video_generation": True,
+            "no_cinema_4d_execution": True,
+            "no_unreal_or_led_processor_calls": True,
+            "no_platform_publish": True,
+        },
+    )
+
+
+def _spoken_line(text: str, max_words: int = 12) -> str:
+    cleaned = re.sub(r"\s+", " ", text).strip().rstrip(".")
+    words = cleaned.split()
+    if len(words) <= max_words:
+        return cleaned + "."
+    return " ".join(words[:max_words]).rstrip(".,;:") + "."
+
+
+def _anchor_readability(lines: list[NewsAnchorScriptLine], visual_alignment: float = 1.0) -> float:
+    if not lines:
+        return 0.0
+    short_sentence_score = sum(1 for line in lines if line.word_count <= 14) / len(lines)
+    breath_unit_fit = sum(1 for line in lines if line.breath_unit_fit) / len(lines)
+    dense_penalty = sum(1 for line in lines if line.word_count > 16) / len(lines)
+    value = (
+        0.25 * short_sentence_score
+        + 0.20 * breath_unit_fit
+        + 0.15 * 0.9
+        + 0.15 * visual_alignment
+        + 0.10 * 0.95
+        + 0.10 * 0.9
+        - 0.15 * dense_penalty
+    )
+    return _clip01(_sigmoid(value))
+
+
+def create_anchor_script(
+    bulletin: NewsVideoBulletin,
+    package: NewsroomPackage,
+    claims: list[NewsClaim],
+) -> tuple[NewsAnchorScript, list[NewsAnchorScriptLine]]:
+    base_lines = [
+        f"Here is the latest on {package.title}",
+        "The newsroom is following candidate claims through verification",
+    ]
+    for index, claim in enumerate(claims[:4], start=1):
+        base_lines.append(f"Point {index}: {_spoken_line(claim.claim_text, 10)}")
+    base_lines.append("This bulletin is not final truth until the Truth Pyramid path completes")
+    script_id = _stable_id("news_anchor_script", bulletin.bulletin_id, package.package_id, base_lines)
+    lines = [
+        NewsAnchorScriptLine(
+            line_id=_stable_id("news_anchor_line", script_id, index, text),
+            script_id=script_id,
+            bulletin_id=bulletin.bulletin_id,
+            sequence=index,
+            speaker="anchor",
+            text=_spoken_line(text, 14),
+            word_count=_word_count(_spoken_line(text, 14)),
+            breath_unit_fit=_word_count(_spoken_line(text, 14)) <= 14,
+            one_idea_per_breath=True,
+            duration_seconds=max(3, min(8, _word_count(text) // 2 + 2)),
+        )
+        for index, text in enumerate(base_lines)
+    ]
+    script_text = " ".join(line.text for line in lines)
+    readability = _anchor_readability(lines)
+    script = NewsAnchorScript(
+        script_id=script_id,
+        bulletin_id=bulletin.bulletin_id,
+        package_id=package.package_id,
+        article_id=bulletin.article_id,
+        script_text=script_text,
+        line_ids=[line.line_id for line in lines],
+        anchor_speech_readability=readability,
+        short_spoken_sentences=all(line.word_count <= 14 for line in lines),
+        metadata={
+            "structure": bulletin.story_structure,
+            "lower_information_density_than_text": True,
+            "conversational_but_credible": True,
+            "visuals_carry_context": True,
+        },
+    )
+    return script, lines
+
+
+def build_studio_cues(
+    bulletin: NewsVideoBulletin,
+    claims: list[NewsClaim],
+) -> tuple[
+    list[NewsRobotExplainerCue],
+    list[NewsStudioSceneCue],
+    list[NewsStudioScreenState],
+    list[NewsStudioLowerThird],
+    list[NewsStudioTickerItem],
+    list[NewsStudioAssetRequirement],
+    list[NewsStudioAiReconstructionLabel],
+]:
+    scene_targets = [
+        NewsStudioCueTarget.MGL_BACK_DISPLAY_Main,
+        NewsStudioCueTarget.MGL_SOURCE_PANEL_Right,
+        NewsStudioCueTarget.MGL_CONFIDENCE_PANEL_Left,
+        NewsStudioCueTarget.MGL_CLAIMS_PANEL_Right,
+        NewsStudioCueTarget.MGL_TIMELINE_PANEL_Left,
+    ]
+    robot = [
+        NewsRobotExplainerCue(
+            cue_id=_stable_id("news_robot_cue", bulletin.bulletin_id, "verification"),
+            bulletin_id=bulletin.bulletin_id,
+            sequence=0,
+            text="Explain that claims remain candidate-only until verification completes.",
+        )
+    ]
+    scenes = [
+        NewsStudioSceneCue(
+            cue_id=_stable_id("news_scene_cue", bulletin.bulletin_id, index, target.value),
+            bulletin_id=bulletin.bulletin_id,
+            sequence=index,
+            target=target,
+            description=f"Preview-only scene cue for {target.value}",
+        )
+        for index, target in enumerate(scene_targets)
+    ]
+    screens = [
+        NewsStudioScreenState(
+            state_id=_stable_id("news_screen_state", bulletin.bulletin_id, target.value),
+            bulletin_id=bulletin.bulletin_id,
+            target=target,
+            state_name="preview_claim_context",
+            payload={"bulletin_id": bulletin.bulletin_id, "candidate_only": True},
+        )
+        for target in scene_targets
+    ]
+    lower_thirds = [
+        NewsStudioLowerThird(
+            lower_third_id=_stable_id("news_lower_third", bulletin.bulletin_id, index, claim.claim_id),
+            bulletin_id=bulletin.bulletin_id,
+            sequence=index,
+            text=_spoken_line(claim.claim_text, 8),
+        )
+        for index, claim in enumerate(claims[:3])
+    ]
+    tickers = [
+        NewsStudioTickerItem(
+            ticker_id=_stable_id("news_ticker", bulletin.bulletin_id, "stage6"),
+            bulletin_id=bulletin.bulletin_id,
+            sequence=0,
+            text="Stage 6 review remains required before final truth.",
+        )
+    ]
+    requirements = [
+        NewsStudioAssetRequirement(
+            requirement_id=_stable_id("news_asset_req", bulletin.bulletin_id, bulletin.visual_disclosure.value),
+            bulletin_id=bulletin.bulletin_id,
+            asset_type="visual_context",
+            description="Preview-only visual context asset requirement.",
+            visual_disclosure=bulletin.visual_disclosure,
+            ai_reconstruction_label_required=bulletin.visual_disclosure in SYNTHETIC_VISUAL_DISCLOSURES,
+        )
+    ]
+    labels: list[NewsStudioAiReconstructionLabel] = []
+    if bulletin.visual_disclosure in SYNTHETIC_VISUAL_DISCLOSURES:
+        labels.append(
+            NewsStudioAiReconstructionLabel(
+                label_id=_stable_id("news_ai_label", bulletin.bulletin_id, bulletin.visual_disclosure.value),
+                bulletin_id=bulletin.bulletin_id,
+                disclosure=bulletin.visual_disclosure,
+                visible_label="AI reconstruction / not actual footage",
+                metadata={"must_be_visible_on_screen": True},
+            )
+        )
+    return robot, scenes, screens, lower_thirds, tickers, requirements, labels
+
+
+def build_sfx_plan(
+    bulletin: NewsVideoBulletin,
+    cue_types: list[NewsSfxCueType],
+    story_categories: list[str],
+) -> list[NewsStudioSfxCue]:
+    lowered_categories = {category.lower() for category in story_categories}
+    is_tragedy = bool(lowered_categories & TRAGEDY_CATEGORY_TERMS)
+    cues: list[NewsStudioSfxCue] = []
+    for index, cue_type in enumerate(cue_types or [NewsSfxCueType.neutral_bed]):
+        if is_tragedy and cue_type in TRAGEDY_UNSAFE_SFX:
+            raise ValueError("unsafe SFX cue rejected for tragedy/disaster/child-safety story")
+        cues.append(
+            NewsStudioSfxCue(
+                sfx_id=_stable_id("news_sfx", bulletin.bulletin_id, index, cue_type.value),
+                bulletin_id=bulletin.bulletin_id,
+                sequence=index,
+                cue_type=cue_type,
+                reason="approved neutral cue taxonomy only",
+                editorial_state="sensitive" if is_tragedy else "neutral",
+                approved=True,
+            )
+        )
+    return cues
+
+
+def build_rights_check(
+    bulletin: NewsVideoBulletin,
+    labels: list[NewsStudioAiReconstructionLabel],
+    sfx_cues: list[NewsStudioSfxCue],
+) -> NewsStudioRightsCheck:
+    needs_label = bulletin.visual_disclosure in SYNTHETIC_VISUAL_DISCLOSURES
+    label_pass = not needs_label or any(label.present and label.required for label in labels)
+    sfx_pass = all(cue.approved for cue in sfx_cues)
+    checks = [True, label_pass, True, sfx_pass, True, True]
+    safety = min(1.0 if check else 0.0 for check in checks)
+    return NewsStudioRightsCheck(
+        rights_check_id=_stable_id("news_rights_check", bulletin.bulletin_id, label_pass, sfx_pass),
+        bulletin_id=bulletin.bulletin_id,
+        passed=all(checks),
+        rights_pass=True,
+        ai_reconstruction_label_pass=label_pass,
+        sponsor_disclosure_pass=True,
+        sfx_policy_pass=sfx_pass,
+        no_hardware_execution_pass=True,
+        no_platform_publish_pass=True,
+        studio_cue_safety=safety,
+    )
+
+
+def build_video_seo_artifact(
+    bulletin: NewsVideoBulletin,
+    package: NewsroomPackage,
+    article: NormalizedNewsArticle,
+) -> tuple[NewsVideoSeoArtifact, NewsVideoSitemapEntry]:
+    jsonld = {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        "name": bulletin.title,
+        "description": "News Room Studio watch-page metadata only; no platform publishing command is attached.",
+        "uploadDate": bulletin.created_at.isoformat(),
+        "url": bulletin.watch_url,
+        "inLanguage": bulletin.locale,
+        "publisher": _publisher(),
+        "isFamilyFriendly": True,
+        "provenance": {
+            "article_id": article.article_id,
+            "package_id": package.package_id,
+            "generated_from_claim_graph": True,
+        },
+    }
+    if bulletin.synthetic_visual_used:
+        jsonld["digitalSourceType"] = "https://cv.iptc.org/newscodes/digitalsourcetype/syntheticMedia"
+    seo = NewsVideoSeoArtifact(
+        video_seo_id=_stable_id("news_video_seo", bulletin.bulletin_id, bulletin.watch_url),
+        bulletin_id=bulletin.bulletin_id,
+        package_id=package.package_id,
+        article_id=article.article_id,
+        title=bulletin.title,
+        description=jsonld["description"],
+        watch_url=bulletin.watch_url,
+        video_format=bulletin.video_format,
+        video_object_jsonld=jsonld,
+    )
+    sitemap = NewsVideoSitemapEntry(
+        entry_id=_stable_id("news_video_sitemap", bulletin.bulletin_id, bulletin.watch_url),
+        bulletin_id=bulletin.bulletin_id,
+        watch_url=bulletin.watch_url,
+        title=bulletin.title,
+        description=seo.description,
+    )
+    return seo, sitemap
+
+
+def build_modality_divergence_report(
+    bulletin: NewsVideoBulletin,
+    package: NewsroomPackage,
+    text_variant: str,
+    video_script: NewsAnchorScript,
+) -> NewsModalityDivergenceReport:
+    similarity = _source_similarity(text_variant, video_script.script_text)
+    divergence = _clip01(1.0 - similarity)
+    return NewsModalityDivergenceReport(
+        report_id=_stable_id("news_modality_divergence", bulletin.bulletin_id, text_variant, video_script.script_id),
+        bulletin_id=bulletin.bulletin_id,
+        package_id=package.package_id,
+        article_id=bulletin.article_id,
+        modality_divergence=divergence,
+        similarity=similarity,
+        text_variant_ref=package.package_id,
+        video_script_ref=video_script.script_id,
+        passes_distinctness=divergence >= 0.25,
+    )

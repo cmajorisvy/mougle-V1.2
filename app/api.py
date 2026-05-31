@@ -22,6 +22,7 @@ from app.models import (
     NewsroomPackageInput,
     NewsroomScriptInput,
     NewsSourceInput,
+    NewsVideoBulletinInput,
     PodcastAgentInvitationInput,
     PodcastClaimReviewInput,
     PodcastDebateClaimInput,
@@ -499,6 +500,14 @@ def newsrooms_package_text_article(package_id: str, payload: dict | None = None)
         raise HTTPException(status_code=400 if "rejected" in str(exc) else 404, detail=str(exc)) from exc
 
 
+@app.post("/newsrooms/packages/{package_id}/video-bulletin")
+def newsrooms_package_video_bulletin(package_id: str, payload: NewsVideoBulletinInput) -> dict:
+    try:
+        return engine.create_news_video_bulletin(package_id, payload).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 @app.post("/newsrooms/packages/{package_id}/live-blog-update")
 def newsrooms_package_live_blog_update(package_id: str, payload: dict | None = None) -> dict:
     try:
@@ -538,6 +547,68 @@ def newsrooms_audit_logs() -> list[dict]:
     return engine.newsroom_audit_logs()
 
 
+@app.get("/newsrooms/video-bulletins")
+def newsrooms_video_bulletins() -> list[dict]:
+    return engine.list_news_video_bulletins()
+
+
+@app.get("/newsrooms/video-bulletins/{bulletin_id}")
+def newsrooms_video_bulletin_detail(bulletin_id: str) -> dict:
+    try:
+        return engine.get_news_video_bulletin_detail(bulletin_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/video-bulletins/{bulletin_id}/anchor-script")
+def newsrooms_video_bulletin_anchor_script(bulletin_id: str) -> dict:
+    try:
+        return engine.create_news_video_anchor_script(bulletin_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/video-bulletins/{bulletin_id}/studio-cues")
+def newsrooms_video_bulletin_studio_cues(bulletin_id: str) -> dict:
+    try:
+        return engine.create_news_video_studio_cues(bulletin_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/video-bulletins/{bulletin_id}/sfx-plan")
+def newsrooms_video_bulletin_sfx_plan(bulletin_id: str, payload: dict | None = None) -> dict:
+    try:
+        return engine.create_news_video_sfx_plan(bulletin_id, payload)
+    except ValueError as exc:
+        status = 400 if "unsafe SFX" in str(exc) else 404
+        raise HTTPException(status_code=status, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/video-bulletins/{bulletin_id}/rights-check")
+def newsrooms_video_bulletin_rights_check(bulletin_id: str) -> dict:
+    try:
+        return engine.create_news_video_rights_check(bulletin_id).model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/video-bulletins/{bulletin_id}/video-seo")
+def newsrooms_video_bulletin_video_seo(bulletin_id: str) -> dict:
+    try:
+        return engine.create_news_video_seo(bulletin_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/newsrooms/video-bulletins/{bulletin_id}/modality-divergence")
+def newsrooms_video_bulletin_modality_divergence(bulletin_id: str, payload: dict | None = None) -> dict:
+    try:
+        return engine.create_news_modality_divergence(bulletin_id, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 @app.get("/dashboard/newsrooms/cards")
 def dashboard_newsrooms_cards() -> list[dict]:
     return engine.newsroom_dashboard_cards()
@@ -571,6 +642,21 @@ def dashboard_newsrooms_seo() -> dict:
 @app.get("/dashboard/newsrooms/originality")
 def dashboard_newsrooms_originality() -> dict:
     return engine.newsroom_originality_dashboard()
+
+
+@app.get("/dashboard/newsrooms/studio-cues")
+def dashboard_newsrooms_studio_cues() -> dict:
+    return engine.newsroom_studio_cues_dashboard()
+
+
+@app.get("/dashboard/newsrooms/video-bulletins")
+def dashboard_newsrooms_video_bulletins() -> dict:
+    return engine.newsroom_video_bulletins_dashboard()
+
+
+@app.get("/dashboard/newsrooms/video-safety")
+def dashboard_newsrooms_video_safety() -> dict:
+    return engine.newsroom_video_safety_dashboard()
 
 
 def _collapse_dashboard_payload() -> dict:

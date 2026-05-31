@@ -56,12 +56,19 @@ from app.models import (
     NewsFeedInput,
     NewsOriginalityReport,
     NewsOutputModality,
+    NewsAnchorScript,
     NewsScoreBundle,
+    NewsSfxCueType,
     NewsSource,
     NewsSourceInput,
+    NewsStudioAiReconstructionLabel,
+    NewsStudioRightsCheck,
+    NewsStudioSfxCue,
     NewsStage6SubmissionPacket,
     NewsStage7CandidateRoute,
     NewsToDebateHandoff,
+    NewsVideoBulletin,
+    NewsVideoBulletinInput,
     NewsroomAuditLog,
     NewsroomPackage,
     NewsroomPackageInput,
@@ -115,11 +122,18 @@ from app.newsrooms_council import (
     build_hreflang_cluster as news_build_hreflang_cluster,
     build_news_sitemap_entry as news_build_sitemap_entry,
     build_originality_report as news_build_originality_report,
+    build_modality_divergence_report as news_build_modality_divergence_report,
+    build_rights_check as news_build_rights_check,
+    build_sfx_plan as news_build_sfx_plan,
+    build_studio_cues as news_build_studio_cues,
+    build_video_seo_artifact as news_build_video_seo_artifact,
     create_correction_record as news_create_correction_record,
     create_manual_news_claim as news_create_manual_claim,
     create_news_feed as news_create_feed,
     create_news_category as news_create_category,
     create_news_to_debate_handoff as news_create_debate_handoff,
+    create_anchor_script as news_create_anchor_script,
+    create_video_bulletin as news_create_video_bulletin,
     create_newsroom_audit_log as news_write_audit_log,
     create_newsroom_candidate as news_create_candidate,
     create_newsroom_package as news_create_package,
@@ -885,6 +899,147 @@ class VerificationEngine:
             ],
         }
 
+    def create_news_video_bulletin(
+        self, package_id: str, payload: NewsVideoBulletinInput
+    ) -> NewsVideoBulletin:
+        package = self._newsroom_package(package_id)
+        article = self._news_article(package.article_id)
+        bulletin = news_create_video_bulletin(package, article, payload)
+        self.store.save_news_video_bulletin(bulletin)
+        self.store.save_newsroom_audit_log(
+            news_write_audit_log(
+                "video_bulletin_created",
+                entity_type="news_video_bulletin",
+                entity_id=bulletin.bulletin_id,
+                article_id=article.article_id,
+                metadata={
+                    "data_control_layer_only": True,
+                    "no_real_video_generation": True,
+                    "no_hardware_execution": True,
+                    "no_platform_publish": True,
+                },
+            )
+        )
+        return bulletin
+
+    def list_news_video_bulletins(self) -> list[dict]:
+        return self.store.list_news_video_bulletins()
+
+    def get_news_video_bulletin_detail(self, bulletin_id: str) -> dict:
+        bulletin = self._news_video_bulletin(bulletin_id)
+        return {
+            "bulletin": bulletin.model_dump(mode="json"),
+            "anchor_scripts": self.store.list_news_anchor_scripts(bulletin_id),
+            "anchor_script_lines": self.store.list_news_anchor_script_lines(bulletin_id),
+            "robot_explainer_cues": self.store.list_news_robot_explainer_cues(bulletin_id),
+            "scene_cues": self.store.list_news_studio_scene_cues(bulletin_id),
+            "screen_states": self.store.list_news_studio_screen_states(bulletin_id),
+            "sfx_cues": self.store.list_news_studio_sfx_cues(bulletin_id),
+            "lower_thirds": self.store.list_news_studio_lower_thirds(bulletin_id),
+            "ticker_items": self.store.list_news_studio_ticker_items(bulletin_id),
+            "asset_requirements": self.store.list_news_studio_asset_requirements(bulletin_id),
+            "rights_checks": self.store.list_news_studio_rights_checks(bulletin_id),
+            "ai_reconstruction_labels": self.store.list_news_studio_ai_reconstruction_labels(bulletin_id),
+            "video_seo_artifacts": self.store.list_news_video_seo_artifacts(bulletin_id),
+            "video_sitemap_entries": self.store.list_news_video_sitemap_entries(bulletin_id),
+            "modality_divergence_reports": self.store.list_news_modality_divergence_reports(bulletin_id),
+        }
+
+    def create_news_video_anchor_script(self, bulletin_id: str) -> dict:
+        bulletin = self._news_video_bulletin(bulletin_id)
+        package = self._newsroom_package(bulletin.package_id)
+        claims = self._news_claims_for_ids(package.claim_ids)
+        script, lines = news_create_anchor_script(bulletin, package, claims)
+        self.store.save_news_anchor_script(script)
+        for line in lines:
+            self.store.save_news_anchor_script_line(line)
+        return {
+            "anchor_script": script.model_dump(mode="json"),
+            "lines": [line.model_dump(mode="json") for line in lines],
+        }
+
+    def create_news_video_studio_cues(self, bulletin_id: str) -> dict:
+        bulletin = self._news_video_bulletin(bulletin_id)
+        package = self._newsroom_package(bulletin.package_id)
+        claims = self._news_claims_for_ids(package.claim_ids)
+        robot, scenes, screens, lower_thirds, tickers, requirements, labels = news_build_studio_cues(
+            bulletin, claims
+        )
+        for item in robot:
+            self.store.save_news_robot_explainer_cue(item)
+        for item in scenes:
+            self.store.save_news_studio_scene_cue(item)
+        for item in screens:
+            self.store.save_news_studio_screen_state(item)
+        for item in lower_thirds:
+            self.store.save_news_studio_lower_third(item)
+        for item in tickers:
+            self.store.save_news_studio_ticker_item(item)
+        for item in requirements:
+            self.store.save_news_studio_asset_requirement(item)
+        for item in labels:
+            self.store.save_news_studio_ai_reconstruction_label(item)
+        return {
+            "robot_explainer_cues": [item.model_dump(mode="json") for item in robot],
+            "scene_cues": [item.model_dump(mode="json") for item in scenes],
+            "screen_states": [item.model_dump(mode="json") for item in screens],
+            "lower_thirds": [item.model_dump(mode="json") for item in lower_thirds],
+            "ticker_items": [item.model_dump(mode="json") for item in tickers],
+            "asset_requirements": [item.model_dump(mode="json") for item in requirements],
+            "ai_reconstruction_labels": [item.model_dump(mode="json") for item in labels],
+        }
+
+    def create_news_video_sfx_plan(self, bulletin_id: str, payload: dict | None = None) -> dict:
+        payload = payload or {}
+        bulletin = self._news_video_bulletin(bulletin_id)
+        cue_types = [NewsSfxCueType(value) for value in payload.get("cue_types", ["neutral_bed"])]
+        story_categories = [str(value) for value in payload.get("story_categories", [])]
+        cues = news_build_sfx_plan(bulletin, cue_types, story_categories)
+        for cue in cues:
+            self.store.save_news_studio_sfx_cue(cue)
+        return {"sfx_cues": [cue.model_dump(mode="json") for cue in cues]}
+
+    def create_news_video_rights_check(self, bulletin_id: str) -> NewsStudioRightsCheck:
+        bulletin = self._news_video_bulletin(bulletin_id)
+        labels = [
+            NewsStudioAiReconstructionLabel(**row)
+            for row in self.store.list_news_studio_ai_reconstruction_labels(bulletin_id)
+        ]
+        sfx_cues = [NewsStudioSfxCue(**row) for row in self.store.list_news_studio_sfx_cues(bulletin_id)]
+        check = news_build_rights_check(bulletin, labels, sfx_cues)
+        self.store.save_news_studio_rights_check(check)
+        return check
+
+    def create_news_video_seo(self, bulletin_id: str) -> dict:
+        bulletin = self._news_video_bulletin(bulletin_id)
+        package = self._newsroom_package(bulletin.package_id)
+        article = self._news_article(bulletin.article_id)
+        seo, sitemap = news_build_video_seo_artifact(bulletin, package, article)
+        self.store.save_news_video_seo_artifact(seo)
+        self.store.save_news_video_sitemap_entry(sitemap)
+        return {
+            "video_seo_artifact": seo.model_dump(mode="json"),
+            "video_sitemap_entry": sitemap.model_dump(mode="json"),
+        }
+
+    def create_news_modality_divergence(self, bulletin_id: str, payload: dict | None = None) -> dict:
+        payload = payload or {}
+        bulletin = self._news_video_bulletin(bulletin_id)
+        package = self._newsroom_package(bulletin.package_id)
+        scripts = [NewsAnchorScript(**row) for row in self.store.list_news_anchor_scripts(bulletin_id)]
+        if scripts:
+            script = scripts[0]
+        else:
+            created = self.create_news_video_anchor_script(bulletin_id)
+            script = NewsAnchorScript(**created["anchor_script"])
+        text_variant = str(payload.get("text_variant") or "")
+        if not text_variant:
+            latest_seo = self.store.get_latest_news_seo_artifact(bulletin.article_id)
+            text_variant = latest_seo.get("body_text", package.title) if latest_seo else package.title
+        report = news_build_modality_divergence_report(bulletin, package, text_variant, script)
+        self.store.save_news_modality_divergence_report(report)
+        return report.model_dump(mode="json")
+
     def create_news_article_seo_artifact(self, article_id: str, payload: dict | None = None) -> dict:
         payload = payload or {}
         article = self._news_article(article_id)
@@ -1058,6 +1213,50 @@ class VerificationEngine:
             "route_for_rewrite": sum(1 for row in reports if row.get("route_for_rewrite") is True),
             "generated_from_claim_graph": all(row.get("generated_from_claim_graph") is True for row in reports),
             "no_external_calls": True,
+        }
+
+    def newsroom_studio_cues_dashboard(self) -> dict:
+        scene_cues = self.store.list_news_studio_scene_cues()
+        screen_states = self.store.list_news_studio_screen_states()
+        sfx_cues = self.store.list_news_studio_sfx_cues()
+        labels = self.store.list_news_studio_ai_reconstruction_labels()
+        return {
+            "scene_cues": len(scene_cues),
+            "screen_states": len(screen_states),
+            "sfx_cues": len(sfx_cues),
+            "ai_reconstruction_labels": len(labels),
+            "controlled_mgl_targets_only": all(
+                str(row.get("target", "")).startswith("MGL_") for row in [*scene_cues, *screen_states]
+            ),
+            "no_hardware_execution": all(
+                row.get("hardware_execution_command") is False for row in [*scene_cues, *screen_states]
+            ),
+            "no_platform_publish": True,
+        }
+
+    def newsroom_video_bulletins_dashboard(self) -> dict:
+        bulletins = self.store.list_news_video_bulletins()
+        video_seo = self.store.list_news_video_seo_artifacts()
+        sitemap = self.store.list_news_video_sitemap_entries()
+        return {
+            "video_bulletins": len(bulletins),
+            "video_seo_artifacts": len(video_seo),
+            "video_sitemap_entries": len(sitemap),
+            "no_real_video_generation": True,
+            "no_platform_publish": all(row.get("no_platform_publish") is True for row in bulletins),
+        }
+
+    def newsroom_video_safety_dashboard(self) -> dict:
+        checks = self.store.list_news_studio_rights_checks()
+        reports = self.store.list_news_modality_divergence_reports()
+        return {
+            "rights_checks": len(checks),
+            "rights_checks_passed": sum(1 for row in checks if row.get("passed") is True),
+            "modality_divergence_reports": len(reports),
+            "bounded_divergence": all(0.0 <= row.get("modality_divergence", 0.0) <= 1.0 for row in reports),
+            "studio_output_may_publish_truth": False,
+            "studio_output_may_update_stage1": False,
+            "studio_output_may_update_stage4": False,
         }
 
     def _create_package_text_output(
@@ -1239,6 +1438,12 @@ class VerificationEngine:
         if raw is None:
             raise ValueError("newsroom package not found")
         return NewsroomPackage(**raw)
+
+    def _news_video_bulletin(self, bulletin_id: str) -> NewsVideoBulletin:
+        raw = self.store.get_news_video_bulletin(bulletin_id)
+        if raw is None:
+            raise ValueError("news video bulletin not found")
+        return NewsVideoBulletin(**raw)
 
     def create_podcast_room(self, payload: PodcastRoomInput) -> PodcastRoom:
         room = podcast_create_room(payload)

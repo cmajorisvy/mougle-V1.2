@@ -1032,6 +1032,50 @@ class NewsStructuredDataType(str, Enum):
     broadcast_event = "BroadcastEvent"
 
 
+class NewsVideoFormat(str, Enum):
+    standard_16x9 = "standard_16x9"
+    shorts_9x16 = "shorts_9x16"
+    square_1x1 = "square_1x1"
+    ultrawide_32x9 = "ultrawide_32x9"
+
+
+class NewsStudioCueTarget(str, Enum):
+    MGL_BACK_DISPLAY_Main = "MGL_BACK_DISPLAY_Main"
+    MGL_EVENT_DISPLAY_Fullscreen = "MGL_EVENT_DISPLAY_Fullscreen"
+    MGL_SOURCE_PANEL_Right = "MGL_SOURCE_PANEL_Right"
+    MGL_CONFIDENCE_PANEL_Left = "MGL_CONFIDENCE_PANEL_Left"
+    MGL_CLAIMS_PANEL_Right = "MGL_CLAIMS_PANEL_Right"
+    MGL_TIMELINE_PANEL_Left = "MGL_TIMELINE_PANEL_Left"
+    MGL_TICKER_Bottom = "MGL_TICKER_Bottom"
+    MGL_LOWER_THIRD_Main = "MGL_LOWER_THIRD_Main"
+    MGL_ROBOT_FACE_SCREEN = "MGL_ROBOT_FACE_SCREEN"
+    MGL_CHAT_OVERLAY_Safe = "MGL_CHAT_OVERLAY_Safe"
+    MGL_SPONSOR_SAFE_ZONE = "MGL_SPONSOR_SAFE_ZONE"
+
+
+class NewsSfxCueType(str, Enum):
+    none_ = "none"
+    neutral_bed = "neutral_bed"
+    breaking_alert_soft = "breaking_alert_soft"
+    transition_whoosh = "transition_whoosh"
+    data_ping = "data_ping"
+    weather_ambience = "weather_ambience"
+    market_energy = "market_energy"
+    correction_notice = "correction_notice"
+    respectful_silence = "respectful_silence"
+
+
+class NewsAiVisualDisclosure(str, Enum):
+    real_footage = "real_footage"
+    licensed_footage = "licensed_footage"
+    public_domain = "public_domain"
+    ai_reconstruction = "ai_reconstruction"
+    simulation = "simulation"
+    artist_visualization = "artist_visualization"
+    not_actual_footage = "not_actual_footage"
+    internal_preview_only = "internal_preview_only"
+
+
 class NewsSourceInput(BaseModel):
     name: str
     source_type: NewsSourceType = NewsSourceType.local
@@ -1584,6 +1628,229 @@ class NewsOriginalityReport(BaseModel):
     not_verified_unless_claims_passed_verification_path: bool = True
     source_refs: list[str] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsVideoBulletinInput(BaseModel):
+    title: Optional[str] = None
+    video_format: NewsVideoFormat = NewsVideoFormat.standard_16x9
+    locale: str = "en"
+    section: str = "news"
+    target_duration_seconds: int = Field(default=90, ge=15, le=1800)
+    story_structure: str = "hourglass"
+    visual_disclosure: NewsAiVisualDisclosure = NewsAiVisualDisclosure.real_footage
+    synthetic_visual_used: bool = False
+    topic_tags: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class NewsVideoBulletin(BaseModel):
+    bulletin_id: str
+    package_id: str
+    article_id: str
+    title: str
+    video_format: NewsVideoFormat = NewsVideoFormat.standard_16x9
+    locale: str = "en"
+    section: str = "news"
+    watch_url: str
+    target_duration_seconds: int = Field(default=90, ge=15)
+    story_structure: str = "hourglass"
+    visual_disclosure: NewsAiVisualDisclosure = NewsAiVisualDisclosure.real_footage
+    synthetic_visual_used: bool = False
+    candidate_only: bool = True
+    may_publish_truth: bool = False
+    may_update_stage1: bool = False
+    may_update_stage4: bool = False
+    no_hardware_execution: bool = True
+    no_platform_publish: bool = True
+    external_calls_made: bool = False
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
+    updated_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsAnchorScriptLine(BaseModel):
+    line_id: str
+    script_id: str
+    bulletin_id: str
+    sequence: int = Field(ge=0)
+    speaker: str = "anchor"
+    text: str
+    word_count: int = Field(default=0, ge=0)
+    breath_unit_fit: bool = True
+    one_idea_per_breath: bool = True
+    duration_seconds: int = Field(default=4, ge=1)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsAnchorScript(BaseModel):
+    script_id: str
+    bulletin_id: str
+    package_id: str
+    article_id: str
+    script_text: str
+    line_ids: list[str] = Field(default_factory=list)
+    anchor_speech_readability: float = Field(default=0.0, ge=0.0, le=1.0)
+    short_spoken_sentences: bool = True
+    distinct_from_text_article: bool = True
+    no_direct_read_aloud_duplicate: bool = True
+    no_platform_publish: bool = True
+    no_hardware_execution: bool = True
+    may_publish_truth: bool = False
+    may_update_stage1: bool = False
+    may_update_stage4: bool = False
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsRobotExplainerCue(BaseModel):
+    cue_id: str
+    bulletin_id: str
+    sequence: int = Field(ge=0)
+    target: NewsStudioCueTarget = NewsStudioCueTarget.MGL_ROBOT_FACE_SCREEN
+    text: str
+    preview_only: bool = True
+    no_hardware_execution: bool = True
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsStudioSceneCue(BaseModel):
+    cue_id: str
+    bulletin_id: str
+    sequence: int = Field(ge=0)
+    target: NewsStudioCueTarget
+    description: str
+    preview_only: bool = True
+    hardware_execution_command: bool = False
+    platform_publish_command: bool = False
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsStudioScreenState(BaseModel):
+    state_id: str
+    bulletin_id: str
+    target: NewsStudioCueTarget
+    state_name: str
+    payload: dict[str, Any] = Field(default_factory=dict)
+    preview_only: bool = True
+    hardware_execution_command: bool = False
+    platform_publish_command: bool = False
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsStudioSfxCue(BaseModel):
+    sfx_id: str
+    bulletin_id: str
+    sequence: int = Field(ge=0)
+    cue_type: NewsSfxCueType = NewsSfxCueType.none_
+    reason: str = "neutral editorial cue"
+    editorial_state: str = "neutral"
+    approved: bool = True
+    rejects_unsafe_celebratory_tragedy: bool = True
+    no_hardware_execution: bool = True
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsStudioLowerThird(BaseModel):
+    lower_third_id: str
+    bulletin_id: str
+    sequence: int = Field(ge=0)
+    target: NewsStudioCueTarget = NewsStudioCueTarget.MGL_LOWER_THIRD_Main
+    text: str
+    summary_overlay_only: bool = True
+    full_paragraph: bool = False
+    preview_only: bool = True
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsStudioTickerItem(BaseModel):
+    ticker_id: str
+    bulletin_id: str
+    sequence: int = Field(ge=0)
+    target: NewsStudioCueTarget = NewsStudioCueTarget.MGL_TICKER_Bottom
+    text: str
+    preview_only: bool = True
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsStudioAssetRequirement(BaseModel):
+    requirement_id: str
+    bulletin_id: str
+    asset_type: str
+    description: str
+    visual_disclosure: NewsAiVisualDisclosure = NewsAiVisualDisclosure.real_footage
+    rights_required: bool = True
+    ai_reconstruction_label_required: bool = False
+    no_external_fetch: bool = True
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsStudioRightsCheck(BaseModel):
+    rights_check_id: str
+    bulletin_id: str
+    passed: bool = True
+    rights_pass: bool = True
+    ai_reconstruction_label_pass: bool = True
+    sponsor_disclosure_pass: bool = True
+    sfx_policy_pass: bool = True
+    no_hardware_execution_pass: bool = True
+    no_platform_publish_pass: bool = True
+    studio_cue_safety: float = Field(default=1.0, ge=0.0, le=1.0)
+    notes: str = "local metadata check only"
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsStudioAiReconstructionLabel(BaseModel):
+    label_id: str
+    bulletin_id: str
+    disclosure: NewsAiVisualDisclosure
+    visible_label: str
+    required: bool = True
+    present: bool = True
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsVideoSeoArtifact(BaseModel):
+    video_seo_id: str
+    bulletin_id: str
+    package_id: str
+    article_id: str
+    title: str
+    description: str
+    watch_url: str
+    video_format: NewsVideoFormat
+    video_object_jsonld: dict[str, Any] = Field(default_factory=dict)
+    no_platform_publish: bool = True
+    no_external_calls: bool = True
+    may_publish_truth: bool = False
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsVideoSitemapEntry(BaseModel):
+    entry_id: str
+    bulletin_id: str
+    watch_url: str
+    title: str
+    description: str
+    thumbnail_url: Optional[str] = None
+    publication_date: datetime = Field(default_factory=utc_now)
+    family_friendly: bool = True
+    live: bool = False
+    platform_submission: bool = False
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class NewsModalityDivergenceReport(BaseModel):
+    report_id: str
+    bulletin_id: str
+    package_id: str
+    article_id: str
+    modality_divergence: float = Field(default=0.0, ge=0.0, le=1.0)
+    similarity: float = Field(default=0.0, ge=0.0, le=1.0)
+    text_variant_ref: Optional[str] = None
+    video_script_ref: Optional[str] = None
+    passes_distinctness: bool = True
     created_at: datetime = Field(default_factory=utc_now)
 
 

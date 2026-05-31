@@ -31,6 +31,10 @@ NEWSROOMS_TEXT_SEO_E2E = (
     "tests/test_newsrooms_text_seo.py::"
     "test_newsrooms_text_blog_seo_structured_data_and_originality"
 )
+NEWSROOMS_STUDIO_VIDEO_E2E = (
+    "tests/test_newsroom_studio_video.py::"
+    "test_newsroom_studio_video_compatibility_layer"
+)
 
 TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/health"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries"],
@@ -95,12 +99,21 @@ TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/newsrooms/packages/{package_id}"): [NEWSROOMS_COUNCIL_E2E],
     ("POST", "/newsrooms/packages/{package_id}/script"): [NEWSROOMS_COUNCIL_E2E],
     ("POST", "/newsrooms/packages/{package_id}/text-article"): [NEWSROOMS_TEXT_SEO_E2E],
+    ("POST", "/newsrooms/packages/{package_id}/video-bulletin"): [NEWSROOMS_STUDIO_VIDEO_E2E],
     ("POST", "/newsrooms/packages/{package_id}/live-blog-update"): [NEWSROOMS_TEXT_SEO_E2E],
     ("POST", "/newsrooms/packages/{package_id}/blog-post"): [NEWSROOMS_TEXT_SEO_E2E],
     ("POST", "/newsrooms/packages/{package_id}/news-to-debate"): [NEWSROOMS_COUNCIL_E2E],
     ("POST", "/newsrooms/corrections"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/newsrooms/risk-alerts"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/newsrooms/audit-logs"): [NEWSROOMS_COUNCIL_E2E],
+    ("GET", "/newsrooms/video-bulletins"): [NEWSROOMS_STUDIO_VIDEO_E2E],
+    ("GET", "/newsrooms/video-bulletins/{bulletin_id}"): [NEWSROOMS_STUDIO_VIDEO_E2E],
+    ("POST", "/newsrooms/video-bulletins/{bulletin_id}/anchor-script"): [NEWSROOMS_STUDIO_VIDEO_E2E],
+    ("POST", "/newsrooms/video-bulletins/{bulletin_id}/studio-cues"): [NEWSROOMS_STUDIO_VIDEO_E2E],
+    ("POST", "/newsrooms/video-bulletins/{bulletin_id}/sfx-plan"): [NEWSROOMS_STUDIO_VIDEO_E2E],
+    ("POST", "/newsrooms/video-bulletins/{bulletin_id}/rights-check"): [NEWSROOMS_STUDIO_VIDEO_E2E],
+    ("POST", "/newsrooms/video-bulletins/{bulletin_id}/video-seo"): [NEWSROOMS_STUDIO_VIDEO_E2E],
+    ("POST", "/newsrooms/video-bulletins/{bulletin_id}/modality-divergence"): [NEWSROOMS_STUDIO_VIDEO_E2E],
     ("GET", "/dashboard/newsrooms/cards"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/dashboard/newsrooms/pages"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/dashboard/newsrooms/risk-alerts"): [NEWSROOMS_COUNCIL_E2E],
@@ -108,6 +121,9 @@ TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/dashboard/newsrooms/safety-boundaries"): [NEWSROOMS_COUNCIL_E2E],
     ("GET", "/dashboard/newsrooms/seo"): [NEWSROOMS_TEXT_SEO_E2E],
     ("GET", "/dashboard/newsrooms/originality"): [NEWSROOMS_TEXT_SEO_E2E],
+    ("GET", "/dashboard/newsrooms/studio-cues"): [NEWSROOMS_STUDIO_VIDEO_E2E],
+    ("GET", "/dashboard/newsrooms/video-bulletins"): [NEWSROOMS_STUDIO_VIDEO_E2E],
+    ("GET", "/dashboard/newsrooms/video-safety"): [NEWSROOMS_STUDIO_VIDEO_E2E],
     ("GET", "/api/dashboard/collapse-metrics"): [
         "tests/test_api.py::test_dashboard_collapse_alias_preserves_metrics_payload"
     ],

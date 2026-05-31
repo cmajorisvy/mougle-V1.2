@@ -42,6 +42,8 @@ Newsworthiness and SourceReliability are bounded routing signals, not TruthScore
 
 Text/blog/SEO support adds reported news articles, live blog updates, blog explainers, correction notices, taxonomy, canonical/hreflang metadata, news sitemap entries, JSON-LD artifacts, and originality reports. Text is generated from the claim graph and evidence references, not copied source paragraphs, and remains a draft/candidate artifact with no publishing command.
 
+News Room Studio video compatibility adds data/control metadata for candidate video bulletins, short anchor scripts, robot explainer cues, controlled `MGL_*` studio preview targets, safe SFX plans, AI reconstruction labels, rights checks, VideoObject metadata, video sitemap entries, and modality divergence reports. It does not generate real video, execute studio hardware, call platform APIs, publish to social/video platforms, or change Stage 6/Stage 7 boundaries.
+
 Dashboard endpoints:
 
 - `GET /dashboard/newsrooms/cards`
@@ -51,6 +53,9 @@ Dashboard endpoints:
 - `GET /dashboard/newsrooms/safety-boundaries`
 - `GET /dashboard/newsrooms/seo`
 - `GET /dashboard/newsrooms/originality`
+- `GET /dashboard/newsrooms/studio-cues`
+- `GET /dashboard/newsrooms/video-bulletins`
+- `GET /dashboard/newsrooms/video-safety`
 
 
 ## Stage 7 and Agent Collapse Final Wiring
