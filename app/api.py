@@ -292,6 +292,20 @@ def podcast_council_dashboard_pages() -> list[dict]:
     return engine.podcast_dashboard_pages()
 
 
+def _collapse_dashboard_payload() -> dict:
+    return engine.collapse_metrics_summary()
+
+
+@app.get("/api/dashboard/collapse-metrics")
+def api_dashboard_collapse_metrics() -> dict:
+    return _collapse_dashboard_payload()
+
+
+@app.get("/api/dashboard/collapse")
+def api_dashboard_collapse() -> dict:
+    return _collapse_dashboard_payload()
+
+
 @app.post("/agents/{agent_id}/collapse/evaluate")
 def agent_collapse_evaluate(agent_id: str, payload: AgentCollapseMetricsInput) -> dict:
     return engine.evaluate_collapse_risk(agent_id, payload).model_dump(mode="json")

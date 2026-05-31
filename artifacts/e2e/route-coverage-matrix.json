@@ -201,6 +201,30 @@
   },
   {
     "method": "GET",
+    "path": "/api/dashboard/collapse",
+    "name": "api_dashboard_collapse",
+    "module_owner": "agent_collapse",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_api.py::test_dashboard_collapse_alias_preserves_metrics_payload"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
+    "path": "/api/dashboard/collapse-metrics",
+    "name": "api_dashboard_collapse_metrics",
+    "module_owner": "agent_collapse",
+    "criticality": "P0",
+    "tested_by": [
+      "tests/test_api.py::test_dashboard_collapse_alias_preserves_metrics_payload"
+    ],
+    "status": "tested",
+    "reason": null
+  },
+  {
+    "method": "GET",
     "path": "/archive/micro-pyramid/candidates",
     "name": "archive_micro_pyramid_candidates",
     "module_owner": "archive_reuse_guard",

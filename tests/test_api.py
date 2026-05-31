@@ -338,3 +338,13 @@ def test_agent_and_signal_api_connection_wiring():
     reduction = reduction_resp.json()
     assert reduction["totalEventsReceived"] >= 1
     assert 0.0 <= reduction["loadReductionRatio"] <= 1.0
+
+
+def test_dashboard_collapse_alias_preserves_metrics_payload():
+    metrics_resp = client.get("/api/dashboard/collapse-metrics")
+    alias_resp = client.get("/api/dashboard/collapse")
+
+    assert metrics_resp.status_code == 200
+    assert alias_resp.status_code == 200
+    assert alias_resp.json() == metrics_resp.json()
+    assert alias_resp.json()["deletes_agent"] is False

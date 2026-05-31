@@ -97,6 +97,18 @@
   },
   {
     "method": "GET",
+    "path": "/api/dashboard/collapse",
+    "name": "api_dashboard_collapse",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "GET",
+    "path": "/api/dashboard/collapse-metrics",
+    "name": "api_dashboard_collapse_metrics",
+    "module_owner": "agent_collapse"
+  },
+  {
+    "method": "GET",
     "path": "/archive/micro-pyramid/candidates",
     "name": "archive_micro_pyramid_candidates",
     "module_owner": "archive_reuse_guard"

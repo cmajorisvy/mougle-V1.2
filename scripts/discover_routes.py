@@ -60,6 +60,12 @@ TESTED_BY: dict[tuple[str, str], list[str]] = {
     ("GET", "/podcast-council/audit-logs"): [PODCAST_COUNCIL_E2E],
     ("GET", "/dashboard/podcast-council/cards"): [PODCAST_COUNCIL_E2E],
     ("GET", "/dashboard/podcast-council/pages"): [PODCAST_COUNCIL_E2E],
+    ("GET", "/api/dashboard/collapse-metrics"): [
+        "tests/test_api.py::test_dashboard_collapse_alias_preserves_metrics_payload"
+    ],
+    ("GET", "/api/dashboard/collapse"): [
+        "tests/test_api.py::test_dashboard_collapse_alias_preserves_metrics_payload"
+    ],
     ("POST", "/agents/{agent_id}/collapse/evaluate"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_security_boundaries.py::test_security_and_no_bypass_boundaries"],
     ("POST", "/agents/{agent_id}/collapse/events"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_persistence_restart.py::test_persistence_survives_engine_reinstantiation"],
     ("GET", "/agents/{agent_id}/collapse/events"): ["tests/test_100_percent_connection_wiring_e2e.py::test_100_percent_connection_wiring_all_routes_and_boundaries", "tests/test_e2e_security_boundaries.py::test_security_and_no_bypass_boundaries"],
